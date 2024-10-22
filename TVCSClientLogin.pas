@@ -7,7 +7,6 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, AdvGlassButton, Vcl.StdCtrls,Registry,tvcsAPI,tvcsProtocol,
   Vcl.ExtCtrls;
 
-{$DEFINE FAKE_RUNNING}
 type
   TfrmLogin = class(TForm)
     edServer: TEdit;
@@ -30,16 +29,21 @@ type
   private
      userName,userPass:String;
      bSaved:Boolean;
-     api:TTVCSAPI;
+     Fapi:TTVCSAPI;
      Procedure LoadSettings;
      Procedure SaveSettings;
 
   public
      isLogged:Boolean;
+
+  published
+    property api:ttvcsAPI read Fapi write Fapi;
+
   end;
 
 var
   frmLogin: TfrmLogin;
+  Globalapi:TTVCSAPI;
   const PrgKey='Software\TVCSClient\Settings';
 
 implementation
@@ -49,15 +53,24 @@ implementation
 procedure TfrmLogin.btnLoginClick(Sender: TObject);
 
 begin
- {$IFNDEF FAKE_RUNNING}
   // Login API
-    isLogged:=api.login(edUser.text,edPass.Text);
- {$ELSE}
-    isLogged:=True;
- {$ENDIF}
+  Gapi := TTVCSAPI.Create;
+  Gapi.SetUrl(edServer.Text);
 
-  SaveSettings;
-  ModalResult := mrOK;
+  //Globalapi.SetUrl(edServer.Text);
+  isLogged:=Gapi.login(edUser.text,edPass.Text);
+
+  if isLogged then
+  begin
+    SaveSettings;
+    //Globalapi := api;
+
+    ModalResult := mrOK;
+  end
+  else
+    ShowMessage('로그인 실패');
+
+
 
 end;
 
@@ -65,17 +78,16 @@ procedure TfrmLogin.FormCreate(Sender: TObject);
 begin
 isLogged:=False;
 LoadSettings;
-{$IFNDEF FAKE_RUNNING}
-     api.create;
-{$ENDIF}
+ //api := TTVCSAPI.Create();
+
 end;
 
 procedure TfrmLogin.FormDestroy(Sender: TObject);
 begin
-{$IFNDEF FAKE_RUNNING}
+
    if (api<>nil) then
       FreeAndNil(api);
-{$ENDIF}
+
 end;
 
 procedure TfrmLogin.LoadSettings;
