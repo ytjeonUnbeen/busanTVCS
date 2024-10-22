@@ -10,7 +10,7 @@ uses
   AdvUtil, Vcl.Grids, AdvObj, BaseGrid, AdvGrid, Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan,Direct2D, PasLibVlcPlayerUnit,PasLibVlcClassUnit,
   System.Actions, Vcl.ActnList, Vcl.Menus, AdvMenus;
 const
-  GLOBAL_FONT_NAME = '돋움';
+  GLOBAL_FONT_NAME = '돋 움';
   GLOBAL_FONT_SIZE = 10;
   GLOBAL_FONT_COLOR = clWhite;
   GLOBAL_FONT_STYLE = [fsBold];

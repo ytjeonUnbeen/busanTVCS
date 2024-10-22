@@ -415,8 +415,6 @@ object frmTVCSMain: TfrmTVCSMain
       Height = 206
       Align = alClient
       TabOrder = 0
-      ExplicitLeft = 2
-      ExplicitTop = 6
     end
   end
   object ImageCollection1: TImageCollection
