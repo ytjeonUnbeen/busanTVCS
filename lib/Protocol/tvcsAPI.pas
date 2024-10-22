@@ -4,7 +4,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, IdBaseComponent, IdComponent, IdTCPConnection,System.JSON,Rest.JSON,IDUri, IdSSL, IdSSLOpenSSL,IdAuthenticationDigest,IdAuthentication,
-  IdTCPClient, IdHTTP, Registry,Types,strutils,tvcsProtocol;
+  IdTCPClient, IdHTTP, Registry,Types,strutils,tvcsProtocol,
+  OverbyteIcsHttpProt, OverbyteIcsWSocket, OverbyteIcsWndControl, OverbyteIcsTypes, Soap.EncdDecd;
 
 const
    api_login='/tvcs/login';
@@ -18,6 +19,7 @@ const
    api_license='/tvcs/license';
    api_system='/tvcs/system';
    api_list='/tvcs/apilist';
+
 
 type
 
@@ -48,6 +50,7 @@ type
           FResponseCode:Integer;
           FResponseText:String;
           DebugMemo:TMemo;
+
 
           function  GetHost:String;
           function  GetPort:Integer;
@@ -81,6 +84,9 @@ type
          property UrlPath:String read GetPath;
          property ResponseCode:Integer read FResponseCode;
          property ResponseText:String read FResponseText;
+         property UserId:String read FUserId;
+         property UserPass:String read FUserPass;
+         property HostAddr:String  read FHostAddr;
   end;
 
   TListAPI=record
@@ -89,6 +95,23 @@ type
       Uri:String;
       Data:TJSONObject;
   end;
+
+  TReceiveDataEvent = procedure(const Data: string) of object;
+
+  TReceiveThread = class(TThread)
+  private
+    FWSocket: TWSocket;
+    FOnReceiveData: TReceiveDataEvent;
+    FStopFlag: Boolean;
+    FReceiveDataMethod: TFunc<string>;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(ASocket: TWSocket; AReceiveDataMethod: TFunc<string>);
+    procedure Stop;
+    property OnReceiveData: TReceiveDataEvent read FOnReceiveData write FOnReceiveData;
+  end;
+
 
 
 
@@ -104,9 +127,17 @@ type
          FDebugMemo:TMemo;
          FLoginInfo:TVCSLogin;
 
+         WSocket: TWSocket;
+         FStopReceiving: Boolean;
+         FReceiveThread: TReceiveThread;
+         FOnReceiveData: TReceiveDataEvent;
+
+         procedure ThreadReceiveData(const Data: string);
          procedure LoadAPIList(AAPIList:TJSONArray);
+         function InternalReceiveData: string;
 
      public
+
          destructor  Destroy;override;
          constructor Create;overload;
          constructor Create(url:String);overload;
@@ -126,7 +157,7 @@ type
          //station
          function GetStation(code:String=''; line:Integer=0):TArray<TvcsStation>;
          function AddStation(stationinfo:TvcsStationInPost):TvcsStation;
-         function UpdateStation(stationinfo:TvcsStation):TvcsStation;
+         function UpdateStation(stationinfo:TvcsStationInPost):TvcsStation;
          function DeleteStation(code:String=''):string;
 
          //train
@@ -166,6 +197,15 @@ type
          //apilist
          function GetApiList():TArray<TVCSApilist>;
 
+         //tcmsdata
+         function ConnectTCMS(const IPAddress, Port: string; out ErrorMsg: string; line: string): boolean;
+         procedure DisconnectTCMS(out ErrorMsg: string);
+         function ReceiveData(): string;
+
+         //TCMS 쓰레드
+         property OnReceiveData: TReceiveDataEvent read FOnReceiveData write FOnReceiveData;
+
+
 
          procedure DisplayDebug(str:String);
          function GetParamter(apiname:String;var params:TJSONObject):Integer;
@@ -173,6 +213,7 @@ type
          procedure CallAPI(apiname: String;method:TTvcsAPIMethod; params: String; var retParams: String);overload;
          procedure CallAPI(apiname:String;method:TTvcsAPIMethod;params:TJSONObject;var retParams:TJSONObject);overload;
       published
+
          property APIBase:TTvcsAPIBase read FAPIBase write FAPIBase;
          property ListAPI:TArray<TListAPI> read FListAPI write FListAPI;
          property ResoponseCode:Integer read FResponseCode write FResponsecode;
@@ -182,7 +223,12 @@ type
          property DebugMemo:TMemo read FDebugMemo write FDebugMemo;
          property isLogin:Boolean read FLogin;
 
+
+
   end;
+
+var
+  Gapi: TTVCSAPI;
 
 
 implementation
@@ -193,6 +239,8 @@ begin
  FErrorCode:=0;
  FErrorMsg:='';
  FLogin:=False;
+ FStopReceiving:=False;
+ WSocket := TWSocket.Create(nil);
  FAPIBase:=TTvcsAPIBase.Create;
 end;
 
@@ -202,6 +250,9 @@ begin
   FErrorCode:=0;
   FErrorMsg:='';
   FLogin:=False;
+  FStopReceiving:=False;
+  WSocket := TWSocket.Create(nil);
+
  FAPIBase:=TTvcsAPIBase.Create(url);
 end;
 
@@ -214,6 +265,8 @@ begin
   FErrorCode:=0;
   FErrorMsg:='';
   FLogin:=False;
+  WSocket.Free;
+
   inherited Destroy;
 end;
 
@@ -545,7 +598,7 @@ begin
   end;
 end;
 
-function TTVCSAPI.UpdateStation(stationinfo: TvcsStation):TvcsStation;
+function TTVCSAPI.UpdateStation(stationinfo: TvcsStationInPost):TvcsStation;
 var
  RequestJson, ResponseJson: TJSONObject;
  StationJson: TJSONValue;
@@ -1196,6 +1249,146 @@ begin
     Result := nil;
 end;
 
+constructor TReceiveThread.Create(ASocket: TWSocket; AReceiveDataMethod: TFunc<string>);
+begin
+  inherited Create(True);
+  FWSocket := ASocket;
+  FReceiveDataMethod := AReceiveDataMethod;
+  FStopFlag := False;
+  FreeOnTerminate := True;
+end;
+
+procedure TReceiveThread.Execute;
+var
+  Data: string;
+begin
+  OutputDebugString('Receive thread started');
+  while not Terminated and not FStopFlag do
+  //OutputDebugString('0');
+  begin
+    if Assigned(FReceiveDataMethod) then
+    OutputDebugString('1');
+    begin
+      Data := FReceiveDataMethod();
+      OutputDebugString(PChar('Raw received data: ' + Data));
+
+
+      if Data <> '' then
+      OutputDebugString('2');
+      begin
+        if Assigned(FOnReceiveData) then
+          OutputDebugString('3');
+          TThread.Synchronize(nil, procedure
+          begin
+            OutputDebugString(PChar('4 Data: '+Data));
+            FOnReceiveData(Data);
+          end);
+      end;
+    end;
+    OutputDebugString('Receive thread loop');
+    //Sleep(3000);
+  end;
+  OutputDebugString('Receive thread ended');
+
+end;
+
+procedure TReceiveThread.Stop;
+begin
+  FStopFlag := True;
+end;
+
+
+function TTVCSAPI.ConnectTCMS(const IPAddress, Port: string; out ErrorMsg: string; line: string): Boolean;
+var
+  ConnectTimeout: Integer;
+  AuthStr, LineStr, SendStr: string;
+begin
+  WSocket.Proto := 'tcp';
+  WSocket.Addr := IPAddress;
+  WSocket.Port := Port;
+  ConnectTimeout := 0;
+  WSocket.Connect;
+  while (WSocket.State <> wsConnected) and (ConnectTimeout < 50) do
+  begin
+    Application.ProcessMessages;
+    Sleep(100);
+    Inc(ConnectTimeout);
+  end;
+
+  if WSocket.State = wsConnected then
+  begin
+    AuthStr := EncodeString('admin:qwe123!@#');
+    LineStr := line;
+    SendStr := Format('auth=%s&line=%s'#10, [AuthStr, LineStr]);
+    WSocket.SendStr(SendStr);
+
+
+    // Start receive thread
+    FReceiveThread := TReceiveThread.Create(WSocket, InternalReceiveData);
+    FReceiveThread.OnReceiveData := ThreadReceiveData;
+    FReceiveThread.Start;
+
+    Result := True;
+  end
+  else
+  begin
+    ErrorMsg := 'Connection failed';
+    Result := False;
+  end;
+end;
+
+function TTVCSAPI.InternalReceiveData: string;
+begin
+  Result := ReceiveData;
+end;
+
+function TTVCSAPI.ReceiveData: string;
+var
+  Buffer: array[0..1023] of Byte;
+  BytesRead: Integer;
+  TotalBuffer: TBytes;
+begin
+  Result := '';
+  if not Assigned(WSocket) then Exit;
+
+  SetLength(TotalBuffer, 0);
+  BytesRead := WSocket.Receive(@Buffer, SizeOf(Buffer));
+  if BytesRead > 0 then
+  begin
+    SetLength(TotalBuffer, BytesRead);
+    Move(Buffer[0], TotalBuffer[0], BytesRead);
+    Result := TEncoding.UTF8.GetString(TotalBuffer);
+  end;
+end;
+
+procedure TTVCSAPI.DisconnectTCMS(out ErrorMsg: string);
+begin
+  ErrorMsg := '';
+  try
+    if Assigned(FReceiveThread) then
+    begin
+      FReceiveThread.Stop;
+      FReceiveThread.Terminate;
+      FReceiveThread := nil;
+    end;
+    if Assigned(WSocket) and (WSocket.State = wsConnected) then
+    begin
+      WSocket.Close;
+    end;
+  except
+    on E: Exception do
+    begin
+      ErrorMsg := 'Exception in DisconnectTCMS: ' + E.Message;
+    end;
+  end;
+end;
+
+procedure TTVCSAPI.ThreadReceiveData(const Data: string);
+begin
+  if Assigned(FOnReceiveData) then
+    FOnReceiveData(Data);
+end;
+
 constructor TTvcsAPIBase.Create;
 begin
    idHttp:=TIdHTTP.Create(nil);
@@ -1226,8 +1419,8 @@ begin
    self.FUserPass:=userpass;
 
 
-
 end;
+
 procedure TTVCSAPIBase.SetHostUrl(url: string);
 begin
 
@@ -1492,8 +1685,10 @@ begin
          idHttp.Request.CharSet:='utf-8';
          idHttp.Get(AUrl,resStream);
        finally
+
          Result:=resStream.DataString;
          FResponseCode:=idHttp.ResponseCode;
+         idHttp.Disconnect;
          FreeAndNil(resStream);
        end;
     except
@@ -1586,7 +1781,17 @@ begin
 end;
 
 
+{
+initialization
+  gapi := TTVCSAPI.Create;
+
+finalization
+  if Assigned(gapi) then
+    gapi.Free;
+}
 
 
 
 end.
+
+

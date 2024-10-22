@@ -1,16 +1,16 @@
 ﻿unit tvcsProtocol;
 
 interface
-
+//13
 type
 
   TvcsUser=class
-      fuserId:string;
       ffirstName:String;
       flastName:String;
       femail:String;
       fisStaff:Integer;
       fisSuperUser:boolean;
+      fActive:boolean;
       flastLogin:String;
       fdateJoined:String;
       fversion:String;
@@ -23,6 +23,7 @@ type
       flastName:String;
       femail:String;
       fisStaff:Boolean;
+      fisActive:Boolean;
   end;
 
   TvcsUserPatch=class
@@ -32,6 +33,7 @@ type
       flastName:string;
       femail:string;
       fisStaff:boolean;
+      fisActive:boolean;
   end;
 
   TvcsSystem=class
@@ -40,11 +42,20 @@ type
      fframe:Integer;
      fisEventInterval:boolean;
      feventIntervalSec:Integer;
+     fline:Integer;
+  end;
+
+  TvcsSystemPatch=class
+      fdisplayInterval:Integer;
+      fresolution:String;
+      fframe:Integer;
+      fisEventInterval:boolean;
+      feventIntervalSec:Integer;
   end;
 
   TvcsStation=class
     fcode:String;
-    fline:Integer;
+    //fline:Integer;
     fname:String;
     fdepartDelay:Integer;
     farriveDelay:Integer;
@@ -52,17 +63,19 @@ type
     fprevName:String;
     fnextCode:String;
     fnextName:String;
+    ftvcsIpaddr:string;
   end;
 
 
   TvcsStationInPost=class
     fcode:String;
-    fline:Integer;
     fname:String;
     fdepartDelay:Integer;
     farriveDelaay:Integer;
     fprevCode:String;
     fnextCode:String;
+    ftvcsIpaddr:string;
+    //fline:Integer;
   end;
 
   TVCSTrain=class
@@ -71,22 +84,29 @@ type
     fformatNo:Integer;
     fcarriageNum:Integer;
     fcameraNum:Integer;
-    fmergeRtsp:String;
+    ftvcsIpaddr:String;
+    //fmergeRtsp:String;
+    //fline:Integer;
   end;
 
   TVCSTrainInPost=class
-    ftrainNo:String;
+    ftrainNo:Integer;
     fformatNo:Integer;
     fcarriageNum:Integer;
     fcameraNum:Integer;
+    ftvcsIpaddr:string;
+    //ftrainId:Integer;
+    //fline:Integer;
   end;
 
   TVCSTrainInPatch=class
     fid:Integer;
-    ftrainNo:String;
+    ftrainNo:Integer;
     fformatNo:Integer;
     fcarriageNum:Integer;
     fcameraNum:Integer;
+    ftvcsIpaddr:string;
+    //fline:Integer;
   end;
 
   TVCSTrainServiceIn=class
@@ -96,7 +116,7 @@ type
 
  TVCSTrainService=class
     ftrainId:Integer;
-    ftrainNo:String;
+    ftrainNo:Integer;
     fformatNo:Integer;
     fstationCode:String;
     fstationName:String;
@@ -109,6 +129,8 @@ type
     ftcms:Tobject;
   end;
 
+
+  //Station Camera
   TVCSStationCamera=class
     fid:Integer;
     fstationCode:String;
@@ -146,6 +168,8 @@ type
     fuserPwd:String;
   end;
 
+
+  // TrainCamera
   TVCSTrainCamera=class
     fid:Integer;
     ftrainId:Integer;
@@ -172,7 +196,7 @@ type
   end;
 
   TVCSTrainCameraInPatch=class
-    fid:string;
+    fid:Integer;
     ftrainId:Integer;
     fposition:Integer;
     fname:string;
@@ -183,27 +207,44 @@ type
     fuserPwd:string;
   end;
 
+  fmergeCamInfo = class
+    fid: Integer;
+    ftrainId: Integer;
+    fcameraid: Integer;
+    fposition: Integer;
+    fname: String;
+    fipaddr: string;
+    fport: Integer;
+    frtsp : String;
+    ftvcsRtsp: String;
+    fpositionX: Integer;
+    fpositionY: Integer;
+  end;
+
 
   TVCSTrainCameraMerge=class
-    ftrainId:Integer;
-    fcameraId:Integer;
-    fpostition:Integer;
-    fname:String;
-    fipaddr:String;
-    fport:Integer;
-    frtsp:String;
-    ftvcsRtsp:String;
+    fname: String;
+    ftvcsRtsp: String;
+    fwidth : Integer;
+    fheight: Integer;
+    fitem: array of fmergeCamInfo;
   end;
 
   TVCSTrainCameraMergePost=class
     ftrainId:Integer;
+    fname:string;
     fcameraId:Integer;
+    fpositionX:Integer;
+    fpositionY:Integer;
   end;
 
   TVCSTrainCameraMergePatch=class
     fid:Integer;
     ftrainId:Integer;
+    fname:string;
     fcameraId:Integer;
+    fpositionX:Integer;
+    fpositionY:Integer;
   end;
 
   TVCSCameraLicense=class
@@ -249,6 +290,23 @@ type
     finJson:TObject;
   end;
 
+  TCMSData=class
+    ftrainNo: string;
+    fformatNo: Integer;
+    fopCode: string;
+    ftrainDir: string;
+    fstationCode: string;
+    fstationName: string;
+    fprevStationCode: string;
+    fprevStationName: string;
+    fnextStationCode: string;
+    fnextStationName: string;
+    ffireWarning: boolean;
+    ffirebreak: boolean;
+    finterphone1: boolean;
+    finterphone2: boolean;
+  end;
+
 
 
 
@@ -257,3 +315,5 @@ type
 implementation
 
 end.
+
+
