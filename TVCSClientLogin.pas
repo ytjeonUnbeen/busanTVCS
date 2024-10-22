@@ -59,16 +59,19 @@ begin
 
   //Globalapi.SetUrl(edServer.Text);
   isLogged:=Gapi.login(edUser.text,edPass.Text);
-
+//  isLogged:=true;
   if isLogged then
   begin
     SaveSettings;
     //Globalapi := api;
 
     ModalResult := mrOK;
+    Exit;
   end
-  else
-    ShowMessage('로그인 실패');
+  else  begin
+    ShowMessage('잘못된 아이디나 패스워드 입니다.');
+    ModalResult:=mrClose;
+  end;
 
 
 

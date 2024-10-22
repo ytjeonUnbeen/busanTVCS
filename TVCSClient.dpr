@@ -1,5 +1,7 @@
 program TVCSClient;
 
+
+
 uses
   Vcl.Forms,
   Winapi.Windows,
@@ -29,7 +31,8 @@ uses
   tvcsAPI in 'lib\Protocol\tvcsAPI.pas',
   tvcsProtocol in 'lib\Protocol\tvcsProtocol.pas',
   TVCSMainFrm in 'TVCSMainFrm.pas' {frmTVCSMain},
-  CustomPageControl in 'CustomPageControl.pas';
+  CustomPageControl in 'CustomPageControl.pas',
+  TVCSMulView in 'TVCSMulView.pas';
 
 {$R *.res}
 var
@@ -45,15 +48,17 @@ begin
   Registry := TRegIniFile.Create(KEY_READ);
   try
             //Application.CreateForm(TfrmRBTLogin, frmRBTLogin);
+   //  Application.CreateForm(TfrmLogin, frmLogin);
      frmLogin:=TfrmLogin.Create(Application);
      frmLogin.ShowModal;
      if (frmLogin.isLogged) then
-            //
+             Application.CreateForm(TfrmTVCSMain, frmTVCSMain);
 
-     FreeAndNil(frmLogin);
+    FreeAndNil(frmLogin);
 
-     Application.CreateForm(TfrmTVCSMain, frmTVCSMain);
+
   Application.Run;
+//  FreeAndNil(frmTVCSMain);
 
 
     Registry.CloseKey;

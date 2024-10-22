@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,System.Generics.Collections,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.ImageList, Vcl.ImgList,
   Vcl.VirtualImageList, Vcl.BaseImageCollection, Vcl.ImageCollection,
-  Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.ToolWin, Vcl.TitleBarCtrls, AdvMetroButton, AdvPageControl,
+  Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.ToolWin, Vcl.TitleBarCtrls, AdvMetroButton, AdvPageControl,GDIPicture,
   AdvUtil, Vcl.Grids, AdvObj, BaseGrid, AdvGrid, Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan,Direct2D, PasLibVlcPlayerUnit,PasLibVlcClassUnit,
   System.Actions, Vcl.ActnList, Vcl.Menus, AdvMenus;
 const
@@ -53,7 +53,7 @@ type
        destructor Destroy;override;
        procedure PlayView;
        procedure StopView;
-     published
+    published
       property Allocated:Boolean read bAllocated write bAllocated;
       property RtspUrl:String  read FRTSPUrl write FRTSPUrl;
     //  property Player:TPasLibVlcPlayer  read FPlayer write FPlayer;
@@ -98,7 +98,7 @@ type
     actSystem: TAction;
     actUsers: TAction;
     actExit: TAction;
-    pgRoute: TPageControl;
+    pgRoute: TAdvPageControl;
     procedure ToolbtnCloseClick(Sender: TObject);
     procedure toolBtnMaxClick(Sender: TObject);
     procedure toolBtnMinimizeClick(Sender: TObject);
@@ -113,6 +113,10 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure lstTrainSchedSelectCell(Sender: TObject; ACol, ARow: Integer;
       var CanSelect: Boolean);
+    procedure pnTopmenuMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure pnTopmenuDblClick(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
     curTabCount:Integer;
     FTrainBitMap:TBitMap;
@@ -121,7 +125,7 @@ type
     Stations:array of TStation;
     UseStations:array of Integer;
     Trains:Array of TTrainForm;
-    TrainTabList:TList<TTabSheet>;
+    TrainTabList:TList<TAdvTabSheet>;
     StationRange:Array of TStationRange;
 
     procedure TrainTabResize(Sender: TObject);
@@ -140,14 +144,21 @@ type
     procedure DoResize;
 
     procedure InitStations;
-
+  protected
+    procedure WMNCHitTest(var message: TWMNCHitTest); message WM_NCHITTEST;
+     procedure CreateParams(var Params: TCreateParams); override;
   public
     { Public declarations }
   end;
 
 var
   frmTVCSMain: TfrmTVCSMain;
+ // LastPt: TPointF;
+ // Dragging: Boolean = False;
+
+
    const max_stations_per_tab=10;
+        Edge = 5;
         CamSample:array[0..15] of TCamUrl =
         (
           (url:'rtsp://192.168.1.201:554/ISAPI/Streaming/channels/101';id:'admin';password:'Admin12#$'),
@@ -241,6 +252,47 @@ begin
 
 end;
 
+procedure TfrmTVCSMain.WMNCHitTest(var Message: TWMNCHitTest);
+var
+  P: TPoint;
+begin
+  inherited;
+
+  P := ScreenToClient(Message.Pos);
+
+  with Message do
+  begin
+    if Result = htClient then Exit;
+
+    Result := htCaption;
+
+    if P.Y < Edge then
+    begin
+      if P.X < Edge then
+        Result := htTopLeft
+      else if P.X > ClientWidth - Edge then
+        Result := htTopRight
+      else
+        Result := htTop;
+    end
+    else if P.Y > ClientHeight - Edge then
+    begin
+      if P.X < Edge then
+        Result := htBottomLeft
+      else if P.X > ClientWidth - Edge then
+        Result := htBottomRight
+      else
+        Result := htBottom;
+    end
+    else
+    begin
+      if P.X < Edge then
+        Result := htLeft
+      else if P.X > ClientWidth - Edge then
+        Result := htRight
+    end;
+  end;
+end;
 
 procedure TfrmTVCSMain.LoadSchedPanel;
 var
@@ -336,7 +388,7 @@ procedure TfrmTVCSMain.AddTrainTab(idrow:Integer);
 var
   trainNo:String;
   idx:Integer;
-  tmpTabSheet,tabSheet:TTabSheet;
+  tmpTabSheet,tabSheet:TAdvTabSheet;
 begin
   trainNo:=lstTrainSched.Cells[1,idrow];
 
@@ -349,8 +401,8 @@ begin
 
   end;
   //SetLength(TrainTabSheet,curTabCount);
-  tabSheet:=TTabSheet.Create(pgRoute);
-  tabSheet.PageControl:=pgRoute;
+  tabSheet:=TAdvTabSheet.Create(pgRoute);
+  tabSheet.AdvPageControl:=pgRoute;
   tabSheet.OnResize:=TrainTabResize;
   tabSheet.Tag:=StrToInt(trainNo);
 
@@ -364,10 +416,10 @@ end;
 
 procedure TfrmTVCSMain.TrainTabClose(Sender: TObject);
 var
- tabSheet:TTabSheet;
+ tabSheet:TAdvTabSheet;
  idx:Integer;
 begin
- tabSheet:=(Sender) As TTAbSheet;
+ tabSheet:=(Sender) As TAdvTAbSheet;
  idx:=TrainTabList.Indexof(tabSheet);
  TrainTabList.Delete(idx);
  TrainTabList.TrimExcess;
@@ -383,7 +435,7 @@ end;
 procedure TFrmTVCSMain.MakeRouteTab;
 var
  idx,curstidx,tabCount,tabRemain:Integer;
- tabTrainSheet:TTabSheet;
+ tabTrainSheet:TAdvTabSheet;
 
 
 begin
@@ -394,14 +446,14 @@ begin
   curstidx:=0;
   curTabCount:=tabCount;
 
-  TrainTabList:=TList<TTabSheet>.Create();
+  TrainTabList:=TList<TAdvTabSheet>.Create();
 
 
   for idx := 0 to tabCount-1 do begin
 
-    tabTrainSheet:=TTabSheet.Create(pgRoute);
+    tabTrainSheet:=TAdvTabSheet.Create(pgRoute);
 
-    tabTrainSheet.PageControl:=pgRoute;
+    tabTrainSheet.AdvPageControl:=pgRoute;
     tabTrainSheet.OnResize:=TrainTabResize;
     tabTrainSheet.Tag:=idx;
     tabTrainSheet.ImageIndex:=1;
@@ -421,6 +473,24 @@ begin
 
   end;
 
+
+end;
+
+procedure TfrmTVCSMain.pnTopmenuDblClick(Sender: TObject);
+begin
+WindowState:=TWindowState.wsNormal;
+end;
+
+procedure TfrmTVCSMain.pnTopmenuMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+const
+  SC_DRAGMOVE = $F012;
+begin
+  if Button = mbLeft then
+  begin
+    ReleaseCapture;
+    Perform(WM_SYSCOMMAND, SC_DRAGMOVE, 0);
+  end;
 
 end;
 
@@ -475,6 +545,31 @@ begin
   end;
 if (TrainTabList<>nil) then
    TrainTabList.Free;
+
+end;
+
+procedure TfrmTVCSMain.CreateParams(var Params: TCreateParams);
+begin
+  BorderStyle := bsNone;
+
+  inherited;
+
+  Params.WndParent := 0;
+  Params.ExStyle := Params.ExStyle or WS_EX_APPWINDOW;
+end;
+
+procedure TfrmTVCSMain.FormResize(Sender: TObject);
+var
+  WindowRgn, HoleRgn : HRgn;
+begin
+  WindowRgn := 0;
+  GetWindowRgn(Handle, WindowRgn);
+  DeleteObject(WindowRgn);
+  WindowRgn := CreateRectRgn(0, 0, Width, Height);
+  HoleRgn := CreateRectRgn(Edge, Edge+self.Height+Edge, Width-Edge, Height-Edge);
+  CombineRgn(WindowRgn, WindowRgn, HoleRgn, RGN_DIFF);
+  SetWindowRgn(Handle, WindowRgn, TRUE);
+  DeleteObject(HoleRgn);
 
 end;
 
