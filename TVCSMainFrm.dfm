@@ -227,6 +227,7 @@ object frmTVCSMain: TfrmTVCSMain
       PopupMenu = popupMain
       TabOrder = 0
       Version = '1.2.0.0'
+      OnClick = AdvMetroButton1Click
     end
     object pnTitle: TPanel
       Left = 34

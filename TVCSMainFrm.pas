@@ -114,6 +114,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure pnTopmenuDblClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
+    procedure AdvMetroButton1Click(Sender: TObject);
   private
     curTabCount:Integer;
     FTrainBitMap:TBitMap;
@@ -409,6 +410,11 @@ begin
   //tabSheet.ShowOnClose:=TrainTabClose;
   TrainTabList.Add(tabSheet);
 
+end;
+
+procedure TfrmTVCSMain.AdvMetroButton1Click(Sender: TObject);
+begin
+  popupMain.PopupAtControl(advmetrobutton1);
 end;
 
 procedure TfrmTVCSMain.TrainTabClose(Sender: TObject);
