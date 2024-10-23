@@ -34,7 +34,6 @@ object frmTVCSMain: TfrmTVCSMain
     Align = alLeft
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitHeight = 631
     object lstTrainSched: TAdvStringGrid
       Left = 0
       Top = 0
@@ -171,7 +170,6 @@ object frmTVCSMain: TfrmTVCSMain
       SortSettings.HeaderMirrorColor = clWhite
       SortSettings.HeaderMirrorColorTo = clWhite
       Version = '9.1.3.0'
-      ExplicitHeight = 631
     end
   end
   object pnCamView: TPanel
@@ -184,8 +182,6 @@ object frmTVCSMain: TfrmTVCSMain
     Color = clBackground
     ParentBackground = False
     TabOrder = 1
-    ExplicitWidth = 1368
-    ExplicitHeight = 631
   end
   object pnTopmenu: TPanel
     Left = 0
@@ -199,9 +195,6 @@ object frmTVCSMain: TfrmTVCSMain
     TabOrder = 2
     OnDblClick = pnTopmenuDblClick
     OnMouseDown = pnTopmenuMouseDown
-    ExplicitLeft = -1
-    ExplicitTop = -6
-    ExplicitWidth = 1696
     object AdvMetroButton1: TAdvMetroButton
       Left = 1
       Top = 1
@@ -261,7 +254,6 @@ object frmTVCSMain: TfrmTVCSMain
       Caption = 'pnWindowMenu'
       ShowCaption = False
       TabOrder = 2
-      ExplicitLeft = 1547
       object toolBtnMinimize: TAdvMetroToolButton
         Left = 16
         Top = 1
