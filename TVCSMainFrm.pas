@@ -748,6 +748,7 @@ for idx :=0 to Length(Trains)-1 do begin
        Trains[idx].fSationCode:=GetRandomStation()
     else
       Trains[idx].fSationCode:='';
+      //
 end;
 
 
