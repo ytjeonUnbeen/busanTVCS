@@ -32,7 +32,9 @@ uses
   tvcsProtocol in 'lib\Protocol\tvcsProtocol.pas',
   TVCSMainFrm in 'TVCSMainFrm.pas' {frmTVCSMain},
   CustomPageControl in 'CustomPageControl.pas',
-  TVCSMulView in 'TVCSMulView.pas';
+  TVCSMulView in 'TVCSMulView.pas',
+  TVCSCheckDelete in 'TVCSCheckDelete.pas' {frmCheckDelete},
+  TVCSCheckDialog in 'TVCSCheckDialog.pas';
 
 {$R *.res}
 var
@@ -53,8 +55,8 @@ begin
      frmLogin.ShowModal;
      if (frmLogin.isLogged) then
              Application.CreateForm(TfrmTVCSMain, frmTVCSMain);
-
-    FreeAndNil(frmLogin);
+  Application.CreateForm(TfrmCheckDelete, frmCheckDelete);
+  FreeAndNil(frmLogin);
 
 
   Application.Run;

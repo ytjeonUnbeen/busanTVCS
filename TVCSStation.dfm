@@ -231,9 +231,9 @@ object frmStation: TfrmStation
     object lblTotal: TLabel
       Left = 8
       Top = 85
-      Width = 41
+      Width = 35
       Height = 13
-      Caption = #52509': 43'#44060
+      Caption = #52509': 0'#44060
     end
     object pnCamStationInfo: TPanel
       Left = 342
@@ -266,7 +266,7 @@ object frmStation: TfrmStation
           ParentFont = False
         end
         object lblStname: TLabel
-          Left = 208
+          Left = 152
           Top = 20
           Width = 33
           Height = 16
@@ -278,21 +278,39 @@ object frmStation: TfrmStation
           Font.Style = [fsBold]
           ParentFont = False
         end
+        object lbTvcsIpaddr: TLabel
+          Left = 312
+          Top = 24
+          Width = 62
+          Height = 13
+          Caption = 'TVCSIP'#51452#49548
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
         object edStcode: TEdit
-          Left = 62
+          Left = 49
           Top = 18
-          Width = 121
+          Width = 71
           Height = 21
           TabOrder = 0
-          Text = '201'
         end
         object edStname: TEdit
-          Left = 264
-          Top = 22
-          Width = 121
+          Left = 191
+          Top = 18
+          Width = 81
           Height = 21
           TabOrder = 1
-          Text = #51109#49328
+        end
+        object edTvcsIpaddr: TEdit
+          Left = 380
+          Top = 18
+          Width = 93
+          Height = 21
+          TabOrder = 2
         end
       end
       object pnT1Delay: TPanel
@@ -347,11 +365,11 @@ object frmStation: TfrmStation
         end
         object edT1DepDownDelay: TEdit
           Left = 84
-          Top = 29
+          Top = 28
           Width = 50
           Height = 21
           TabOrder = 0
-          Text = '1'
+          Text = '0'
         end
         object edT1DepUpDelay: TEdit
           Left = 280
@@ -359,7 +377,7 @@ object frmStation: TfrmStation
           Width = 50
           Height = 21
           TabOrder = 1
-          Text = '1'
+          Text = '0'
         end
         object edT1DownArrDelay: TEdit
           Left = 84
@@ -367,7 +385,7 @@ object frmStation: TfrmStation
           Width = 50
           Height = 21
           TabOrder = 2
-          Text = '1'
+          Text = '0'
         end
         object edT1UpArrDelay: TEdit
           Left = 280
@@ -375,7 +393,7 @@ object frmStation: TfrmStation
           Width = 50
           Height = 21
           TabOrder = 3
-          Text = '1'
+          Text = '0'
         end
       end
       object pnCamInfos: TPanel
@@ -405,7 +423,7 @@ object frmStation: TfrmStation
           Top = 29
           Width = 35
           Height = 13
-          Caption = #52509': 4'#44060
+          Caption = #52509': 0'#44060
         end
         object btnAddCams: TAdvGlowButton
           Left = 353
@@ -586,7 +604,7 @@ object frmStation: TfrmStation
           SortSettings.HeaderColorTo = clWhite
           SortSettings.HeaderMirrorColor = clWhite
           SortSettings.HeaderMirrorColorTo = clWhite
-          Version = '9.0.0.6'
+          Version = '9.1.3.0'
         end
       end
     end
@@ -609,6 +627,7 @@ object frmStation: TfrmStation
       ParentFont = False
       Rounded = True
       TabOrder = 1
+      OnClick = btnAddStationClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130
@@ -955,7 +974,7 @@ object frmStation: TfrmStation
       SortSettings.HeaderColorTo = clWhite
       SortSettings.HeaderMirrorColor = clWhite
       SortSettings.HeaderMirrorColorTo = clWhite
-      Version = '9.0.0.6'
+      Version = '9.1.3.0'
     end
   end
   object ImageList1: TImageList
