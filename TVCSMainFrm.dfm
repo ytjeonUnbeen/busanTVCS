@@ -55,6 +55,7 @@ object frmTVCSMain: TfrmTVCSMain
       OnSelectCell = lstTrainSchedSelectCell
       GridLineColor = 13948116
       GridFixedLineColor = 11250603
+      OnDblClickCell = lstTrainSchedDblClickCell
       ActiveCellFont.Charset = DEFAULT_CHARSET
       ActiveCellFont.Color = 4474440
       ActiveCellFont.Height = -11
@@ -62,6 +63,7 @@ object frmTVCSMain: TfrmTVCSMain
       ActiveCellFont.Style = [fsBold]
       ActiveCellColor = 11565130
       ActiveCellColorTo = 11565130
+      AutoThemeAdapt = True
       BorderColor = 11250603
       ControlLook.FixedGradientFrom = clWhite
       ControlLook.FixedGradientTo = clWhite
@@ -170,6 +172,7 @@ object frmTVCSMain: TfrmTVCSMain
       SortSettings.HeaderMirrorColor = clWhite
       SortSettings.HeaderMirrorColorTo = clWhite
       Version = '9.1.3.0'
+      ExplicitTop = 5
     end
   end
   object pnCamView: TPanel
@@ -412,19 +415,26 @@ object frmTVCSMain: TfrmTVCSMain
     Caption = 'pnTrainInfo'
     ShowCaption = False
     TabOrder = 3
-    object pgRoute: TAdvPageControl
+    object tabRoute: TAdvTabSet
       Left = 1
       Top = 1
       Width = 1729
-      Height = 272
+      Height = 24
+      Version = '1.7.5.0'
+      Align = alTop
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
       ActiveFont.Name = 'Tahoma'
       ActiveFont.Style = []
-      Align = alClient
-      DoubleBuffered = True
-      TabBackGroundColor = clBtnFace
+      ClosePosition = cpRight
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      AdvTabs = <>
+      TextColor = clWhite
       TabBackGround.Data = {
         E6160000424DE61600000000000036000000280000003A000000210000000100
         180000000000B0160000C30E0000C30E00000000000000000000FF00FFFF00FF
@@ -610,7 +620,7 @@ object frmTVCSMain: TfrmTVCSMain
         FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
         FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
         00FFFF00FFFF00FF0000}
-      TabBackGroundActive.Data = {
+      TabBackGroundSelected.Data = {
         E6160000424DE61600000000000036000000280000003A000000210000000100
         180000000000B0160000C30E0000C30E00000000000000000000FF00FFFF00FF
         FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
@@ -795,13 +805,25 @@ object frmTVCSMain: TfrmTVCSMain
         FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
         FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
         00FFFF00FFFF00FF0000}
-      TabMargin.RightMargin = 0
+      GradientDirection = gdVertical
+      TabMargin.LeftMargin = 6
+      TabMargin.TopMargin = 5
+      TabMargin.RightMargin = 30
       TabOverlap = 0
-      Version = '2.0.5.0'
-      PersistPagesState.Location = plRegistry
-      PersistPagesState.Enabled = False
+      Images = tabImgList
       TabHeight = 30
-      TabOrder = 0
+      OnTabClose = tabRouteTabClose
+    end
+    object pnRoute: TPanel
+      Left = 1
+      Top = 25
+      Width = 1729
+      Height = 248
+      Align = alClient
+      Caption = 'pnRoute'
+      ShowCaption = False
+      TabOrder = 1
+      ExplicitLeft = 0
     end
   end
   object ImageCollection1: TImageCollection
@@ -958,8 +980,8 @@ object frmTVCSMain: TfrmTVCSMain
               FD9854CC7637B07C1E00BF1D337E1785650000000049454E44AE426082}
           end>
       end>
-    Left = 1312
-    Top = 104
+    Left = 496
+    Top = 496
   end
   object VirtualImageList1: TVirtualImageList
     DisabledGrayscale = False
@@ -990,8 +1012,8 @@ object frmTVCSMain: TfrmTVCSMain
         Name = 'icon-layout1'
       end>
     ImageCollection = ImageCollection1
-    Left = 1232
-    Top = 104
+    Left = 496
+    Top = 400
   end
   object popupMain: TAdvPopupMenu
     Version = '2.7.1.12'
@@ -1050,5 +1072,25 @@ object frmTVCSMain: TfrmTVCSMain
     object actExit: TAction
       Caption = #51333#47308
     end
+  end
+  object tabImgList: TVirtualImageList
+    DisabledGrayscale = False
+    DisabledSuffix = '_Disabled'
+    Images = <
+      item
+        CollectionIndex = 1
+        CollectionName = 'icon-close_gray'
+        Disabled = False
+        Name = 'icon-close_gray'
+      end
+      item
+        CollectionIndex = 0
+        CollectionName = 'icon-close'
+        Disabled = False
+        Name = 'icon-close'
+      end>
+    ImageCollection = ImageCollection1
+    Left = 632
+    Top = 481
   end
 end

@@ -8,7 +8,7 @@ uses
   Vcl.VirtualImageList, Vcl.BaseImageCollection, Vcl.ImageCollection,
   Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.ToolWin, Vcl.TitleBarCtrls, AdvMetroButton, AdvPageControl,GDIPicture,
   AdvUtil, Vcl.Grids, AdvObj, BaseGrid, AdvGrid, Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan,Direct2D, PasLibVlcPlayerUnit,PasLibVlcClassUnit,
-  System.Actions, Vcl.ActnList, Vcl.Menus, AdvMenus;
+  System.Actions, Vcl.ActnList, Vcl.Menus, AdvMenus, AdvTabSet;
 
   
 
@@ -95,7 +95,9 @@ type
     actSystem: TAction;
     actUsers: TAction;
     actExit: TAction;
-    pgRoute: TAdvPageControl;
+    tabRoute: TAdvTabSet;
+    pnRoute: TPanel;
+    tabImgList: TVirtualImageList;
     procedure ToolbtnCloseClick(Sender: TObject);
     procedure toolBtnMaxClick(Sender: TObject);
     procedure toolBtnMinimizeClick(Sender: TObject);
@@ -115,6 +117,8 @@ type
     procedure pnTopmenuDblClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure AdvMetroButton1Click(Sender: TObject);
+    procedure tabRouteTabClose(Sender: TObject; TabIndex: Integer);
+    procedure lstTrainSchedDblClickCell(Sender: TObject; ARow, ACol: Integer);
   private
     curTabCount:Integer;
     FTrainBitMap:TBitMap;
@@ -123,11 +127,9 @@ type
     Stations:array of TStation;
     UseStations:array of Integer;
     Trains:Array of TTrainForm;
-    TrainTabList:TList<TAdvTabSheet>;
+
     StationRange:Array of TStationRange;
 
-    procedure TrainTabResize(Sender: TObject);
-    procedure TrainTabClose(Sender: TObject);
     procedure LoadSampleRTSP;
     procedure LoadSchedPanel;
     procedure LoadTrain;
@@ -386,29 +388,26 @@ procedure TfrmTVCSMain.AddTrainTab(idrow:Integer);
 var
   trainNo:String;
   idx:Integer;
-  tmpTabSheet,tabSheet:TAdvTabSheet;
+  tmpTabSheet,tabSheet:TTabCollectionItem;
 begin
   trainNo:=lstTrainSched.Cells[1,idrow];
 
-  for idx :=0  to TrainTabList.Count-1 do begin
-     tmpTabSheet:=TrainTabList[idx];
-     if (tmpTabSheet.Tag=StrToInt(trainNo)) then begin
-       pgRoute.ActivePage:=tmpTabSheet;
+  for idx :=0  to tabRoute.AdvTabs.Count-1 do begin
+
+     if (tabRoute.AdvTabs.Items[0].Tag=StrToInt(trainNo)) then begin
+         tabRoute.TabIndex:=idx;
        Exit;
      end;
 
   end;
   //SetLength(TrainTabSheet,curTabCount);
-  tabSheet:=TAdvTabSheet.Create(pgRoute);
-  tabSheet.AdvPageControl:=pgRoute;
-  tabSheet.OnResize:=TrainTabResize;
-  tabSheet.Tag:=StrToInt(trainNo);
+  with tabRoute.AdvTabs.Add do begin
+      tag:=StrToInt(trainNo);
+      ShowClose:=true;
 
-  tabSheet.ImageIndex:=2;
-  tabSheet.Caption:=trainNo;
-//  tabSheet.ShowClose:=true;
-  //tabSheet.ShowOnClose:=TrainTabClose;
-  TrainTabList.Add(tabSheet);
+      Caption:=trainNo;
+  end;
+
 
 end;
 
@@ -417,23 +416,8 @@ begin
   popupMain.PopupAtControl(advmetrobutton1);
 end;
 
-procedure TfrmTVCSMain.TrainTabClose(Sender: TObject);
-var
- tabSheet:TAdvTabSheet;
- idx:Integer;
-begin
- tabSheet:=(Sender) As TAdvTAbSheet;
- idx:=TrainTabList.Indexof(tabSheet);
- TrainTabList.Delete(idx);
- TrainTabList.TrimExcess;
 
-end;
 
-procedure TfrmTVCSMain.TrainTabResize(Sender: TObject);
-begin
-
-  TTabSheet(Sender).Repaint;
-end;
 
 procedure TFrmTVCSMain.MakeRouteTab;
 var
@@ -449,17 +433,11 @@ begin
   curstidx:=0;
   curTabCount:=tabCount;
 
-  TrainTabList:=TList<TAdvTabSheet>.Create();
+
 
 
   for idx := 0 to tabCount-1 do begin
 
-    tabTrainSheet:=TAdvTabSheet.Create(pgRoute);
-
-    tabTrainSheet.AdvPageControl:=pgRoute;
-    tabTrainSheet.OnResize:=TrainTabResize;
-    tabTrainSheet.Tag:=idx;
-    tabTrainSheet.ImageIndex:=1;
     StationRange[idx].startIdx:=curstidx;
     if (curstidx+(max_stations_per_tab-1) >(Length(Stations)-1)) then begin
       StationRange[idx].endIdx:=Length(Stations)-1;
@@ -468,11 +446,14 @@ begin
       StationRange[idx].endIdx:=curstidx+(max_stations_per_tab-1);
       inc(curstidx,max_stations_per_tab);
     end;
+    with tabRoute.AdvTabs.Add do begin
+         tag:=idx;
+         Font.Color:=clWhite;
+         TextColor:=clWhite;
+         Font.Size:=11;
+         Caption:=Format('%s~%s',[Stations[StationRange[idx].startIdx].stname,Stations[StationRange[idx].endIdx].stname]);
 
-
-
-    tabTrainSheet.Caption:=Format('%s~%s',[Stations[StationRange[idx].startIdx].stname,Stations[StationRange[idx].endIdx].stname]);
-    TrainTabList.Add(tabTrainSheet);
+    end;
 
   end;
 
@@ -546,8 +527,6 @@ begin
     for i:= 0 to Length(Multicams)-1 do
       FreeAndNil(Multicams[i]);
   end;
-if (TrainTabList<>nil) then
-   TrainTabList.Free;
 
 end;
 
@@ -613,6 +592,14 @@ begin
      end;
 
 end;
+procedure TfrmTVCSMain.tabRouteTabClose(Sender: TObject; TabIndex: Integer);
+var
+ tabSheet:TAdvTabSheet;
+ idx:Integer;
+begin
+ tabRoute.AdvTabs.Delete(TabIndex);
+end;
+
 procedure TfrmTVCSMain.InitStations;
 var
  i:Integer;
@@ -759,6 +746,12 @@ end;
 
 end;
 
+
+procedure TfrmTVCSMain.lstTrainSchedDblClickCell(Sender: TObject; ARow,
+  ACol: Integer);
+begin
+AddTrainTab(ARow);
+end;
 
 procedure TfrmTVCSMain.lstTrainSchedSelectCell(Sender: TObject; ACol,
   ARow: Integer; var CanSelect: Boolean);

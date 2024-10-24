@@ -55,7 +55,7 @@ begin
      frmLogin.ShowModal;
      if (frmLogin.isLogged) then
              Application.CreateForm(TfrmTVCSMain, frmTVCSMain);
-  Application.CreateForm(TfrmCheckDelete, frmCheckDelete);
+
   FreeAndNil(frmLogin);
 
 
