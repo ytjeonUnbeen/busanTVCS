@@ -34,7 +34,8 @@ uses
   CustomPageControl in 'CustomPageControl.pas',
   TVCSMulView in 'TVCSMulView.pas',
   TVCSCheckDelete in 'TVCSCheckDelete.pas' {frmCheckDelete},
-  TVCSCheckDialog in 'TVCSCheckDialog.pas';
+  TVCSCheckDialog in 'TVCSCheckDialog.pas',
+  TVCSPreview in 'TVCSPreview.pas' {frmPreview};
 
 {$R *.res}
 var
@@ -51,6 +52,8 @@ begin
   try
             //Application.CreateForm(TfrmRBTLogin, frmRBTLogin);
    //  Application.CreateForm(TfrmLogin, frmLogin);
+
+     //Application.CreateForm(TfrmPreview, frmPreview);
      frmLogin:=TfrmLogin.Create(Application);
      frmLogin.ShowModal;
      if (frmLogin.isLogged) then

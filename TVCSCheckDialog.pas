@@ -31,6 +31,7 @@ begin
   Dialog.CaptionHeight := 50;
   Dialog.CaptionFill.GradientType := gtSolid;
   Dialog.ButtonAreaFill.GradientType := gtSolid;
+
   Dialog.Fill.GradientType := gtSolid;
   Dialog.Fill.GradientMirrorType := gtNone;
 end;
