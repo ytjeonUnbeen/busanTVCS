@@ -2,6 +2,27 @@
 
 interface
 //13
+
+const
+
+  Line4StationName: array[0..14] of string = (
+    '미남', '동래', '수안', '낙민', '충렬사', '명장', '서동', '금사',
+    '반여농산물시장', '석대', '영산대', '동부산대학', '고촌', '안평', '입출고 선'
+  );
+
+  Line3StationName: array [0..16] of string = (
+    '수영','망미','배산','문만골','연산','거제','종합운동장','사직','미남','만덕',
+    '남산정','숙등','덕천','구포','강서구청','체육공원','대저'
+  );
+
+  Line2StationName: array [0..42] of string = (
+    '장산','중동','해운대','동백','벡스코','센텀시티','민락','수영','광안','금련산','남천','경성대부경대',
+    '대연','못골','지게골','문현','국제금융센터부산은행','전포','서면','부암','가야','동의대','개금','냉정',
+    '주례','감전','사상','덕포','모덕','모라','구남','구명','덕천','수정','화명','율리','동원','금곡','호포',
+    '증산','부산대양산캠퍼스','남양산','양산'
+  );
+
+
 type
 
   TvcsUser=class
@@ -80,7 +101,7 @@ type
 
   TVCSTrain=class
     fid:Integer;
-    ftrainNo:Integer;
+    ftrainNo:String;
     fformatNo:Integer;
     fcarriageNum:Integer;
     fcameraNum:Integer;
@@ -90,7 +111,7 @@ type
   end;
 
   TVCSTrainInPost=class
-    ftrainNo:Integer;
+    ftrainNo:String;
     fformatNo:Integer;
     fcarriageNum:Integer;
     fcameraNum:Integer;
@@ -101,7 +122,7 @@ type
 
   TVCSTrainInPatch=class
     fid:Integer;
-    ftrainNo:Integer;
+    ftrainNo:String;
     fformatNo:Integer;
     fcarriageNum:Integer;
     fcameraNum:Integer;
@@ -306,6 +327,8 @@ type
     finterphone1: boolean;
     finterphone2: boolean;
   end;
+
+
 
 
 

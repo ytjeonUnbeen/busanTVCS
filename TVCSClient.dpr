@@ -35,7 +35,8 @@ uses
   TVCSMulView in 'TVCSMulView.pas',
   TVCSCheckDelete in 'TVCSCheckDelete.pas' {frmCheckDelete},
   TVCSCheckDialog in 'TVCSCheckDialog.pas',
-  TVCSPreview in 'TVCSPreview.pas' {frmPreview};
+  TVCSPreview in 'TVCSPreview.pas' {frmPreview},
+  TVCSButtonStyle in 'TVCSButtonStyle.pas';
 
 {$R *.res}
 var
@@ -58,7 +59,6 @@ begin
      frmLogin.ShowModal;
      if (frmLogin.isLogged) then
              Application.CreateForm(TfrmTVCSMain, frmTVCSMain);
-
   FreeAndNil(frmLogin);
 
 

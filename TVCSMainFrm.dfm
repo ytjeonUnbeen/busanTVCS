@@ -172,7 +172,6 @@ object frmTVCSMain: TfrmTVCSMain
       SortSettings.HeaderMirrorColor = clWhite
       SortSettings.HeaderMirrorColorTo = clWhite
       Version = '9.1.3.0'
-      ExplicitTop = 5
     end
   end
   object pnCamView: TPanel
@@ -823,7 +822,6 @@ object frmTVCSMain: TfrmTVCSMain
       Caption = 'pnRoute'
       ShowCaption = False
       TabOrder = 1
-      ExplicitLeft = 0
     end
   end
   object ImageCollection1: TImageCollection

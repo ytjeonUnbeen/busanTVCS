@@ -655,6 +655,9 @@ var
   TrainsJson: TJSONValue;
   Trains: TArray<TvcsTrain>;
   I: Integer;
+  JsonObj: TJSONObject;
+  JsonValue: TJSONValue;
+  train : TVCSTrain;
 begin
   if trainNo <> -1 then
     ResponseStr := FAPIBase.GetAPI(API_TRAIN, 'trainNo=' + IntToStr(trainNo))
@@ -665,21 +668,67 @@ begin
 
   FResponseText := FAPIBase.ResponseText;
   FResponseCode := FAPIBase.ResponseCode;
-  ResponseJson := TJSONObject.ParseJsonValue(ResponseStr) as TJSONObject;
 
-  if CheckError(ResponseJson, ErrorMsg) <> 0 then
-    Exit(nil);
+  // 잘못된 JSON 형식 수정 (carriageNum: 뒤의 쉼표 처리)
+  ResponseStr := StringReplace(ResponseStr, '"carriageNum":,', '"carriageNum":null,', [rfReplaceAll]);
 
-  TrainsJson := ResponseJson.GetValue('reply');
-  if TrainsJson is TJSONArray then
-  begin
-    SetLength(Trains, TJSONArray(TrainsJson).Count);
-    for I := 0 to TJSONArray(TrainsJson).Count - 1 do
-      Trains[I] := TJSON.JsonToObject<TvcsTrain>(TJSONArray(TrainsJson).Items[I] as TJSONObject);
-    Result := Trains;
-  end
-  else
+  try
+    ResponseJson := TJSONObject.ParseJsonValue(ResponseStr) as TJSONObject;
+    if ResponseJson = nil then
+      Exit(nil);
+
+    if CheckError(ResponseJson, ErrorMsg) <> 0 then
+      Exit(nil);
+
+    TrainsJson := ResponseJson.GetValue('reply');
+    if TrainsJson is TJSONArray then
+    begin
+      SetLength(Trains, TJSONArray(TrainsJson).Count);
+      for I := 0 to TJSONArray(TrainsJson).Count - 1 do
+      begin
+        JsonObj := TJSONArray(TrainsJson).Items[I] as TJSONObject;
+        Train := TvcsTrain.Create;
+
+        // id는 JSON에서 'id'로 되어있지만 객체는 'fid'를 사용
+        if JsonObj.TryGetValue('id', JsonValue) and (not JsonValue.Null) then
+          Train.fid := JsonValue.AsType<Integer>
+        else
+          Train.fid := 0;
+
+        if JsonObj.TryGetValue('trainNo', JsonValue) and (not JsonValue.Null) then
+          Train.ftrainNo := JsonValue.AsType<String>
+        else
+          Train.ftrainNo := '';
+
+        if JsonObj.TryGetValue('formatNo', JsonValue) and (not JsonValue.Null) then
+          Train.fformatNo := JsonValue.AsType<Integer>
+        else
+          Train.fformatNo := 0;
+
+        if JsonObj.TryGetValue('carriageNum', JsonValue) and (not JsonValue.Null) then
+          Train.fcarriageNum := JsonValue.AsType<Integer>
+        else
+          Train.fcarriageNum := 0;
+
+        if JsonObj.TryGetValue('cameraNum', JsonValue) and (not JsonValue.Null) then
+          Train.fcameraNum := JsonValue.AsType<Integer>
+        else
+          Train.fcameraNum := 0;
+
+        if JsonObj.TryGetValue('tvcsIpaddr', JsonValue) and (not JsonValue.Null) then
+          Train.ftvcsIpaddr := JsonValue.AsType<string>
+        else
+          Train.ftvcsIpaddr := '';
+
+        Trains[I] := Train;
+      end;
+      Result := Trains;
+    end
+    else
+      Result := nil;
+  except
     Result := nil;
+  end;
 end;
 
 function TTVCSAPI.AddTrain(traininfo:TVCSTrainInPost):TvcsTrain;
@@ -905,36 +954,105 @@ end;
 //trainCamera
 function TTVCSAPI.GetTrainCamera(trainId:integer=-1):TArray<TVCSTrainCamera>;
 var
-  ResponseStr, ErrorMsg: string;
-  ResponseJson: TJSONObject;
-  TrainCamerasJson: TJSONValue;
-  TrainCameras: TArray<TVCSTrainCamera>;
-  I: Integer;
+ ResponseStr, ErrorMsg: string;
+ ResponseJson: TJSONObject;
+ TrainCamerasJson: TJSONValue;
+ TrainCameras: TArray<TVCSTrainCamera>;
+ I: Integer;
+ JsonObj: TJSONObject;
+ JsonValue: TJSONValue;
+ Camera: TVCSTrainCamera;
 begin
-  if trainId <> -1 then
-    ResponseStr := FAPIBase.GetAPI(API_TRAIN_CAMERA, 'trainId=' + IntToStr(trainId))
-  else
-  begin
-    ResponseStr := FAPIBase.GetAPI(API_TRAIN_CAMERA);
-  end;
+ if trainId <> -1 then
+   ResponseStr := FAPIBase.GetAPI(API_TRAIN_CAMERA, 'trainId=' + IntToStr(trainId))
+ else
+ begin
+   ResponseStr := FAPIBase.GetAPI(API_TRAIN_CAMERA);
+ end;
 
-  FResponseText := FAPIBase.ResponseText;
-  FResponseCode := FAPIBase.ResponseCode;
-  ResponseJson := TJSONObject.ParseJsonValue(ResponseStr) as TJSONObject;
+ FResponseText := FAPIBase.ResponseText;
+ FResponseCode := FAPIBase.ResponseCode;
 
-  if CheckError(ResponseJson, ErrorMsg) <> 0 then
-    Exit(nil);
+ ResponseStr := StringReplace(ResponseStr, '":,', '":null,', [rfReplaceAll]);  // 빈 값 처리
 
-  TrainCamerasJson := ResponseJson.GetValue('reply');
-  if TrainCamerasJson is TJSONArray then
-  begin
-    SetLength(TrainCameras, TJSONArray(TrainCamerasJson).Count);
-    for I := 0 to TJSONArray(TrainCamerasJson).Count - 1 do
-      TrainCameras[I] := TJSON.JsonToObject<TVCSTrainCamera>(TJSONArray(TrainCamerasJson).Items[I] as TJSONObject);
-    Result := TrainCameras;
-  end
-  else
-    Result := nil;
+ try
+   ResponseJson := TJSONObject.ParseJsonValue(ResponseStr) as TJSONObject;
+   if ResponseJson = nil then
+     Exit(nil);
+
+   if CheckError(ResponseJson, ErrorMsg) <> 0 then
+     Exit(nil);
+
+   TrainCamerasJson := ResponseJson.GetValue('reply');
+   if TrainCamerasJson is TJSONArray then
+   begin
+     SetLength(TrainCameras, TJSONArray(TrainCamerasJson).Count);
+     for I := 0 to TJSONArray(TrainCamerasJson).Count - 1 do
+     begin
+       JsonObj := TJSONArray(TrainCamerasJson).Items[I] as TJSONObject;
+       Camera := TVCSTrainCamera.Create;
+
+       if JsonObj.TryGetValue('id', JsonValue) and (not JsonValue.Null) then
+         Camera.fid := JsonValue.AsType<Integer>
+       else
+         Camera.fid := 0;
+
+       if JsonObj.TryGetValue('trainId', JsonValue) and (not JsonValue.Null) then
+         Camera.ftrainId := JsonValue.AsType<Integer>
+       else
+         Camera.ftrainId := 0;
+
+       if JsonObj.TryGetValue('postition', JsonValue) and (not JsonValue.Null) then
+         Camera.fpostition := JsonValue.AsType<Integer>
+       else
+         Camera.fpostition := 0;
+
+       if JsonObj.TryGetValue('name', JsonValue) and (not JsonValue.Null) then
+         Camera.fname := JsonValue.AsType<string>
+       else
+         Camera.fname := '';
+
+       if JsonObj.TryGetValue('ipaddr', JsonValue) and (not JsonValue.Null) then
+         Camera.fipaddr := JsonValue.AsType<string>
+       else
+         Camera.fipaddr := '';
+
+       if JsonObj.TryGetValue('port', JsonValue) and (not JsonValue.Null) then
+         Camera.fport := JsonValue.AsType<Integer>
+       else
+         Camera.fport := 0;
+
+       if JsonObj.TryGetValue('rtsp', JsonValue) and (not JsonValue.Null) then
+         Camera.frtsp := JsonValue.AsType<string>
+       else
+         Camera.frtsp := '';
+
+       if JsonObj.TryGetValue('tvcsRtsp', JsonValue) and (not JsonValue.Null) then
+         Camera.ftvcsRtsp := JsonValue.AsType<string>
+       else
+         Camera.ftvcsRtsp := '';
+
+       if JsonObj.TryGetValue('userId', JsonValue) and (not JsonValue.Null) then
+         Camera.fuserId := JsonValue.AsType<string>
+       else
+         Camera.fuserId := '';
+
+       if JsonObj.TryGetValue('userPwd', JsonValue) and (not JsonValue.Null) then
+         Camera.fuserPwd := JsonValue.AsType<string>
+       else
+         Camera.fuserPwd := '';
+
+       Camera.fresource := nil;  // 객체는 기본적으로 nil로 초기화
+
+       TrainCameras[I] := Camera;
+     end;
+     Result := TrainCameras;
+   end
+   else
+     Result := nil;
+ except
+   Result := nil;
+ end;
 end;
 
 function TTVCSAPI.AddTrainCamera(trainCameraInfo:TVCSTrainCameraInPost):TVCSTrainCamera;

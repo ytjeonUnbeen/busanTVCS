@@ -7,8 +7,8 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, AdvListV,
   AdvGlowButton, Vcl.ExtCtrls, Vcl.Grids, AdvUtil, AdvObj, BaseGrid, AdvGrid,
   System.ImageList, Vcl.ImgList ,tvcsAPI, tvcsProtocol, TVCSCheckDialog, TVCSPreview,
-  Vcl.BaseImageCollection, Vcl.ImageCollection, Vcl.VirtualImageList,
-  AdvStyleIF, AdvAppStyler; //, tmsAdvGridExcel;
+  Vcl.BaseImageCollection, Vcl.ImageCollection, Vcl.VirtualImageList, TVCSButtonStyle,
+  AdvStyleIF, AdvAppStyler, tmsAdvGridExcel; //, tmsAdvGridExcel;
 
 type
   TfrmStation = class(TForm)
@@ -55,6 +55,7 @@ type
     ImageCollection1: TImageCollection;
     AdvFormStyler1: TAdvFormStyler;
     AdvAppStyler1: TAdvAppStyler;
+    AdvGridExcelIO1: TAdvGridExcelIO;
 
 
     procedure FormCreate(Sender: TObject);
@@ -70,6 +71,7 @@ type
     procedure grdStationCamsGetEditorProp(Sender: TObject; ACol, ARow: Integer;
   AEditLink: TEditLink);
     procedure FormDestroy(Sender: TObject);
+    procedure btnUploadStationsClick(Sender: TObject);
 
 
   private
@@ -77,6 +79,9 @@ type
 
     addStCnt: integer;
     addCamCnt: integer;
+    //엑셀업로드 체크용
+    uploadData: Boolean;
+    GridBuf: TAdvStringGrid;
 
     SelectStation : tvcsProtocol.TvcsStation;
     stations : TArray<tvcsProtocol.TvcsStation>;
@@ -121,6 +126,9 @@ begin
     Cells[6,1] := '';
     Cells[7,1] := '';
     Cells[8,1] := '';
+    AddImageIdx(7, 1, VirtualImageList1.GetIndexByName('preview'), haCenter, vaCenter);
+    AddImageIdx(8, 1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
+
   end;
 end;
 
@@ -320,8 +328,48 @@ begin
     end;
   end;
 
-  ShowTVCSMessage(IntToStr(addCamCnt));
+  //ShowTVCSMessage(IntToStr(addCamCnt));
   ModalResult := mrOk;
+end;
+
+procedure TfrmStation.btnUploadStationsClick(Sender: TObject);
+var
+  OpenDialog: TOpenDialog;
+
+
+begin
+//
+  if ShowTVCSCheck(1) then
+  begin
+    OpenDialog := TOpenDialog.Create(nil);
+    try
+      OpenDialog.Filter := 'Excel Files (*.xlsx)|*.xlsx|Excel 97-2003 (*.xls)|*.xls|All Files (*.*)|*.*';
+      OpenDialog.FilterIndex := 2;
+
+      if OpenDialog.Execute then
+        begin
+          uploadData := True;
+          GridBuf := TAdvStringGrid.Create(self);
+          AdvGridExcelIO1.AdvStringGrid := GridBuf;
+          AdvGridExcelIO1.XLSImport(OpenDialog.FileName, 0);
+
+
+
+
+          //ShowTVCSMessage(GridBuf.Cells[1,1]);
+        end;
+
+
+    finally
+      OpenDialog.Free;
+      LoadStationInfoList;
+
+    end;
+
+  end;
+
+
+
 end;
 
 procedure TfrmStation.FormCreate(Sender: TObject);
@@ -335,10 +383,7 @@ begin
   grdStationCams.OnHasComboBox := grdStationCamsHasComboBox;
   grdStationCams.OnClickCell := grdStationsCamsClickCell;
 
-  AdvAppStyler1.Style := tsOffice2003Blue;
-  //AdvAppStyler1.AppColor := clHighlight;
-  AdvFormStyler1.AppStyle := AdvAppStyler1;
-
+  TButtonStyler.ApplyGlobalStyle(Self);
 
 end;
 
@@ -349,14 +394,117 @@ end;
 
 procedure TfrmStation.LoadStationInfoList;
 var
-    str : string;
-    size: integer;
-    i : integer;
+    size, i, j, k,  addline: integer;
     delBtn : TButton;
-
+    uniqueValues : TStringList;
+    uniqueCount : integer;
+    lineInfo : integer;
+    StationNames: array of string;
 begin
-    str := gapi.GetLoinInfo.ffirstName;
-    stations := gapi.GetStation('',gapi.GetLoinInfo.fsystem.fline);
+
+    lineInfo := gapi.GetLoinInfo.fsystem.fline;
+    // 엑셀 업로드 하는경우
+    if uploadData then
+    begin
+      // lineInfo에 따라 적절한 배열 선택
+      case lineInfo of
+        2: begin
+             SetLength(StationNames, Length(Line2StationName));
+             for i := Low(Line2StationName) to High(Line2StationName) do
+               StationNames[i] := Line2StationName[i];
+           end;
+        3: begin
+             SetLength(StationNames, Length(Line3StationName));
+             for i := Low(Line3StationName) to High(Line3StationName) do
+               StationNames[i] := Line3StationName[i];
+           end;
+        4: begin
+             SetLength(StationNames, Length(Line4StationName));
+             for i := Low(Line4StationName) to High(Line4StationName) do
+               StationNames[i] := Line4StationName[i];
+           end;
+      end;
+      uniqueValues := TStringList.Create;
+      try
+        uniqueValues.Sorted := True;
+        uniqueValues.Duplicates := dupIgnore;
+        for i := 2 to GridBuf.RowCount do
+        begin
+          if GridBuf.Cells[1, i].Trim <> '' then
+            uniqueValues.Add(GridBuf.Cells[1, i]);
+        end;
+        uniqueCount := uniqueValues.Count;
+        SetLength(stations, uniqueCount);
+        for i := 0 to uniqueCount - 1 do
+        begin
+          stations[i] := tvcsProtocol.TvcsStation.Create;
+          stations[i].fcode := uniqueValues[i];
+
+          // GridBuf에서 해당 역의 정보 찾기 (마지막 데이터)
+          for k := GridBuf.RowCount downto 2 do
+          begin
+            if GridBuf.Cells[1, k] = stations[i].fcode then
+            begin
+              stations[i].fname := GridBuf.Cells[2, k];
+              stations[i].fdepartDelay := StrToInt(GridBuf.Cells[3, k]);
+             // stations[i].상행도착지연 := StrToInt(GridBuf.Cells[3, k]);
+              stations[i].farriveDelay := StrToInt(GridBuf.Cells[5, k]);
+              //tations[i].하행도착지연 := StrToInt(GridBuf.Cells[3, k]);
+              stations[i].ftvcsIpaddr := GridBuf.Cells[7, k];
+
+
+              // 필요한 다른 필드들도 여기에 추가
+              Break;
+            end;
+          end;
+
+          // 현재 역의 이름을 찾기
+          for j := Low(StationNames) to High(StationNames) do
+          begin
+            try
+              if stations[i].fcode = Format('%d%0.2d', [lineInfo, j+1]) then
+              begin
+                // 이전역 설정
+                if j = 0 then
+                begin
+                  stations[i].fprevCode := '';
+                  stations[i].fprevName := '';
+                end
+                else
+                begin
+                  stations[i].fprevCode := Format('%d%0.2d', [lineInfo, j]);
+                  stations[i].fprevName := StationNames[j-1];
+                end;
+                // 다음역 설정
+                if j = High(StationNames) then
+                begin
+                  stations[i].fnextCode := '';
+                  stations[i].fnextName := '';
+                end
+                else
+                begin
+                  stations[i].fnextCode := Format('%d%0.2d', [lineInfo, j+2]);
+                  stations[i].fnextName := StationNames[j+1];
+                end;
+                Break;
+              end;
+            except
+              ShowTVCSMessage('역 정보가 올바르지 않습니다.');
+            end;
+          end;
+        end;
+      finally
+        uniqueValues.Free;
+      end;
+    end
+    else
+
+    // api로리스트 호출하는 경우
+    begin
+      stations := gapi.GetStation('',gapi.GetLoinInfo.fsystem.fline);
+    end;
+
+    //ShowTVCSMessage(inttostr(uniqueCount));
     size := Length(stations);
     lblTotal.Caption := '총:' + IntTostr(size) + '개';
     delBtn := Tbutton.Create(self);
@@ -398,8 +546,6 @@ var
   i : integer;
   size : integer;
   division : string;
-
-
 begin
 
     with grdStationCams do begin
@@ -418,7 +564,7 @@ begin
         ColWidths[7] := 45;   // 미리보기 버튼
         ColWidths[8] := 45;   // 삭제 버튼
 
-        Cells[0,0]:='구분.';
+        Cells[0,0]:='구분';
         Cells[1,0]:='카메라명';
         Cells[2,0]:='IP Addr';
         Cells[3,0]:= 'Port';
@@ -441,7 +587,42 @@ begin
 
     if stationCode <> '' then
     begin
-      stationCams := gapi.GetStationCamera(stationCode);
+
+      // 엑셀 업로드
+      if uploadData then
+      begin
+        SetLength(stationCams, GridBuf.rowcount - 2);
+        for i := 0 to Length(stationCams) do
+        begin
+          stationCams[i] := TVCSStationCamera.Create;
+          stationCams[i].fstationCode := GridBuf.Cells[1,i+2];
+          if GridBuf.Cells[8,i +2] = '상행' then
+              stationCams[i].fdivision := 1
+          else
+              stationCams[i].fdivision := 2;
+
+          stationCams[i].fname := GridBuf.Cells[9,i+2];
+          stationCams[i].fipaddr := GridBuf.Cells[10,i+2];
+
+          if i =81 then
+            ShowMessage(GridBuf.Cells[11,i+2-1]);
+
+          stationCams[i].fport := StrToInt(GridBuf.Cells[11,i+2]);
+          stationCams[i].frtsp := GridBuf.Cells[12,i+2];
+          stationCams[i].ftvcsRtsp := GridBuf.Cells[13,i+2];
+          stationCams[i].fuserId := GridBuf.Cells[14,i+2];
+          stationCams[i].fuserPwd := GridBuf.Cells[15,i+2];
+
+
+        end;
+
+
+      end
+      // api 호출
+      else
+      begin
+         stationCams := gapi.GetStationCamera(stationCode);
+      end;
 
       size := Length(stationCams);
       lbStCamCnt.Caption := '총: '+ IntToStr(size) + '개';
@@ -465,22 +646,8 @@ begin
              Cells[5,i+1] := stationCams[i].fuserId;
              Cells[6,i+1] := stationCams[i].fuserPwd;
 
-             //bitbutton bitmap
-             //AddBitButton(7,i+1, 25, 25, '', preImg, haCenter, vaCenter);
-             //AddBitButton(8,i+1, 25, 25, '', delImg, haCenter, vaCenter);
-
-
              AddImageIdx(7, i+1, VirtualImageList1.GetIndexByName('preview'), haCenter, vaCenter);
              AddImageIdx(8, i+1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
-
-             //AddBitButton(8,i+1, 35, 35, '', imagecollection1.GetBitmap(1,33,33), haCenter, vaCenter);
-             //TCellType.ctBitButton
-
-             //VirtualImageList1.get
-
-             //AddImageIdx(7, i+1, VirtualImageList1.GetIndexByName('preview'), haCenter, vaCenter);
-             //AddImageIdx(8, i+1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
-             //ReadOnly[7,  i+1] := true;
 
            end;
 
@@ -528,12 +695,14 @@ begin
           edT1DepUpDelay.Text := intToStr(SelectStation.farriveDelay);
           edTvcsIpaddr.Text := SelectStation.ftvcsIpaddr;
           LoadCamInfoList(SelectStation.fcode);
+
         except
           edStcode.Text := '';
           edStname.Text := '';
           edT1DepDownDelay.Text := '0';
           edT1DepUpDelay.Text := '0';
           edTvcsIpaddr.Text := '';
+          LoadCamInfoList;
         end;
       end;
   end;

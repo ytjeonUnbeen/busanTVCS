@@ -2,8 +2,8 @@ object frmTrain: TfrmTrain
   Left = 0
   Top = 0
   BorderStyle = bsDialog
-  ClientHeight = 710
-  ClientWidth = 845
+  ClientHeight = 691
+  ClientWidth = 1274
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,20 +12,21 @@ object frmTrain: TfrmTrain
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 18
   object pnBottom: TPanel
     Left = 0
-    Top = 640
-    Width = 845
+    Top = 621
+    Width = 1274
     Height = 70
     Align = alBottom
     Caption = 'pnBottom'
     ShowCaption = False
     TabOrder = 0
     object btnCancel: TAdvGlowButton
-      Left = 664
-      Top = 23
+      Left = 499
+      Top = 15
       Width = 40
       Height = 24
       Caption = #52712#49548
@@ -136,8 +137,8 @@ object frmTrain: TfrmTrain
       Appearance.TextColorDisabled = 13948116
     end
     object btnSave: TAdvGlowButton
-      Left = 735
-      Top = 23
+      Left = 707
+      Top = 15
       Width = 40
       Height = 24
       Caption = #51200#51109
@@ -195,14 +196,14 @@ object frmTrain: TfrmTrain
   object pnMainFrame: TPanel
     Left = 0
     Top = 0
-    Width = 845
-    Height = 640
+    Width = 1274
+    Height = 621
     Align = alClient
     Caption = 'pnMainFrame'
     ShowCaption = False
     TabOrder = 1
     object lblInfoTitle: TLabel
-      Left = 343
+      Left = 377
       Top = 80
       Width = 56
       Height = 18
@@ -215,8 +216,8 @@ object frmTrain: TfrmTrain
       ParentFont = False
     end
     object lblTitle: TLabel
-      Left = 328
-      Top = 4
+      Left = 551
+      Top = 7
       Width = 169
       Height = 19
       Caption = #54200#49457' '#52852#47700#46972' '#44288#47532
@@ -228,23 +229,16 @@ object frmTrain: TfrmTrain
       ParentFont = False
     end
     object lblTotal: TLabel
-      Left = 8
-      Top = 85
-      Width = 52
+      Left = 26
+      Top = 80
+      Width = 44
       Height = 18
-      Caption = #52509': 43'#44060
-    end
-    object lblSubLine: TLabel
-      Left = 503
-      Top = 5
-      Width = 46
-      Height = 18
-      Caption = '(0'#54840#49440')'
+      Caption = #52509': 0'#44060
     end
     object pnCamStationInfo: TPanel
-      Left = 342
+      Left = 376
       Top = 104
-      Width = 482
+      Width = 833
       Height = 441
       Caption = 'edit'
       ShowCaption = False
@@ -252,7 +246,7 @@ object frmTrain: TfrmTrain
       object pnDefStation: TPanel
         Left = 1
         Top = 1
-        Width = 480
+        Width = 831
         Height = 49
         Align = alTop
         Caption = 'pnDefSc'
@@ -303,7 +297,6 @@ object frmTrain: TfrmTrain
           Width = 59
           Height = 26
           TabOrder = 0
-          Text = '0001'
         end
         object edTrainNo: TEdit
           Left = 190
@@ -311,28 +304,27 @@ object frmTrain: TfrmTrain
           Width = 121
           Height = 26
           TabOrder = 1
-          Text = '2920'
         end
         object edTrainCnt: TEdit
-          Left = 408
+          Left = 399
           Top = 17
           Width = 64
           Height = 26
           TabOrder = 2
-          Text = '6'
+          Text = '0'
         end
       end
       object pnNvrRTSP: TPanel
         Left = 1
         Top = 50
-        Width = 480
+        Width = 831
         Height = 47
         Align = alTop
         Caption = 'pnNvrRtsp'
         ShowCaption = False
         TabOrder = 1
         object lblNvrRTSP: TLabel
-          Left = 18
+          Left = 10
           Top = 14
           Width = 87
           Height = 16
@@ -345,18 +337,17 @@ object frmTrain: TfrmTrain
           ParentFont = False
         end
         object edNvrRTSP: TEdit
-          Left = 124
-          Top = 6
+          Left = 122
+          Top = 15
           Width = 189
           Height = 26
           TabOrder = 0
-          Text = '192.168.1.0'
         end
       end
       object pnCamInfos: TPanel
         Left = 1
         Top = 97
-        Width = 480
+        Width = 831
         Height = 343
         Align = alClient
         Caption = 'pnCamInfos'
@@ -378,13 +369,13 @@ object frmTrain: TfrmTrain
         object lblCamCnt: TLabel
           Left = 18
           Top = 29
-          Width = 52
+          Width = 44
           Height = 18
-          Caption = #52509': 12'#44060
+          Caption = #52509': 0'#44060
         end
         object btnAddCams: TAdvGlowButton
-          Left = 353
-          Top = 18
+          Left = 713
+          Top = 6
           Width = 104
           Height = 24
           Caption = #52852#47700#46972' '#52628#44032
@@ -401,6 +392,7 @@ object frmTrain: TfrmTrain
           ParentFont = False
           Rounded = True
           TabOrder = 0
+          OnClick = btnAddCamsClick
           Appearance.BorderColor = 11382963
           Appearance.BorderColorHot = 11565130
           Appearance.BorderColorCheckedHot = 11565130
@@ -439,11 +431,12 @@ object frmTrain: TfrmTrain
         end
         object grdTrainCams: TAdvStringGrid
           Left = 10
-          Top = 45
-          Width = 463
+          Top = 53
+          Width = 807
           Height = 234
           DrawingStyle = gdsClassic
           FixedColor = clWhite
+          Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goFixedRowDefAlign]
           TabOrder = 1
           ActiveCellFont.Charset = DEFAULT_CHARSET
           ActiveCellFont.Color = 4474440
@@ -513,6 +506,7 @@ object frmTrain: TfrmTrain
           FixedFont.Name = 'Tahoma'
           FixedFont.Style = [fsBold]
           FloatFormat = '%.2f'
+          GridImages = VirtualImageList1
           HoverButtons.Buttons = <>
           HTMLSettings.ImageFolder = 'images'
           HTMLSettings.ImageBaseName = 'img'
@@ -560,12 +554,23 @@ object frmTrain: TfrmTrain
           SortSettings.HeaderColorTo = clWhite
           SortSettings.HeaderMirrorColor = clWhite
           SortSettings.HeaderMirrorColorTo = clWhite
-          Version = '9.0.0.6'
+          Version = '9.1.3.0'
+          RowHeights = (
+            22
+            22
+            22
+            22
+            22
+            22
+            22
+            22
+            22
+            22)
         end
       end
     end
     object btnAddTrain: TAdvGlowButton
-      Left = 225
+      Left = 250
       Top = 74
       Width = 104
       Height = 24
@@ -583,6 +588,7 @@ object frmTrain: TfrmTrain
       ParentFont = False
       Rounded = True
       TabOrder = 1
+      OnClick = btnAddTrainClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130
@@ -620,8 +626,8 @@ object frmTrain: TfrmTrain
       Appearance.TextColorDisabled = 13948116
     end
     object btnSearch: TAdvGlowButton
-      Left = 527
-      Top = 32
+      Left = 743
+      Top = 51
       Width = 50
       Height = 24
       Caption = #44160#49353
@@ -675,9 +681,9 @@ object frmTrain: TfrmTrain
       Appearance.TextColorDisabled = 13948116
     end
     object btnStationDownload: TAdvGlowButton
-      Left = 664
+      Left = 1016
       Top = 551
-      Width = 152
+      Width = 177
       Height = 24
       Caption = #50669#49324' '#51221#48372' '#51068#44292' '#45236#47140#48155#44592
       Font.Charset = DEFAULT_CHARSET
@@ -730,9 +736,9 @@ object frmTrain: TfrmTrain
       Appearance.TextColorDisabled = 13948116
     end
     object btnUploadStations: TAdvGlowButton
-      Left = 513
-      Top = 550
-      Width = 145
+      Left = 808
+      Top = 551
+      Width = 170
       Height = 24
       Caption = #50669#49324' '#51221#48372' '#51068#44292' '#46321#47197
       Font.Charset = DEFAULT_CHARSET
@@ -785,8 +791,8 @@ object frmTrain: TfrmTrain
       Appearance.TextColorDisabled = 13948116
     end
     object cmbStation: TComboBox
-      Left = 232
-      Top = 35
+      Left = 431
+      Top = 48
       Width = 97
       Height = 26
       ItemIndex = 0
@@ -798,20 +804,20 @@ object frmTrain: TfrmTrain
         #50669#48264#54840)
     end
     object edSearchText: TEdit
-      Left = 335
-      Top = 35
+      Left = 534
+      Top = 51
       Width = 186
       Height = 26
       TabOrder = 6
     end
     object grdTrains: TAdvStringGrid
-      Left = 8
+      Left = 26
       Top = 104
       Width = 328
       Height = 440
       DrawingStyle = gdsClassic
       FixedColor = clSkyBlue
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSizing, goColSizing, goRowSelect, goFixedRowDefAlign]
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSizing, goColSizing, goFixedRowDefAlign]
       TabOrder = 7
       ActiveCellFont.Charset = DEFAULT_CHARSET
       ActiveCellFont.Color = 4474440
@@ -881,6 +887,7 @@ object frmTrain: TfrmTrain
       FixedFont.Name = 'Tahoma'
       FixedFont.Style = [fsBold]
       FloatFormat = '%.2f'
+      GridImages = VirtualImageList1
       HoverButtons.Buttons = <>
       HTMLSettings.ImageFolder = 'images'
       HTMLSettings.ImageBaseName = 'img'
@@ -928,7 +935,73 @@ object frmTrain: TfrmTrain
       SortSettings.HeaderColorTo = clWhite
       SortSettings.HeaderMirrorColor = clWhite
       SortSettings.HeaderMirrorColorTo = clWhite
-      Version = '9.0.0.6'
+      Version = '9.1.3.0'
     end
+  end
+  object VirtualImageList1: TVirtualImageList
+    DisabledGrayscale = False
+    DisabledSuffix = '_Disabled'
+    Images = <
+      item
+        CollectionIndex = 0
+        CollectionName = 'icon-'#48120#47532#48372#44592
+        Disabled = False
+        Name = 'preview'
+      end
+      item
+        CollectionIndex = 1
+        CollectionName = 'icon-'#49325#51228
+        Disabled = False
+        Name = 'delete'
+      end>
+    ImageCollection = ImageCollection1
+    Left = 24
+    Top = 560
+  end
+  object ImageCollection1: TImageCollection
+    Images = <
+      item
+        Name = 'icon-'#48120#47532#48372#44592
+        SourceImages = <
+          item
+            Image.Data = {
+              89504E470D0A1A0A0000000D494844520000002100000021080600000057E4C2
+              6F000000097048597300000B1200000B1201D2DD7EFC0000011E494441545885
+              ED97C16D83301486BF54B9930D9A1118211B74057A79D7D209E806E5FC5FBA42
+              B3414648374837081390436D815C20A10925077F12427E58F6C7B3851F8BBAAE
+              999B87B905204A342CDB0D496B200372209960BE6FE0D3CCF27630CCC40E2826
+              120078045E2465EDE0B2A313C016D84F2051B8FB7A48C2539AD9EED606928AAE
+              F85D6CCC28E189129E28E189129E28E1E93B3B72499BB9259EDCF52F5CBB1C5B
+              E0F95A89301315E30A9ACD1FE73DB61B61267227722909E396AD025ECDAC6C07
+              17E17F87A415900E0C9402EF3DCFBEF879913EF666760C83BF24CE21E98DA64C
+              0BA9CC6C356A40466E4C97A56CA04B1216B13795909402079A62B88F0F97AD8B
+              E9FB4E747100CA739D1CA32AF5D17B620AEEE2EC88129E134206413F0DBB1BF5
+              0000000049454E44AE426082}
+          end>
+      end
+      item
+        Name = 'icon-'#49325#51228
+        SourceImages = <
+          item
+            Image.Data = {
+              89504E470D0A1A0A0000000D494844520000002100000021080600000057E4C2
+              6F000000097048597300000B1200000B1201D2DD7EFC00000192494441545885
+              CD97C171C23010451F99DCA183B883B883900EA082DCF60C1DA484E4BA277790
+              7480D301E9003A301590CB7A3C10698D3482E4CF780CBBD6EA495E4BABC9F178
+              E4AF759FD3485517C0EACCDC884893136F923A1306F01171AF45E42D15E22EB5
+              01D077B2079EEDFA36DB6B46BCCB6642552BA0B2BF1BBBAF81ADFD9E31CCCE12
+              E8804E447A7F3E84AACE810678B82458407B6025229F591006B0093AD3B5F440
+              BC9C680A01C09047C910BB82109DE74CFE44AFA1E862A5AA35B028D44F2B226D
+              CCE92566074C0B411C805A447621A79713A50000A63180318898BE327D517910
+              87502722326758A64F9E37DF7B49086FC90D7D72FDF375C0B7CF8528A9DD3520
+              DCA0A94A7D1D4F0E446F9B958470975A07E231E073B7F45BE5843BA06408559D
+              71C39C6823F63A02B1B50A2CA4B233E1A8632801CFF52F72C2554E51533132B2
+              6210CEAE5789C8AF776CF5421569138BE54338AAACE03991D942FB86372020EF
+              18F842B8E26AC9AC41C66622B46513E92C06102A09922092CF95393146AB6D3B
+              04CD3301DC02F762885BE8076A178411D89E3AD60000000049454E44AE426082}
+          end>
+      end>
+    Left = 104
+    Top = 560
   end
 end

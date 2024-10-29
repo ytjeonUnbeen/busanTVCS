@@ -25,11 +25,10 @@ object frmStation: TfrmStation
     Caption = 'pnBottom'
     ShowCaption = False
     TabOrder = 0
-    ExplicitTop = 621
     object btnCancel: TAdvGlowButton
-      Left = 624
-      Top = 15
-      Width = 40
+      Left = 544
+      Top = 6
+      Width = 75
       Height = 24
       Caption = #52712#49548
       Font.Charset = DEFAULT_CHARSET
@@ -44,16 +43,16 @@ object frmStation: TfrmStation
       NotesFont.Style = []
       ParentFont = False
       Rounded = True
-      TabOrder = 0
+      TabOrder = 2
       OnClick = btnCancelClick
-      Appearance.BorderColor = 11382963
+      Appearance.BorderColor = clNavy
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130
       Appearance.BorderColorDown = 11565130
       Appearance.BorderColorChecked = 13744549
       Appearance.BorderColorDisabled = 13948116
       Appearance.Color = clWhite
-      Appearance.ColorTo = clWhite
+      Appearance.ColorTo = clNone
       Appearance.ColorChecked = 13744549
       Appearance.ColorCheckedTo = 13744549
       Appearance.ColorDisabled = clWhite
@@ -61,17 +60,18 @@ object frmStation: TfrmStation
       Appearance.ColorDown = 11565130
       Appearance.ColorDownTo = 11565130
       Appearance.ColorHot = 16444643
-      Appearance.ColorHotTo = 16444643
+      Appearance.ColorHotTo = clNone
       Appearance.ColorMirror = clWhite
-      Appearance.ColorMirrorTo = clWhite
+      Appearance.ColorMirrorTo = clNone
       Appearance.ColorMirrorHot = 16444643
-      Appearance.ColorMirrorHotTo = 16444643
+      Appearance.ColorMirrorHotTo = clNone
       Appearance.ColorMirrorDown = 11565130
-      Appearance.ColorMirrorDownTo = 11565130
+      Appearance.ColorMirrorDownTo = clNone
       Appearance.ColorMirrorChecked = 13744549
-      Appearance.ColorMirrorCheckedTo = 13744549
+      Appearance.ColorMirrorCheckedTo = clNone
       Appearance.ColorMirrorDisabled = clWhite
       Appearance.ColorMirrorDisabledTo = clNone
+      Appearance.Gradient = ggRadial
       Appearance.GradientHot = ggVertical
       Appearance.GradientMirrorHot = ggVertical
       Appearance.GradientDown = ggVertical
@@ -83,7 +83,7 @@ object frmStation: TfrmStation
       Appearance.TextColorDisabled = 13948116
     end
     object btnDlgClose: TAdvGlowButton
-      Left = 55
+      Left = 60
       Top = 15
       Width = 40
       Height = 24
@@ -100,7 +100,7 @@ object frmStation: TfrmStation
       NotesFont.Style = []
       ParentFont = False
       Rounded = True
-      TabOrder = 1
+      TabOrder = 0
       OnClick = btnDlgCloseClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
@@ -109,7 +109,7 @@ object frmStation: TfrmStation
       Appearance.BorderColorChecked = 13744549
       Appearance.BorderColorDisabled = 13948116
       Appearance.Color = clWhite
-      Appearance.ColorTo = clWhite
+      Appearance.ColorTo = clNone
       Appearance.ColorChecked = 13744549
       Appearance.ColorCheckedTo = 13744549
       Appearance.ColorDisabled = clWhite
@@ -119,9 +119,9 @@ object frmStation: TfrmStation
       Appearance.ColorHot = 16444643
       Appearance.ColorHotTo = 16444643
       Appearance.ColorMirror = clWhite
-      Appearance.ColorMirrorTo = clWhite
+      Appearance.ColorMirrorTo = clNone
       Appearance.ColorMirrorHot = 16444643
-      Appearance.ColorMirrorHotTo = 16444643
+      Appearance.ColorMirrorHotTo = clNone
       Appearance.ColorMirrorDown = 11565130
       Appearance.ColorMirrorDownTo = 11565130
       Appearance.ColorMirrorChecked = 13744549
@@ -139,9 +139,9 @@ object frmStation: TfrmStation
       Appearance.TextColorDisabled = 13948116
     end
     object btnSave: TAdvGlowButton
-      Left = 682
-      Top = 15
-      Width = 40
+      Left = 688
+      Top = 6
+      Width = 75
       Height = 24
       Caption = #51200#51109
       Font.Charset = DEFAULT_CHARSET
@@ -156,9 +156,9 @@ object frmStation: TfrmStation
       NotesFont.Style = []
       ParentFont = False
       Rounded = True
-      TabOrder = 2
+      TabOrder = 1
       OnClick = btnSaveClick
-      Appearance.BorderColor = 11382963
+      Appearance.BorderColor = clNavy
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130
       Appearance.BorderColorDown = 11565130
@@ -204,8 +204,6 @@ object frmStation: TfrmStation
     Caption = 'pnMainFrame'
     ShowCaption = False
     TabOrder = 1
-    ExplicitWidth = 835
-    ExplicitHeight = 621
     object lblInfoTitle: TLabel
       Left = 450
       Top = 80
@@ -258,9 +256,6 @@ object frmStation: TfrmStation
         Caption = 'pnDefStation'
         ShowCaption = False
         TabOrder = 0
-        ExplicitLeft = 1
-        ExplicitTop = 1
-        ExplicitWidth = 840
         object lblstCode: TLabel
           Left = 10
           Top = 20
@@ -331,9 +326,6 @@ object frmStation: TfrmStation
         Caption = 'pnT1Delay'
         ShowCaption = False
         TabOrder = 1
-        ExplicitLeft = 1
-        ExplicitTop = 50
-        ExplicitWidth = 840
         object lblT1Delay: TLabel
           Left = 9
           Top = 6
@@ -417,10 +409,6 @@ object frmStation: TfrmStation
         Caption = 'pnCamInfos'
         ShowCaption = False
         TabOrder = 2
-        ExplicitLeft = 1
-        ExplicitTop = 145
-        ExplicitWidth = 840
-        ExplicitHeight = 335
         object Label2: TLabel
           Left = 10
           Top = 6
@@ -442,9 +430,9 @@ object frmStation: TfrmStation
           Caption = #52509': 0'#44060
         end
         object btnAddCams: TAdvGlowButton
-          Left = 721
-          Top = 18
-          Width = 104
+          Left = 712
+          Top = 10
+          Width = 113
           Height = 24
           Caption = #52852#47700#46972' '#52628#44032
           Font.Charset = DEFAULT_CHARSET
@@ -642,7 +630,7 @@ object frmStation: TfrmStation
       end
     end
     object btnAddStation: TAdvGlowButton
-      Left = 329
+      Left = 282
       Top = 74
       Width = 104
       Height = 24
@@ -658,10 +646,10 @@ object frmStation: TfrmStation
       NotesFont.Name = 'Tahoma'
       NotesFont.Style = []
       ParentFont = False
-      Rounded = False
+      Rounded = True
       TabOrder = 1
       OnClick = btnAddStationClick
-      Appearance.BorderColor = 13948116
+      Appearance.BorderColor = clNavy
       Appearance.BorderColorHot = 15917525
       Appearance.BorderColorCheckedHot = 14925219
       Appearance.BorderColorDown = 14925219
@@ -687,6 +675,7 @@ object frmStation: TfrmStation
       Appearance.ColorMirrorCheckedTo = clNone
       Appearance.ColorMirrorDisabled = clWhite
       Appearance.ColorMirrorDisabledTo = clNone
+      Appearance.Gradient = ggRadial
       Appearance.GradientHot = ggVertical
       Appearance.GradientMirrorHot = ggVertical
       Appearance.GradientDown = ggVertical
@@ -698,8 +687,8 @@ object frmStation: TfrmStation
       Appearance.TextColorDisabled = 13948116
     end
     object btnSearch: TAdvGlowButton
-      Left = 527
-      Top = 32
+      Left = 769
+      Top = 40
       Width = 50
       Height = 24
       Caption = #44160#49353
@@ -753,9 +742,9 @@ object frmStation: TfrmStation
       Appearance.TextColorDisabled = 13948116
     end
     object btnStationDownload: TAdvGlowButton
-      Left = 1098
+      Left = 1072
       Top = 599
-      Width = 152
+      Width = 175
       Height = 24
       Caption = #50669#49324' '#51221#48372' '#51068#44292' '#45236#47140#48155#44592
       Font.Charset = DEFAULT_CHARSET
@@ -808,9 +797,9 @@ object frmStation: TfrmStation
       Appearance.TextColorDisabled = 13948116
     end
     object btnUploadStations: TAdvGlowButton
-      Left = 938
+      Left = 888
       Top = 599
-      Width = 145
+      Width = 175
       Height = 24
       Caption = #50669#49324' '#51221#48372' '#51068#44292' '#46321#47197
       Font.Charset = DEFAULT_CHARSET
@@ -826,6 +815,7 @@ object frmStation: TfrmStation
       ParentFont = False
       Rounded = True
       TabOrder = 4
+      OnClick = btnUploadStationsClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130
@@ -863,8 +853,8 @@ object frmStation: TfrmStation
       Appearance.TextColorDisabled = 13948116
     end
     object cmbStation: TComboBox
-      Left = 232
-      Top = 35
+      Left = 474
+      Top = 43
       Width = 97
       Height = 21
       ItemIndex = 0
@@ -876,8 +866,8 @@ object frmStation: TfrmStation
         #50669#48264#54840)
     end
     object edSearchText: TEdit
-      Left = 335
-      Top = 35
+      Left = 577
+      Top = 43
       Width = 186
       Height = 21
       TabOrder = 6
@@ -1665,5 +1655,14 @@ object frmStation: TfrmStation
     MetroColor = clHotLight
     Left = 840
     Top = 592
+  end
+  object AdvGridExcelIO1: TAdvGridExcelIO
+    AdvStringGrid = grdStationCams
+    Options.ExportOverwriteMessage = 'File %s already exists'#13'Ok to overwrite ?'
+    Options.ExportRawRTF = False
+    UseUnicode = True
+    Version = '3.14'
+    Left = 928
+    Top = 641
   end
 end

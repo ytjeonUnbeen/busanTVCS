@@ -76,6 +76,9 @@ begin
           HoverColor := $6C260A;
         end;
       end;
+
+
+
     end;
 
     // 공통 취소 버튼
