@@ -72,6 +72,7 @@ type
   AEditLink: TEditLink);
     procedure FormDestroy(Sender: TObject);
     procedure btnUploadStationsClick(Sender: TObject);
+    procedure btnStationDownloadClick(Sender: TObject);
 
 
   private
@@ -80,8 +81,9 @@ type
     addStCnt: integer;
     addCamCnt: integer;
     //엑셀업로드 체크용
-    uploadData: Boolean;
+    CheckExcel: Boolean;
     GridBuf: TAdvStringGrid;
+    BufstationCams : TArray<TVCSStationCamera>;
 
     SelectStation : tvcsProtocol.TvcsStation;
     stations : TArray<tvcsProtocol.TvcsStation>;
@@ -202,10 +204,122 @@ var
   i, j: Integer;
   allSuccess: Boolean;
   isModified: Boolean;
+  existingStations: TArray<tvcsProtocol.TvcsStation>;
+  existingCams: TArray<TVCSStationCamera>;
 begin
   if ShowTVCSCheck(0) then
   begin
-    stationPos := TvcsStationInPost.Create;
+// 엑셀업로드
+    if CheckExcel then
+    begin
+      allSuccess := True;
+
+      try
+        // 1. 기존 데이터 삭제
+        // 1-1. 기존 역사 정보 조회 및 삭제
+        existingStations := gapi.GetStation('', gapi.GetLoinInfo.fsystem.fline);
+        for i := 0 to Length(existingStations)-1 do
+        begin
+          // 각 역사의 카메라 정보 조회 및 삭제
+          existingCams := gapi.GetStationCamera('');
+          for j := 0 to Length(existingCams)-1 do
+          begin
+            if gapi.DeleteStationCamera(existingCams[j].fid) = '' then
+            begin
+              allSuccess := False;
+              ShowTVCSMessage('카메라 정보 삭제 중 오류가 발생했습니다.');
+              Exit;
+            end;
+          end;
+
+          // 역사 정보 삭제
+          if gapi.DeleteStation(existingStations[i].fcode) = '' then
+          begin
+            allSuccess := False;
+            ShowTVCSMessage('역사 정보 삭제 중 오류가 발생했습니다.');
+            Exit;
+          end;
+        end;
+
+        // 2. 엑셀 데이터 추가
+        // 2-1. 역사 정보 추가
+        for i := 0 to Length(stations)-1 do
+        begin
+          stationPos := TvcsStationInPost.Create;
+          try
+            stationPos.fname := stations[i].fname;
+            stationPos.fcode := stations[i].fcode;
+            stationPos.fdepartDelay := stations[i].fdepartDelay;
+            stationPos.farriveDelaay := stations[i].farriveDelay;
+            stationPos.ftvcsIpaddr := stations[i].ftvcsIpaddr;
+
+            station := gapi.AddStation(stationPos);
+            if station = nil then
+            begin
+              allSuccess := False;
+              ShowTVCSMessage(Format('역사 정보 추가 중 오류가 발생했습니다. (역사코드: %s)', [stations[i].fcode]));
+              Exit;
+            end;
+          finally
+            FreeAndNil(stationPos);
+          end;
+        end;
+
+        // 2-2. 카메라 정보 추가
+        SetLength(stationCamsPos, Length(BufstationCams));
+        try
+         for i := 0 to Length(BufstationCams)-1 do
+         begin
+           stationCamsPos[i] := TVCSStationCameraPost.Create;
+           with stationCamsPos[i] do
+           begin
+             fstationCode := BufstationCams[i].fstationCode;
+             fdivision := BufstationCams[i].fdivision;
+             fname := BufstationCams[i].fname;
+             fipaddr := BufstationCams[i].fipaddr;
+             fport := BufstationCams[i].fport;
+             frtsp := BufstationCams[i].frtsp;
+             frtsp := BufstationCams[i].ftvcsRtsp;
+             fuserId := BufstationCams[i].fuserId;
+             fuserPwd := BufstationCams[i].fuserPwd;
+           end;
+
+           stationCam := gapi.AddStationCamera(stationCamsPos[i]);
+           if stationCam = nil then
+           begin
+             allSuccess := False;
+             ShowTVCSMessage(Format('카메라 정보 추가 중 오류가 발생했습니다. (역사코드: %s, 카메라명: %s)',
+               [BufstationCams[i].fstationCode, BufstationCams[i].fname]));
+             Exit;
+           end;
+         end;
+        finally
+         // 생성된 객체들 해제
+         for i := 0 to Length(stationCamsPos)-1 do
+         begin
+           if Assigned(stationCamsPos[i]) then
+             FreeAndNil(stationCamsPos[i]);
+         end;
+        end;
+
+        if allSuccess then
+        begin
+          ShowTVCSMessage('엑셀 데이터 업로드가 완료되었습니다.');
+          CheckExcel := False;  // 엑셀 업로드 완료 후 플래그 초기화
+          LoadStationInfoList;  // 목록 새로고침
+        end;
+
+      except
+        on E: Exception do
+        begin
+          ShowTVCSMessage('처리 중 오류가 발생했습니다: ' + E.Message);
+        end;
+      end;
+    end
+    else
+    // 기존업로드
+    begin
+      stationPos := TvcsStationInPost.Create;
     try
       // 역사 기본정보 설정
       stationPos.fname := edStname.Text;
@@ -327,9 +441,30 @@ begin
       FreeAndNil(stationPos);
     end;
   end;
+    end;
+
+
+
+
 
   //ShowTVCSMessage(IntToStr(addCamCnt));
   ModalResult := mrOk;
+end;
+
+procedure TfrmStation.btnStationDownloadClick(Sender: TObject);
+var
+  SaveDialog : TSaveDialog;
+begin
+//
+  SaveDialog := TSaveDialog.Create(nil);
+  SaveDialog.Filter := 'Excel Files (*.xlsx)|*.xlsx|Excel 97-2003 (*.xls)|*.xls';
+  SaveDialog.DefaultExt := 'xls';
+  SaveDialog.FilterIndex := 2;
+
+  if SaveDialog.Execute then
+  begin
+    AdvGridExcelIO1.XLSExport(SaveDialog.FileName);
+  end;
 end;
 
 procedure TfrmStation.btnUploadStationsClick(Sender: TObject);
@@ -339,7 +474,7 @@ var
 
 begin
 //
-  if ShowTVCSCheck(1) then
+  if ShowTVCSCheck(2) then
   begin
     OpenDialog := TOpenDialog.Create(nil);
     try
@@ -348,17 +483,13 @@ begin
 
       if OpenDialog.Execute then
         begin
-          uploadData := True;
+          CheckExcel := True;
           GridBuf := TAdvStringGrid.Create(self);
           AdvGridExcelIO1.AdvStringGrid := GridBuf;
           AdvGridExcelIO1.XLSImport(OpenDialog.FileName, 0);
 
-
-
-
           //ShowTVCSMessage(GridBuf.Cells[1,1]);
         end;
-
 
     finally
       OpenDialog.Free;
@@ -404,7 +535,7 @@ begin
 
     lineInfo := gapi.GetLoinInfo.fsystem.fline;
     // 엑셀 업로드 하는경우
-    if uploadData then
+    if CheckExcel then
     begin
       // lineInfo에 따라 적절한 배열 선택
       case lineInfo of
@@ -543,9 +674,11 @@ end;
 
 procedure TfrmStation.LoadCamInfoList(stationCode: string = '');
 var
-  i : integer;
+  i, j : integer;
   size : integer;
   division : string;
+  filteredCams: Tarray<TVCSStationCamera>;
+
 begin
 
     with grdStationCams do begin
@@ -585,40 +718,45 @@ begin
 
     end;
 
-    if stationCode <> '' then
+     if stationCode <> '' then
     begin
-
       // 엑셀 업로드
-      if uploadData then
+      if CheckExcel then
       begin
-        SetLength(stationCams, GridBuf.rowcount - 2);
-        for i := 0 to Length(stationCams) do
+        // 우선 모든 데이터를 BufstationCams에 저장
+        SetLength(BufstationCams, GridBuf.rowcount - 2);
+        for i := 0 to Length(BufstationCams) - 1 do
         begin
-          stationCams[i] := TVCSStationCamera.Create;
-          stationCams[i].fstationCode := GridBuf.Cells[1,i+2];
+          BufstationCams[i] := TVCSStationCamera.Create;
+          BufstationCams[i].fstationCode := GridBuf.Cells[1,i+2];
           if GridBuf.Cells[8,i +2] = '상행' then
-              stationCams[i].fdivision := 1
+              BufstationCams[i].fdivision := 1
           else
-              stationCams[i].fdivision := 2;
-
-          stationCams[i].fname := GridBuf.Cells[9,i+2];
-          stationCams[i].fipaddr := GridBuf.Cells[10,i+2];
-
-          if i =81 then
-            ShowMessage(GridBuf.Cells[11,i+2-1]);
-
-          stationCams[i].fport := StrToInt(GridBuf.Cells[11,i+2]);
-          stationCams[i].frtsp := GridBuf.Cells[12,i+2];
-          stationCams[i].ftvcsRtsp := GridBuf.Cells[13,i+2];
-          stationCams[i].fuserId := GridBuf.Cells[14,i+2];
-          stationCams[i].fuserPwd := GridBuf.Cells[15,i+2];
-
-
+              BufstationCams[i].fdivision := 2;
+          BufstationCams[i].fname := GridBuf.Cells[9,i+2];
+          BufstationCams[i].fipaddr := GridBuf.Cells[10,i+2];
+          BufstationCams[i].fport := StrToInt(GridBuf.Cells[11,i+2]);
+          BufstationCams[i].frtsp := GridBuf.Cells[12,i+2];
+          BufstationCams[i].ftvcsRtsp := GridBuf.Cells[13,i+2];
+          BufstationCams[i].fuserId := GridBuf.Cells[14,i+2];
+          BufstationCams[i].fuserPwd := GridBuf.Cells[15,i+2];
         end;
 
+        // stationCode에 해당하는 카메라만 필터링
+        j := 0;
+        SetLength(filteredCams, 0);
+        for i := 0 to Length(BufstationCams) - 1 do
+        begin
+          if BufstationCams[i].fstationCode = stationCode then
+          begin
+            SetLength(filteredCams, Length(filteredCams) + 1);
+            filteredCams[j] := BufstationCams[i];
+            Inc(j);
+          end;
+        end;
 
+        stationCams := filteredCams;  // 필터링된 데이터를 stationCams에 할당
       end
-      // api 호출
       else
       begin
          stationCams := gapi.GetStationCamera(stationCode);

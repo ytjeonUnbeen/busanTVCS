@@ -430,7 +430,7 @@ object frmSystem: TfrmSystem
       SortSettings.HeaderColorTo = clWhite
       SortSettings.HeaderMirrorColor = clWhite
       SortSettings.HeaderMirrorColorTo = clWhite
-      Version = '9.0.0.6'
+      Version = '9.1.3.0'
       ColWidths = (
         64
         18
@@ -624,7 +624,7 @@ object frmSystem: TfrmSystem
       SortSettings.HeaderColorTo = clWhite
       SortSettings.HeaderMirrorColor = clWhite
       SortSettings.HeaderMirrorColorTo = clWhite
-      Version = '9.0.0.6'
+      Version = '9.1.3.0'
     end
     object btnAddCliLicense: TButton
       Left = 686

@@ -997,10 +997,10 @@ begin
        else
          Camera.fid := 0;
 
-       if JsonObj.TryGetValue('trainId', JsonValue) and (not JsonValue.Null) then
-         Camera.ftrainId := JsonValue.AsType<Integer>
+       if JsonObj.TryGetValue('ftrainNo', JsonValue) and (not JsonValue.Null) then
+         Camera.ftrainNo := JsonValue.AsType<Integer>
        else
-         Camera.ftrainId := 0;
+         Camera.ftrainNo := 0;
 
        if JsonObj.TryGetValue('postition', JsonValue) and (not JsonValue.Null) then
          Camera.fpostition := JsonValue.AsType<Integer>
@@ -1026,6 +1026,11 @@ begin
          Camera.frtsp := JsonValue.AsType<string>
        else
          Camera.frtsp := '';
+
+       if JsonObj.TryGetValue('rtsp2', JsonValue) and (not JsonValue.Null) then
+         Camera.frtsp2 := JsonValue.AsType<string>
+       else
+         Camera.frtsp2 := '';
 
        if JsonObj.TryGetValue('tvcsRtsp', JsonValue) and (not JsonValue.Null) then
          Camera.ftvcsRtsp := JsonValue.AsType<string>
@@ -1139,32 +1144,156 @@ var
   ResponseJson: TJSONObject;
   TrainCameraMergesJson: TJSONValue;
   TrainCameraMerges: TArray<TVCSTrainCameraMerge>;
-  I: Integer;
+  I, J: Integer;
+  JsonObj, ItemObj: TJSONObject;
+  JsonValue, ItemsValue: TJSONValue;
+  MergeCamera: TVCSTrainCameraMerge;
+  MergeInfo: fmergeCamInfo;
 begin
+  Result := nil;
   if trainId <> -1 then
     ResponseStr := FAPIBase.GetAPI(API_TRAIN_CAMERA_MERGE, 'trainId=' + IntToStr(trainId))
   else
-  begin
     ResponseStr := FAPIBase.GetAPI(API_TRAIN_CAMERA_MERGE);
-  end;
 
   FResponseText := FAPIBase.ResponseText;
   FResponseCode := FAPIBase.ResponseCode;
-  ResponseJson := TJSONObject.ParseJsonValue(ResponseStr) as TJSONObject;
+  ResponseStr := StringReplace(ResponseStr, '":,', '":null,', [rfReplaceAll]);
 
-  if CheckError(ResponseJson, ErrorMsg) <> 0 then
-    Exit(nil);
+  try
+    ResponseJson := TJSONObject.ParseJsonValue(ResponseStr) as TJSONObject;
+    if ResponseJson = nil then
+      Exit;
 
-  TrainCameraMergesJson := ResponseJson.GetValue('reply');
-  if TrainCameraMergesJson is TJSONArray then
-  begin
+    if CheckError(ResponseJson, ErrorMsg) <> 0 then
+      Exit;
+
+    TrainCameraMergesJson := ResponseJson.GetValue('reply');
+    if not (TrainCameraMergesJson is TJSONArray) then
+      Exit;
+
     SetLength(TrainCameraMerges, TJSONArray(TrainCameraMergesJson).Count);
+
     for I := 0 to TJSONArray(TrainCameraMergesJson).Count - 1 do
-      TrainCameraMerges[I] := TJSON.JsonToObject<TVCSTrainCameraMerge>(TJSONArray(TrainCameraMergesJson).Items[I] as TJSONObject);
+    begin
+      JsonObj := TJSONArray(TrainCameraMergesJson).Items[I] as TJSONObject;
+      MergeCamera := TVCSTrainCameraMerge.Create;
+      try
+        // Parse basic fields
+        if JsonObj.TryGetValue('name', JsonValue) and (not JsonValue.Null) then
+          MergeCamera.fname := JsonValue.AsType<string>
+        else
+          MergeCamera.fname := '';
+
+        if JsonObj.TryGetValue('tvcsRtsp', JsonValue) and (not JsonValue.Null) then
+          MergeCamera.ftvcsRtsp := JsonValue.AsType<string>
+        else
+          MergeCamera.ftvcsRtsp := '';
+
+        if JsonObj.TryGetValue('width', JsonValue) and (not JsonValue.Null) then
+          MergeCamera.fwidth := JsonValue.AsType<Integer>
+        else
+          MergeCamera.fwidth := 0;
+
+        if JsonObj.TryGetValue('height', JsonValue) and (not JsonValue.Null) then
+          MergeCamera.fheight := JsonValue.AsType<Integer>
+        else
+          MergeCamera.fheight := 0;
+
+        // Parse items array
+        if JsonObj.TryGetValue('item', ItemsValue) and (ItemsValue is TJSONArray) then
+        begin
+          SetLength(MergeCamera.fitem, TJSONArray(ItemsValue).Count);
+          for J := 0 to TJSONArray(ItemsValue).Count - 1 do
+          begin
+            ItemObj := TJSONArray(ItemsValue).Items[J] as TJSONObject;
+            MergeInfo := fmergeCamInfo.Create;
+
+            if ItemObj.TryGetValue('id', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fid := JsonValue.AsType<Integer>
+            else
+              MergeInfo.fid := 0;
+
+            if ItemObj.TryGetValue('trainId', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.ftrainId := JsonValue.AsType<Integer>
+            else
+              MergeInfo.ftrainId := 0;
+
+            if ItemObj.TryGetValue('cameraid', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fcameraid := JsonValue.AsType<Integer>
+            else
+              MergeInfo.fcameraid := 0;
+
+            if ItemObj.TryGetValue('position', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fposition := JsonValue.AsType<Integer>
+            else
+              MergeInfo.fposition := 0;
+
+            if ItemObj.TryGetValue('name', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fname := JsonValue.AsType<string>
+            else
+              MergeInfo.fname := '';
+
+            if ItemObj.TryGetValue('ipaddr', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fipaddr := JsonValue.AsType<string>
+            else
+              MergeInfo.fipaddr := '';
+
+            if ItemObj.TryGetValue('port', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fport := JsonValue.AsType<Integer>
+            else
+              MergeInfo.fport := 0;
+
+            if ItemObj.TryGetValue('rtsp', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.frtsp := JsonValue.AsType<string>
+            else
+              MergeInfo.frtsp := '';
+
+            if ItemObj.TryGetValue('tvcsRtsp', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.ftvcsRtsp := JsonValue.AsType<string>
+            else
+              MergeInfo.ftvcsRtsp := '';
+
+            if ItemObj.TryGetValue('userid', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fuserid := JsonValue.AsType<string>
+            else
+              MergeInfo.fuserid := '';
+
+            if ItemObj.TryGetValue('userPwd', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fuserPwd := JsonValue.AsType<string>
+            else
+              MergeInfo.fuserPwd := '';
+
+            if ItemObj.TryGetValue('positionX', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fpositionX := JsonValue.AsType<Integer>
+            else
+              MergeInfo.fpositionX := 0;
+
+            if ItemObj.TryGetValue('positionY', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fpositionY := JsonValue.AsType<Integer>
+            else
+              MergeInfo.fpositionY := 0;
+
+            MergeCamera.fitem[J] := MergeInfo;
+          end;
+        end;
+
+        TrainCameraMerges[I] := MergeCamera;
+      except
+        FreeAndNil(MergeCamera);
+        raise;
+      end;
+    end;
+
     Result := TrainCameraMerges;
-  end
-  else
+  except
+    // Clean up any partially created array
+    if Length(TrainCameraMerges) > 0 then
+      for I := 0 to Length(TrainCameraMerges) - 1 do
+        FreeAndNil(TrainCameraMerges[I]);
+    SetLength(TrainCameraMerges, 0);
     Result := nil;
+  end;
 end;
 
 function TTVCSAPI.AddTrainCameraMerge(trainCameraMergeInfo:TVCSTrainCameraMergePost):TVCSTrainCameraMerge;
@@ -1173,20 +1302,137 @@ var
   TrainCamerasMergeJson: TJSONValue;
   ResultTrainCameraMerge: TVCSTrainCameraMerge;
   ErrorMsg: string;
+  JsonObj: TJSONObject;
+  JsonValue: TJSONValue;
+  I: Integer;
+  MergeInfo: fmergeCamInfo;
 begin
+  Result := nil;
   RequestJson := TJson.ObjectToJsonObject(trainCameraMergeInfo);
   try
     ResponseJson := FAPIBase.PostAPI(API_TRAIN_CAMERA_MERGE, RequestJson);
     try
+      if ResponseJson = nil then
+        Exit;
+
       if CheckError(ResponseJson, ErrorMsg) <> 0 then
       begin
         ShowMessage(FErrorMsg);
-        Exit(nil);
+        Exit;
       end;
 
       TrainCamerasMergeJson := ResponseJson.GetValue('reply');
-      ResultTrainCameraMerge := TJson.JsonToObject<TVCSTrainCameraMerge>(TrainCamerasMergeJson.ToString);
-      Result := ResultTrainCameraMerge;
+      if TrainCamerasMergeJson = nil then
+        Exit;
+
+      try
+        ResultTrainCameraMerge := TVCSTrainCameraMerge.Create;
+        JsonObj := TrainCamerasMergeJson as TJSONObject;
+
+        // Parse basic fields
+        if JsonObj.TryGetValue('name', JsonValue) and (not JsonValue.Null) then
+          ResultTrainCameraMerge.fname := JsonValue.AsType<string>
+        else
+          ResultTrainCameraMerge.fname := '';
+
+        if JsonObj.TryGetValue('tvcsRtsp', JsonValue) and (not JsonValue.Null) then
+          ResultTrainCameraMerge.ftvcsRtsp := JsonValue.AsType<string>
+        else
+          ResultTrainCameraMerge.ftvcsRtsp := '';
+
+        if JsonObj.TryGetValue('width', JsonValue) and (not JsonValue.Null) then
+          ResultTrainCameraMerge.fwidth := JsonValue.AsType<Integer>
+        else
+          ResultTrainCameraMerge.fwidth := 0;
+
+        if JsonObj.TryGetValue('height', JsonValue) and (not JsonValue.Null) then
+          ResultTrainCameraMerge.fheight := JsonValue.AsType<Integer>
+        else
+          ResultTrainCameraMerge.fheight := 0;
+
+        // Parse item array
+        if JsonObj.TryGetValue('item', JsonValue) and (JsonValue is TJSONArray) then
+        begin
+          SetLength(ResultTrainCameraMerge.fitem, TJSONArray(JsonValue).Count);
+          for I := 0 to TJSONArray(JsonValue).Count - 1 do
+          begin
+            MergeInfo := fmergeCamInfo.Create;
+            JsonObj := TJSONArray(JsonValue).Items[I] as TJSONObject;
+
+            if JsonObj.TryGetValue('id', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fid := JsonValue.AsType<Integer>
+            else
+              MergeInfo.fid := 0;
+
+            if JsonObj.TryGetValue('trainId', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.ftrainId := JsonValue.AsType<Integer>
+            else
+              MergeInfo.ftrainId := 0;
+
+            if JsonObj.TryGetValue('cameraid', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fcameraid := JsonValue.AsType<Integer>
+            else
+              MergeInfo.fcameraid := 0;
+
+            if JsonObj.TryGetValue('position', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fposition := JsonValue.AsType<Integer>
+            else
+              MergeInfo.fposition := 0;
+
+            if JsonObj.TryGetValue('name', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fname := JsonValue.AsType<string>
+            else
+              MergeInfo.fname := '';
+
+            if JsonObj.TryGetValue('ipaddr', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fipaddr := JsonValue.AsType<string>
+            else
+              MergeInfo.fipaddr := '';
+
+            if JsonObj.TryGetValue('port', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fport := JsonValue.AsType<Integer>
+            else
+              MergeInfo.fport := 0;
+
+            if JsonObj.TryGetValue('rtsp', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.frtsp := JsonValue.AsType<string>
+            else
+              MergeInfo.frtsp := '';
+
+            if JsonObj.TryGetValue('tvcsRtsp', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.ftvcsRtsp := JsonValue.AsType<string>
+            else
+              MergeInfo.ftvcsRtsp := '';
+
+            if JsonObj.TryGetValue('userid', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fuserid := JsonValue.AsType<string>
+            else
+              MergeInfo.fuserid := '';
+
+            if JsonObj.TryGetValue('userPwd', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fuserPwd := JsonValue.AsType<string>
+            else
+              MergeInfo.fuserPwd := '';
+
+            if JsonObj.TryGetValue('positionX', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fpositionX := JsonValue.AsType<Integer>
+            else
+              MergeInfo.fpositionX := 0;
+
+            if JsonObj.TryGetValue('positionY', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fpositionY := JsonValue.AsType<Integer>
+            else
+              MergeInfo.fpositionY := 0;
+
+            ResultTrainCameraMerge.fitem[I] := MergeInfo;
+          end;
+        end;
+
+        Result := ResultTrainCameraMerge;
+      except
+        FreeAndNil(ResultTrainCameraMerge);
+        raise;
+      end;
     finally
       ResponseJson.Free;
     end;
@@ -1197,30 +1443,108 @@ end;
 
 function TTVCSAPI.UpdateTrainCameraMerge(trainCameraMergeInfo:TVCSTrainCameraMergePatch):TVCSTrainCameraMerge;
 var
- RequestJson, ResponseJson: TJSONObject;
- trainCameraMergeJson: TJSONValue;
- ResulttTainCameraMerge: TVCSTrainCameraMerge;
- ErrorMsg: string;
+  RequestJson, ResponseJson: TJSONObject;
+  trainCameraMergeJson: TJSONValue;
+  ResultTrainCameraMerge: TVCSTrainCameraMerge;
+  ErrorMsg: string;
+  JsonObj: TJSONObject;
+  JsonValue: TJSONValue;
+  I: Integer;
+  MergeInfo: fmergeCamInfo;
 begin
+  Result := nil;
   RequestJson := TJson.ObjectToJsonObject(trainCameraMergeInfo);
-
   try
     ResponseJson := FAPIBase.PatchAPI(API_TRAIN_CAMERA_MERGE, RequestJson);
-
     try
-    if CheckError(ResponseJson, ErrorMsg)<> 0 then
-    begin
-      ShowMessage(FErrorMsg);
-      Exit(nil);
-    end;
+      if ResponseJson = nil then
+        Exit;
 
-    trainCameraMergeJson := ResponseJson.GetValue('reply');
-    ResulttTainCameraMerge := TJSON.JsonToObject<TVCSTrainCameraMerge>(trainCameraMergeJson.ToString);
-    Result := ResulttTainCameraMerge;
+      if CheckError(ResponseJson, ErrorMsg) <> 0 then
+      begin
+        ShowMessage(FErrorMsg);
+        Exit;
+      end;
 
+      trainCameraMergeJson := ResponseJson.GetValue('reply');
+      if trainCameraMergeJson = nil then
+        Exit;
+
+      try
+        ResultTrainCameraMerge := TVCSTrainCameraMerge.Create;
+        JsonObj := trainCameraMergeJson as TJSONObject;
+
+        // Parse basic fields
+        if JsonObj.TryGetValue('name', JsonValue) and (not JsonValue.Null) then
+          ResultTrainCameraMerge.fname := JsonValue.AsType<string>
+        else
+          ResultTrainCameraMerge.fname := '';
+
+        if JsonObj.TryGetValue('tvcsRtsp', JsonValue) and (not JsonValue.Null) then
+          ResultTrainCameraMerge.ftvcsRtsp := JsonValue.AsType<string>
+        else
+          ResultTrainCameraMerge.ftvcsRtsp := '';
+
+        if JsonObj.TryGetValue('width', JsonValue) and (not JsonValue.Null) then
+          ResultTrainCameraMerge.fwidth := JsonValue.AsType<Integer>
+        else
+          ResultTrainCameraMerge.fwidth := 0;
+
+        if JsonObj.TryGetValue('height', JsonValue) and (not JsonValue.Null) then
+          ResultTrainCameraMerge.fheight := JsonValue.AsType<Integer>
+        else
+          ResultTrainCameraMerge.fheight := 0;
+
+        // Parse item array
+        if JsonObj.TryGetValue('item', JsonValue) and (JsonValue is TJSONArray) then
+        begin
+          SetLength(ResultTrainCameraMerge.fitem, TJSONArray(JsonValue).Count);
+          for I := 0 to TJSONArray(JsonValue).Count - 1 do
+          begin
+            MergeInfo := fmergeCamInfo.Create;
+            JsonObj := TJSONArray(JsonValue).Items[I] as TJSONObject;
+
+            if JsonObj.TryGetValue('id', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fid := JsonValue.AsType<Integer>;
+
+            if JsonObj.TryGetValue('trainId', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.ftrainId := JsonValue.AsType<Integer>;
+
+            if JsonObj.TryGetValue('cameraid', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fcameraid := JsonValue.AsType<Integer>;
+
+            if JsonObj.TryGetValue('name', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fname := JsonValue.AsType<string>;
+
+            if JsonObj.TryGetValue('ipaddr', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fipaddr := JsonValue.AsType<string>;
+
+            if JsonObj.TryGetValue('port', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fport := JsonValue.AsType<Integer>;
+
+            if JsonObj.TryGetValue('rtsp', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.frtsp := JsonValue.AsType<string>;
+
+            if JsonObj.TryGetValue('tvcsRtsp', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.ftvcsRtsp := JsonValue.AsType<string>;
+
+            if JsonObj.TryGetValue('positionX', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fpositionX := JsonValue.AsType<Integer>;
+
+            if JsonObj.TryGetValue('positionY', JsonValue) and (not JsonValue.Null) then
+              MergeInfo.fpositionY := JsonValue.AsType<Integer>;
+
+            ResultTrainCameraMerge.fitem[I] := MergeInfo;
+          end;
+        end;
+
+        Result := ResultTrainCameraMerge;
+      except
+        FreeAndNil(ResultTrainCameraMerge);
+        raise;
+      end;
     finally
-    ResponseJson.Free;
-
+      ResponseJson.Free;
     end;
   finally
     RequestJson.Free;

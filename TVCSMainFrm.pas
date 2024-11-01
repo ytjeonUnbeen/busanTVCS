@@ -516,6 +516,8 @@ end;
 procedure TfrmTVCSMain.FormCreate(Sender: TObject);
 begin
  LoadSchedPanel;
+ pnTopmenu.Color := $1b1511;
+ pnCamView.Color := $170e08;
  curSplit:=0;
 end;
 

@@ -49,7 +49,7 @@ begin
     case DialogType of
       0:  // 수정
       begin
-        Dialog.HTMLText.Text := '<br><br><br><br><br>정말 수정하시겠습니까?';
+        Dialog.HTMLText.Text := '<br><br><br><br><br>데이터 수정';
         Dialog.Caption := '작성하신 내용이 저장됩니다.';
 
         with Dialog.Buttons.Add do
@@ -64,12 +64,27 @@ begin
 
       1:  // 삭제
       begin
-        Dialog.Caption := '정말 삭제 하시겠습니까?';
+        Dialog.Caption := '데이터 삭제';
         Dialog.HTMLText.Text := '<br><br><br><br><br>선택한 데이터가 삭제됩니다.';
 
         with Dialog.Buttons.Add do
         begin
           Caption := '삭제';
+          ButtonResult := mrYes;
+          Color := $81330F;
+          ColorFocused := $81330F;
+          HoverColor := $6C260A;
+        end;
+      end;
+
+      2:  // 엑셀업로드
+      begin
+        Dialog.Caption := '엑셀 업로드';
+        Dialog.HTMLText.Text := '<br><br><br><br><br>엑셀 업로드시 기존의 데이터는 모두 사라집니다.';
+
+        with Dialog.Buttons.Add do
+        begin
+          Caption := '확인';
           ButtonResult := mrYes;
           Color := $81330F;
           ColorFocused := $81330F;

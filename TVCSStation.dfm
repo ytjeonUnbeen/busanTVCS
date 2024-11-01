@@ -760,6 +760,7 @@ object frmStation: TfrmStation
       ParentFont = False
       Rounded = True
       TabOrder = 3
+      OnClick = btnStationDownloadClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130

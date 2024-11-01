@@ -6,8 +6,9 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, AdvGlowButton,
   Vcl.ExtCtrls, AdvUtil, Vcl.Grids, AdvObj, BaseGrid, AdvGrid,
-  TvcsApi, tvcsProtocol, TVCSButtonStyle, System.ImageList, Vcl.ImgList, TVCSCheckDialog,
-  Vcl.VirtualImageList, Vcl.BaseImageCollection, Vcl.ImageCollection;
+  TvcsApi, tvcsProtocol, TVCSButtonStyle, TVCSPreview, System.ImageList, Vcl.ImgList, TVCSCheckDialog,
+  Vcl.VirtualImageList, Vcl.BaseImageCollection, Vcl.ImageCollection,
+  tmsAdvGridExcel, System.Generics.Collections;
 
 type
   TfrmTrain = class(TForm)
@@ -44,6 +45,7 @@ type
     edTrainCnt: TEdit;
     VirtualImageList1: TVirtualImageList;
     ImageCollection1: TImageCollection;
+    AdvGridExcelIO1: TAdvGridExcelIO;
     procedure btnCancelClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure btnDlgCloseClick(Sender: TObject);
@@ -53,17 +55,22 @@ type
     procedure FormCreate(Sender: TObject);
     procedure btnAddTrainClick(Sender: TObject);
     procedure grdTrainsClickCell(Sender: TObject; ARow, ACol: Integer);
+
     procedure btnAddCamsClick(Sender: TObject);
+    procedure grdTrainCamsClickCell(Sender: TObject; ARow, ACol: Integer);
+    procedure btnUploadStationsClick(Sender: TObject);
+    procedure btnStationDownloadClick(Sender: TObject);
 
 
   private
     { Private declarations }
     addTrCnt, addTrCamCnt: integer;
-
+    CheckExcel: Boolean;
+    GridBuf: TAdvStringGrid;
+    BufTrainCams: TArray<TVCSTrainCamera>;
     trains: TArray<tvcsProtocol.TVCSTrain>;
     trainCams: TArray<TVCSTrainCamera>;
     SelTrain: tvcsProtocol.TVCSTrain;
-
   public
     { Public declarations }
   end;
@@ -89,8 +96,9 @@ begin
     Cells[4,1] := '';
     Cells[5,1] := '';
     Cells[6,1] := '';
-    AddImageIdx(7, 1, VirtualImageList1.GetIndexByName('preview'), haCenter, vaCenter);
-    AddImageIdx(8, 1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
+    Cells[7,1] := '';
+    AddImageIdx(8, 1, VirtualImageList1.GetIndexByName('preview'), haCenter, vaCenter);
+    AddImageIdx(9, 1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
   end;
 
 end;
@@ -131,18 +139,121 @@ var
   trainPos: TVCSTrainInPost;
   trainPat: TVCSTrainInPatch;
   trainRes: tvcsProtocol.TVCSTrain;
-
   trainCamPos: TArray<TVCSTrainCameraInPost>;
   trainCamPatch: TVCSTrainCameraInPatch;
   trainCamRes: TVCSTrainCamera;
   allSuccess, isModified: Boolean;
-
-  i, j: integer;
-  size: integer;
+  existingTrains: TArray<tvcsProtocol.TVCSTrain>;
+  existingCams: TArray<TVCSTrainCamera>;
+  i, j, size: integer;
+  trainIdMap: TDictionary<String, Integer>;
 begin
   if ShowTVCSCheck(0) then
   begin
-    size := grdTrainCams.RowCount - 1;
+    if CheckExcel then
+    begin
+      allSuccess := True;
+
+      try
+        // 1. 기존 데이터 삭제
+        existingTrains := gapi.GetTrain(-1);
+        for i := 0 to Length(existingTrains)-1 do
+        begin
+          // 각 열차의 카메라 정보 삭제
+          existingCams := gapi.GetTrainCamera(existingTrains[i].fid);
+          for j := 0 to Length(existingCams)-1 do
+          begin
+            if gapi.DeleteTrainCamera(existingCams[j].fid) = '' then
+            begin
+              allSuccess := False;
+              ShowTVCSMessage('카메라 정보 삭제 중 오류가 발생했습니다.');
+              Exit;
+            end;
+          end;
+
+          // 열차 정보 삭제
+          if gapi.DeleteTrain(existingTrains[i].fid) = '' then
+          begin
+            allSuccess := False;
+            ShowTVCSMessage('열차 정보 삭제 중 오류가 발생했습니다.');
+            Exit;
+          end;
+        end;
+
+        // 2. 엑셀 데이터 추가
+        // 2-1. 열차 정보 추
+         trainIdMap := TDictionary<String, Integer>.Create;
+         for i := 0 to Length(trains)-1 do
+         begin
+           trainPos := TVCSTrainInPost.Create;
+           try
+             trainPos.ftrainNo := trains[i].ftrainNo;
+             trainPos.fformatNo := trains[i].fformatNo;
+             trainPos.fcarriageNum := trains[i].fcarriageNum;
+             trainPos.ftvcsIpaddr := trains[i].ftvcsIpaddr;
+             trainRes := gapi.AddTrain(trainPos);
+             if trainRes = nil then
+             begin
+               allSuccess := False;
+               ShowTVCSMessage(Format('열차 정보 추가 중 오류가 발생했습니다. (열차번호: %s)', [trains[i].ftrainNo]));
+               Exit;
+             end;
+           finally
+             FreeAndNil(trainPos);
+           end;
+         end;
+
+        // 2-3. 카메라 정보 추가
+         SetLength(trainCamPos, Length(BufTrainCams));
+         try
+           for i := 0 to Length(BufTrainCams)-1 do
+           begin
+             trainCamPos[i] := TVCSTrainCameraInPost.Create;
+             with trainCamPos[i] do
+             begin
+               ftrainNo := IntToStr(BufTrainCams[i].ftrainNo);
+               fname := BufTrainCams[i].fname;
+               fipaddr := BufTrainCams[i].fipaddr;
+               fport := BufTrainCams[i].fport;
+               frtsp := BufTrainCams[i].frtsp;
+               frtsp2 := BufTrainCams[i].frtsp2;
+               fuserId := BufTrainCams[i].fuserId;
+               fuserPwd := BufTrainCams[i].fuserPwd;
+             end;
+
+             trainCamRes := gapi.AddTrainCamera(trainCamPos[i]);
+             if trainCamRes = nil then
+             begin
+               allSuccess := False;
+               ShowTVCSMessage(Format('카메라 정보 추가 중 오류가 발생했습니다. (열차번호: %s, 카메라명: %s)',
+                 [BufTrainCams[i].ftrainNo, BufTrainCams[i].fname]));
+               Exit;
+             end;
+           end;
+         finally
+           for i := 0 to Length(trainCamPos)-1 do
+           begin
+             if Assigned(trainCamPos[i]) then
+               FreeAndNil(trainCamPos[i]);
+           end;
+         end;
+
+        if allSuccess then
+        begin
+          ShowTVCSMessage('엑셀 데이터 업로드가 완료되었습니다.');
+          CheckExcel := False;
+          LoadTrainList;
+          
+        end;
+      except
+        on E: Exception do
+          ShowTVCSMessage('처리 중 오류가 발생했습니다: ' + E.Message);
+      end;
+    end
+    else
+    begin
+      size := grdTrainCams.RowCount - 1;
+    trainPos := TVCSTrainInPost.Create;
     //ShowTVCSMessage(inttostr(size));
 
     try
@@ -151,7 +262,7 @@ begin
       // 열차추가
       if addTrCnt > 0 then
       begin
-        trainPos := TVCSTrainInPost.Create;
+
         trainPos.ftrainNo := edTrainNo.Text;
         trainPos.fformatNo := StrtoInt(edscNo.Text);
         trainPos.fcarriageNum := StrToInt(edTrainCnt.Text);
@@ -192,13 +303,15 @@ begin
           trainCamPos[i-1] := TVCSTrainCameraInPost.Create;
           with trainCamPos[i-1] do
           begin
-            ftrainId := StrToInt(edTrainNo.Text);
+            ftrainNo := SelTrain.ftrainNo;
             fname := grdTrainCams.Cells[1,i];
             fipaddr := grdTrainCams.Cells[2,i];
             fport := StrToInt(grdTrainCams.Cells[3,i]);
             frtsp := grdTrainCams.Cells[4,i];
-            fuserId := grdTrainCams.Cells[5,i];
-            fuserPwd := grdTrainCams.Cells[6,i];
+            frtsp2 := grdTrainCams.Cells[5,i];
+
+            fuserId := grdTrainCams.Cells[6,i];
+            fuserPwd := grdTrainCams.Cells[7,i];
 
             fposition := 0;
           end;
@@ -222,49 +335,52 @@ begin
               FreeAndNil(trainCamPos[i]);
           end;
         end;
+      end;
 
-      for i := 1 to grdTrainCams.RowCount - 1 do
-      begin
-        isModified := False;
 
-        if i <= addTrCamCnt then
-          Continue;
-
-        j := i - addTrCamCnt - 1;
-        if (j >= 0) and (j < Length(trainCams)) then
+        for i := 1 to grdTrainCams.RowCount - 1 do
         begin
-          // 수정된 데이터 업데이트
-          trainCamPatch := TVCSTrainCameraInPatch.Create;
-          try
-            trainCamPatch.fid := trainCams[j].fid;
-            trainCamPatch.ftrainId := StrToInt(edTrainNo.Text);
-            trainCamPatch.fname := grdTrainCams.Cells[1,i];
-            trainCamPatch.fipaddr := grdTrainCams.Cells[2,i];
-            trainCamPatch.fport := StrToInt(grdTrainCams.Cells[3,i]);
-            trainCamPatch.frtsp := grdTrainCams.Cells[4,i];
-            trainCamPatch.fuserId := grdTrainCams.Cells[5,i];
-            trainCamPatch.fuserPwd := grdTrainCams.Cells[6,i];
+          isModified := False;
 
-            if nil = gapi.UpdateTrainCamera(trainCamPatch) then
-              allSuccess := False;
-          finally
-            FreeAndNil(trainCamPatch);
+          if i <= addTrCamCnt then
+            Continue;
+
+          j := i - addTrCamCnt - 1;
+          if (j >= 0) and (j < Length(trainCams)) then
+          begin
+            // 수정된 데이터 업데이트
+            trainCamPatch := TVCSTrainCameraInPatch.Create;
+            try
+              trainCamPatch.fid := trainCams[j].fid;
+              trainCamPatch.ftrainId := SelTrain.fid;
+              trainCamPatch.fname := grdTrainCams.Cells[1,i];
+              trainCamPatch.fipaddr := grdTrainCams.Cells[2,i];
+              trainCamPatch.fport := StrToInt(grdTrainCams.Cells[3,i]);
+              trainCamPatch.frtsp := grdTrainCams.Cells[4,i];
+              trainCamPatch.fuserId := grdTrainCams.Cells[5,i];
+              trainCamPatch.fuserPwd := grdTrainCams.Cells[6,i];
+
+              if nil = gapi.UpdateTrainCamera(trainCamPatch) then
+                allSuccess := False;
+            finally
+              FreeAndNil(trainCamPatch);
+            end;
           end;
         end;
+
+        if allSuccess then
+          ShowTVCSMessage('처리가 완료되었습니다.')
+        else
+          ShowTVCSMessage('일부 처리가 실패하였습니다.');
+
+        addTrCnt := 0;
+
+
+      finally
+        FreeAndNil(trainPos);
       end;
 
-      if allSuccess then
-        ShowTVCSMessage('처리가 완료되었습니다.')
-      else
-        ShowTVCSMessage('일부 처리가 실패하였습니다.');
-
-      addTrCnt := 0;
-
-      end;
-    finally
-      FreeAndNil(trainPos);
     end;
-
   end;
 
 
@@ -272,6 +388,48 @@ begin
 end;
 
 
+
+
+procedure TfrmTrain.btnStationDownloadClick(Sender: TObject);
+var
+  SaveDialog : TSaveDialog;
+begin
+//
+  SaveDialog := TSaveDialog.Create(nil);
+  SaveDialog.Filter := 'Excel Files (*.xlsx)|*.xlsx|Excel 97-2003 (*.xls)|*.xls';
+  SaveDialog.DefaultExt := 'xls';
+  SaveDialog.FilterIndex := 2;
+
+  if SaveDialog.Execute then
+  begin
+    AdvGridExcelIO1.XLSExport(SaveDialog.FileName);
+  end;
+end;
+
+procedure TfrmTrain.btnUploadStationsClick(Sender: TObject);
+var
+  OpenDialog: TOpenDialog;
+begin
+  if ShowTVCSCheck(2) then
+  begin
+    OpenDialog := TOpenDialog.Create(nil);
+    try
+      OpenDialog.Filter := 'Excel Files (*.xlsx)|*.xlsx|Excel 97-2003 (*.xls)|*.xls|All Files (*.*)|*.*';
+      OpenDialog.FilterIndex := 2;
+
+      if OpenDialog.Execute then
+      begin
+        CheckExcel := True;
+        GridBuf := TAdvStringGrid.Create(self);
+        AdvGridExcelIO1.AdvStringGrid := GridBuf;
+        AdvGridExcelIO1.XLSImport(OpenDialog.FileName, 0);
+      end;
+    finally
+      OpenDialog.Free;
+      LoadTrainList;
+    end;
+  end;
+end;
 
 
 procedure TfrmTrain.FormCreate(Sender: TObject);
@@ -291,12 +449,53 @@ end;
 
 procedure TfrmTrain.LoadTrainList(trainNo: string='');
 var
-  size, i : integer;
-  delBtn : TButton;
-
+  size, i, k: integer;
+  delBtn: TButton;
+  uniqueValues: TStringList;
+  uniqueCount: integer;
 begin
-  //
-  trains := gapi.GetTrain(-1);
+  if CheckExcel then
+  begin
+    uniqueValues := TStringList.Create;
+    try
+      uniqueValues.Sorted := True;
+      uniqueValues.Duplicates := dupIgnore;
+      for i := 2 to GridBuf.RowCount do
+      begin
+        if GridBuf.Cells[1, i].Trim <> '' then
+          uniqueValues.Add(GridBuf.Cells[2, i]);
+      end;
+
+      uniqueCount := uniqueValues.Count;
+      SetLength(trains, uniqueCount);
+
+      for i := 0 to uniqueCount - 1 do
+      begin
+        trains[i] := tvcsProtocol.TVCSTrain.Create;
+        trains[i].ftrainNo := uniqueValues[i];
+
+        // GridBuf에서 해당 열차의 정보 찾기 (마지막 데이터)
+        for k := GridBuf.RowCount downto 2 do
+        begin
+          if GridBuf.Cells[2, k] = trains[i].ftrainNo then
+          begin
+            trains[i].fformatNo := StrToInt(GridBuf.Cells[1, k]);
+            trains[i].fcarriageNum := StrToInt(GridBuf.Cells[3, k]);
+            trains[i].fcameraNum := StrToInt(GridBuf.Cells[4, k]);
+            trains[i].ftvcsIpaddr := GridBuf.Cells[5, k];
+            Break;
+          end;
+        end;
+      end;
+    finally
+      uniqueValues.Free;
+    end;
+  end
+  else
+  begin
+    trains := gapi.GetTrain(-1);
+  end;
+
   size := Length(trains);
   lblTotal.Caption := '총 :' + IntToStr(size) +'개';
   delBtn := TButton.Create(self);
@@ -312,8 +511,8 @@ begin
     ColWidths[3]:=60;
 
     Cells[0,0]:='No.';
-    Cells[1,0]:='역번호';
-    Cells[2,0]:='역사명';
+    Cells[1,0]:='편성번호';
+    Cells[2,0]:='열차번호';
     Cells[3,0]:='삭제';
   end;
 
@@ -334,36 +533,39 @@ end;
 
 procedure TfrmTrain.LoadTrainCamList(trainId: Integer =-1);
 var
-  i, size : integer;
+  i, j, size: integer;
+  filteredCams: TArray<TVCSTrainCamera>;
 
 begin
   //
   with grdTrainCams do
   begin
     RowCount:=1;
-    ColCount:=9;
+    ColCount:=10;
     //760
     ColWidths[0] := 60;   // 구분
-    ColWidths[1] := 120;  // 카메라명
+    ColWidths[1] := 100;  // 카메라명
     ColWidths[2] := 120;  // IP Addr
     ColWidths[3] := 60;   // Port
     ColWidths[4] := 120;  // RTSP High
-    //ColWidths[5] := 120;  // RTSP Low
+    ColWidths[5] := 120;  // RTSP Low
 
-    ColWidths[5] := 72;   // ID
-    ColWidths[6] := 82;   // Password
-    ColWidths[7] := 45;   // 미리보기 버튼
-    ColWidths[8] := 45;   // 삭제 버튼
+    ColWidths[6] := 72;   // ID
+    ColWidths[7] := 82;   // Password
+    ColWidths[8] := 45;   // 미리보기 버튼
+    ColWidths[9] := 45;   // 삭제 버튼
 
     Cells[0,0]:='객차번호';
     Cells[1,0]:='카메라명';
     Cells[2,0]:='IP Addr';
     Cells[3,0]:= 'Port';
-    Cells[4,0]:='RTSP 주소 ';
-    Cells[5,0]:='ID';
-    Cells[6,0]:='Password';
-    Cells[7,0]:='미리보기';
-    Cells[8,0]:='삭제';
+    Cells[4,0]:='RTSP 주소1 ';
+    Cells[5,0]:='RTSP 주소2 ';
+
+    Cells[6,0]:='ID';
+    Cells[7,0]:='Password';
+    Cells[8,0]:='미리보기';
+    Cells[9,0]:='삭제';
 
     FixedRows := 0;
     FixedCols := 0;
@@ -379,7 +581,43 @@ begin
   //ShowTVCSMessage(intTostr(trainId));
   if trainId <> -1 then
   begin
-    trainCams := Gapi.GetTrainCamera(trainId);
+    if CheckExcel then
+    begin
+      // 모든 데이터를 BufTrainCams에 저장
+      SetLength(BufTrainCams, GridBuf.rowcount - 2);
+      for i := 0 to Length(BufTrainCams) - 1 do
+      begin
+        BufTrainCams[i] := TVCSTrainCamera.Create;
+        BufTrainCams[i].ftrainNo := StrToInt(GridBuf.Cells[2,i+2]);
+        BufTrainCams[i].fname := GridBuf.Cells[7,i+2];
+        BufTrainCams[i].fipaddr := GridBuf.Cells[8,i+2];
+        BufTrainCams[i].fport := StrToInt(GridBuf.Cells[9,i+2]);
+        BufTrainCams[i].frtsp := GridBuf.Cells[10,i+2];
+        BufTrainCams[i].frtsp2 := GridBuf.Cells[11,i+2];
+        BufTrainCams[i].fuserId := GridBuf.Cells[12,i+2];
+        BufTrainCams[i].fuserPwd := GridBuf.Cells[13,i+2];
+      end;
+
+      // trainId에 해당하는 카메라만 필터링
+      j := 0;
+      SetLength(filteredCams, 0);
+      for i := 0 to Length(BufTrainCams) - 1 do
+      begin
+        if BufTrainCams[i].ftrainNo = trainId then
+        begin
+          SetLength(filteredCams, Length(filteredCams) + 1);
+          filteredCams[j] := BufTrainCams[i];
+          Inc(j);
+        end;
+      end;
+
+      trainCams := filteredCams;
+    end
+    else
+    begin
+      trainCams := Gapi.GetTrainCamera(trainId);
+    end;
+
     size := length(trainCams);
     lblCamCnt.Caption := '총:' + IntToStr(size) + '개';
 
@@ -390,16 +628,18 @@ begin
        begin
          AddRow;
 
-         Cells[0,i+1] := IntToStr(trainCams[i].ftrainId);
+         Cells[0,i+1] := IntToStr(trainCams[i].ftrainNo);
          Cells[1,i+1] := trainCams[i].fname;
          Cells[2,i+1] := trainCams[i].fipaddr;
          Cells[3,i+1] := IntToStr(trainCams[i].fport);
          Cells[4,i+1] := trainCams[i].frtsp;
-         Cells[5,i+1] := trainCams[i].fuserId;
-         Cells[6,i+1] := trainCams[i].fuserPwd;
+         Cells[5,i+1] := trainCams[i].frtsp;
 
-         AddImageIdx(7, i+1, VirtualImageList1.GetIndexByName('preview'), haCenter, vaCenter);
-         AddImageIdx(8, i+1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
+         Cells[6,i+1] := trainCams[i].fuserId;
+         Cells[7,i+1] := trainCams[i].fuserPwd;
+
+         AddImageIdx(8, i+1, VirtualImageList1.GetIndexByName('preview'), haCenter, vaCenter);
+         AddImageIdx(9, i+1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
 
        end;
 
@@ -407,9 +647,10 @@ begin
   end;
 end;
 
+//열차 선택/삭제
 procedure TfrmTrain.grdTrainsClickCell(Sender: TObject; ARow, ACol: Integer);
 var
-  trainId : integer;
+  ftrainNo : integer;
 begin
 //
   if ARow > 0 then
@@ -438,12 +679,20 @@ begin
       begin
         try
           SelTrain := trains[ARow - 1 - addTrCnt];
-          trainId := SelTrain.fid;
+          ftrainNo := SelTrain.fid;
           edscNo.Text := IntToStr(SelTrain.fformatNo);
           edTrainNo.Text := SelTrain.ftrainNo;
           edTrainCnt.Text := IntToStr(SelTrain.fcarriageNum);
           edNvrRTSP.text := SelTrain.ftvcsIpaddr;
-          LoadTrainCamList(SelTrain.fid);
+
+
+
+          if CheckExcel then
+            LoadTrainCamList(StrToInt(SelTrain.ftrainNo))
+          else
+            LoadTrainCamList(ftrainNo);
+
+
         except
           edscNo.Text := '';
           edTrainNo.Text := '';
@@ -457,6 +706,40 @@ begin
 
 end;
 
+procedure TfrmTrain.grdTrainCamsClickCell(Sender: TObject; ARow, ACol: Integer);
+var
+  ShowPreview: TFrmPreview;
 
+begin
+//
+if ARow > 0 then
+  begin
+    if ACol = 9 then
+      begin
+        if ShowTVCSCheck(1) then
+        begin
+          gapi.DeleteTrainCamera(trainCams[ARow-1 -addTrCnt].fid);
+          grdTrainCams.RemoveRows(ARow, 1);
+          LoadTrainCamList(SelTrain.fid);
+          addTrCamCnt := 0;
+          ShowTVCSMessage('삭제 되었습니다. ');
+        end;
+      end;
+
+    // 미리보기
+    if ACol = 8 then
+      begin
+        ShowPreview := TfrmPreview.Create(self);
+        ShowPreview.SetRtspUrl(trainCams[ARow-1 -addTrCnt].frtsp);
+        ShowPreview.SetRtspID(trainCams[ARow-1 -addTrCnt].fuserId);
+        ShowPreview.SetRtspPw(trainCams[ARow-1 -addTrCnt].fuserPwd);
+        ShowPreview.StartPreview;
+        ShowPreview.ShowModal;
+      end;
+    //ShowMessage('ACol: '+ IntToStr(ACol) +' ARow:' +IntToStr(ARow));
+
+  end;
+
+end;
 
 end.

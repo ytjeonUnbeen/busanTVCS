@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
   Vcl.Samples.Spin, Vcl.DBCtrls, Vcl.Grids, AdvUtil, AdvObj, BaseGrid, AdvGrid,
-  TVCSPopupView;
+  TVCSPopupView, TVCSButtonStyle, tvcsAPI, tvcsProtocol;
 
 type
   TfrmSystem = class(TForm)
@@ -105,19 +105,50 @@ begin
   cboxVideoFrm.ItemIndex := 1;
   cbxEventPop.ItemIndex := 0;
 
+
   loadCamLicenseList;
+
+  TButtonStyler.ApplyGlobalStyle(Self);
 
 
 end;
 
 procedure TfrmSystem.loadCamLicenseList();
+var
+  TotalWidth, i: Integer;
+  CamLicense: array of TVCSCameraLicense;
+  CliLicense: array of TVCSClientLicense;
+
 begin
-  var
-    TotalWidth: Integer;
+
+
+
+  with gapi.GetLoinInfo.fsystem do
+  begin
+    speAutoSetCnt.Text := IntToStr(fdisplayInterval);
+    cboxVideoResol.Text := fresolution;
+    cboxVideoFrm.Text := IntToStr(fframe);
+    if fisEventInterval then
+      btnEvtRadio2.Checked
+    else
+      btnEvtRadio2.Checked;
+  end;
+
+  setLength(CamLicense,Length(gapi.GetLoinInfo.fcameraLicense));
+  for i := 0 to Length(gapi.GetLoinInfo.fcameraLicense) - 1 do
+  begin
+    CamLicense[i] := gapi.GetLoinInfo.fcameraLicense[i];
+  end;
+
+  setLength(CliLicense,Length(gapi.GetLoinInfo.fclientLicense));
+  for i := 0 to Length(gapi.GetLoinInfo.fclientLicense) - 1 do
+  begin
+    CliLicense[i] := gapi.GetLoinInfo.fclientLicense[i];
+  end;
+
 
   with grdCamLicense do
   begin
-
     TotalWidth := ClientWidth;
     RowCount := 3;
     ColCount := 3;
@@ -128,10 +159,20 @@ begin
     Cells[0,0]:='카메라 수';
     Cells[1,0]:='라이선스 키';
     Cells[2,0]:='상태';
-
-
   end;
-
+  {
+  for i := 0 to Length(CamLicense) do
+    with grdCamLicense do
+    begin
+      AddRow;
+      Cells[0,i+1] := IntToStr(CamLicense[i].fcameraNum);
+      Cells[1,i+1] := CamLicense[i].flicenseKey;
+      if CamLicense[i].fisConfirm then
+        Cells[2,i+1] := '인증'
+      else
+        Cells[2,i+1] := '종료';
+    end;
+  }
   with grdCliLocense do
   begin
 
@@ -147,7 +188,20 @@ begin
     Cells[2,0]:='상태';
 
   end;
+  {
+  for i := 0 to Length(CliLicense) do
+    with grdCliLocense do
+    begin
+      AddRow;
+      Cells[0,i+1] := IntToStr(CliLicense[i].fclientNum);
+      Cells[1,i+1] := CliLicense[i].flicenseKey;
 
+      if CliLicense[i].fisConfirm then
+        Cells[2,i+1] := '인증'
+      else
+        Cells[2,i+1] := '종료';
+    end;
+    }
 end;
 
 

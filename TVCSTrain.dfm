@@ -1,9 +1,9 @@
 object frmTrain: TfrmTrain
-  Left = 0
-  Top = 0
+  Left = 2
+  Top = 2
   BorderStyle = bsDialog
-  ClientHeight = 691
-  ClientWidth = 1274
+  ClientHeight = 681
+  ClientWidth = 1264
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,8 +17,8 @@ object frmTrain: TfrmTrain
   TextHeight = 18
   object pnBottom: TPanel
     Left = 0
-    Top = 621
-    Width = 1274
+    Top = 611
+    Width = 1264
     Height = 70
     Align = alBottom
     Caption = 'pnBottom'
@@ -196,8 +196,8 @@ object frmTrain: TfrmTrain
   object pnMainFrame: TPanel
     Left = 0
     Top = 0
-    Width = 1274
-    Height = 621
+    Width = 1264
+    Height = 611
     Align = alClient
     Caption = 'pnMainFrame'
     ShowCaption = False
@@ -238,7 +238,7 @@ object frmTrain: TfrmTrain
     object pnCamStationInfo: TPanel
       Left = 376
       Top = 104
-      Width = 833
+      Width = 865
       Height = 441
       Caption = 'edit'
       ShowCaption = False
@@ -246,7 +246,7 @@ object frmTrain: TfrmTrain
       object pnDefStation: TPanel
         Left = 1
         Top = 1
-        Width = 831
+        Width = 863
         Height = 49
         Align = alTop
         Caption = 'pnDefSc'
@@ -317,18 +317,18 @@ object frmTrain: TfrmTrain
       object pnNvrRTSP: TPanel
         Left = 1
         Top = 50
-        Width = 831
+        Width = 863
         Height = 47
         Align = alTop
         Caption = 'pnNvrRtsp'
         ShowCaption = False
         TabOrder = 1
         object lblNvrRTSP: TLabel
-          Left = 10
+          Left = 18
           Top = 14
-          Width = 87
+          Width = 71
           Height = 16
-          Caption = 'NVP RTSP '#51452#49548
+          Caption = 'TVCS IP'#51452#49548
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -13
@@ -347,7 +347,7 @@ object frmTrain: TfrmTrain
       object pnCamInfos: TPanel
         Left = 1
         Top = 97
-        Width = 831
+        Width = 863
         Height = 343
         Align = alClient
         Caption = 'pnCamInfos'
@@ -374,8 +374,8 @@ object frmTrain: TfrmTrain
           Caption = #52509': 0'#44060
         end
         object btnAddCams: TAdvGlowButton
-          Left = 713
-          Top = 6
+          Left = 737
+          Top = 23
           Width = 104
           Height = 24
           Caption = #52852#47700#46972' '#52628#44032
@@ -430,14 +430,15 @@ object frmTrain: TfrmTrain
           Appearance.TextColorDisabled = 13948116
         end
         object grdTrainCams: TAdvStringGrid
-          Left = 10
+          Left = 18
           Top = 53
-          Width = 807
-          Height = 234
+          Width = 823
+          Height = 268
           DrawingStyle = gdsClassic
           FixedColor = clWhite
           Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goFixedRowDefAlign]
           TabOrder = 1
+          OnClickCell = grdTrainCamsClickCell
           ActiveCellFont.Charset = DEFAULT_CHARSET
           ActiveCellFont.Color = 4474440
           ActiveCellFont.Height = -11
@@ -681,8 +682,8 @@ object frmTrain: TfrmTrain
       Appearance.TextColorDisabled = 13948116
     end
     object btnStationDownload: TAdvGlowButton
-      Left = 1016
-      Top = 551
+      Left = 1064
+      Top = 550
       Width = 177
       Height = 24
       Caption = #50669#49324' '#51221#48372' '#51068#44292' '#45236#47140#48155#44592
@@ -699,6 +700,7 @@ object frmTrain: TfrmTrain
       ParentFont = False
       Rounded = True
       TabOrder = 3
+      OnClick = btnStationDownloadClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130
@@ -736,7 +738,7 @@ object frmTrain: TfrmTrain
       Appearance.TextColorDisabled = 13948116
     end
     object btnUploadStations: TAdvGlowButton
-      Left = 808
+      Left = 856
       Top = 551
       Width = 170
       Height = 24
@@ -754,6 +756,7 @@ object frmTrain: TfrmTrain
       ParentFont = False
       Rounded = True
       TabOrder = 4
+      OnClick = btnUploadStationsClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130
@@ -795,13 +798,8 @@ object frmTrain: TfrmTrain
       Top = 48
       Width = 97
       Height = 26
-      ItemIndex = 0
       TabOrder = 5
       Text = '== '#51204#52404' =='
-      Items.Strings = (
-        '== '#51204#52404' =='
-        #50669#49324#47749
-        #50669#48264#54840)
     end
     object edSearchText: TEdit
       Left = 534
@@ -1003,5 +1001,14 @@ object frmTrain: TfrmTrain
       end>
     Left = 104
     Top = 560
+  end
+  object AdvGridExcelIO1: TAdvGridExcelIO
+    AdvStringGrid = grdTrainCams
+    Options.ExportOverwriteMessage = 'File %s already exists'#13'Ok to overwrite ?'
+    Options.ExportRawRTF = False
+    UseUnicode = False
+    Version = '3.14'
+    Left = 825
+    Top = 33
   end
 end

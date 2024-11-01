@@ -101,7 +101,7 @@ type
 
   TVCSTrain=class
     fid:Integer;
-    ftrainNo:String;
+    ftrainNo:string;
     fformatNo:Integer;
     fcarriageNum:Integer;
     fcameraNum:Integer;
@@ -193,12 +193,13 @@ type
   // TrainCamera
   TVCSTrainCamera=class
     fid:Integer;
-    ftrainId:Integer;
+    ftrainNo:Integer;
     fpostition:Integer;
     fname:String;
     fipaddr:String;
     fport:Integer;
     frtsp:String;
+    frtsp2:String;
     ftvcsRtsp:string;
     fuserId:string;
     fuserPwd:string;
@@ -206,12 +207,13 @@ type
   end;
 
   TVCSTrainCameraInPost=class
-    ftrainId:Integer;
+    ftrainNo:string;
     fposition:Integer;
     fname:string;
     fipaddr:string;
     fport:Integer;
     frtsp:string;
+    frtsp2:string;
     fuserId:string;
     fuserPwd:string;
   end;
@@ -224,6 +226,7 @@ type
     fipaddr:string;
     fport:Integer;
     frtsp:string;
+    frtsp2:string;
     fuserId:string;
     fuserPwd:string;
   end;
@@ -238,6 +241,8 @@ type
     fport: Integer;
     frtsp : String;
     ftvcsRtsp: String;
+    fuserid: string;
+    fuserPwd: string;
     fpositionX: Integer;
     fpositionY: Integer;
   end;
