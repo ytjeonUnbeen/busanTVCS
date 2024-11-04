@@ -74,6 +74,7 @@ type
     selTrainCam : TVCSTrainCamera;
     selMerge : TVCSTrainCameraMerge;
 
+    panelData : TArray<TVCSTrainCameraMergePatch>;
     addMerge : TArray<TVCSTrainCameraMergePost>;
     LoadMerge : TArray<TVCSTrainCameraMerge>;
 
