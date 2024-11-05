@@ -6,10 +6,10 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, AdvUtil, Vcl.StdCtrls, Vcl.Grids,
   AdvObj, BaseGrid, AdvGrid, AdvGlowButton, Vcl.ExtCtrls, Vcl.ComCtrls,
-  AdvPageControl, TVCSButtonStyle, tvcsProtocol, tvcsAPI, System.ImageList,
+  AdvPageControl, TVCSButtonStyle, tvcsProtocol, tvcsAPI, TVCSCheckDialog, System.ImageList,
   Vcl.ImgList, Vcl.VirtualImageList, Vcl.BaseImageCollection,
   Vcl.ImageCollection, Vcl.Buttons, AdvMetroButton, AdvTabSet, AdvEdit,
-  AdvGroupBox, AdvOfficeButtons, AdvLabel, AdvPanel, advimage, Vcl.WinXPanels;
+  AdvGroupBox, AdvOfficeButtons, AdvLabel, AdvPanel, advimage, Vcl.WinXPanels, Math;
 
 
 type
@@ -62,12 +62,14 @@ type
   private
     { Private declarations }
 
-    checkAddTab : boolean;
+    TabAddCnt : integer;
     selPartition : integer;
     trains : TArray<TVCSTrain>;
     trainCams : TArray<TVCSTrainCamera>;
 
     partitionPanels: array of TAdvPanel;
+    currentTabIndex: Integer;
+    isNewTab: Boolean;
 
 
     selTrain : TVCSTrain;
@@ -78,15 +80,24 @@ type
     addMerge : TArray<TVCSTrainCameraMergePost>;
     LoadMerge : TArray<TVCSTrainCameraMerge>;
 
-    procedure UpdatePartitionPanels;
-    procedure CreatePartitionPanels;
+
     procedure LoadTrainList(trainNo: string='');
     procedure grdTrainsClickCell(Sender: TObject; ARow, ACol: Integer);
     procedure LoadTrainCamList(trainId: Integer =-1);
     procedure LoadMergeList(trainId: Integer =-1);
     procedure InitTabSet;
-    procedure UpdatePartitionPanelsFromMerge(mergeCam: TVCSTrainCameraMerge);
-    function GetPanelIndexFromPosition(posX, posY: Integer; panelCount: Integer): Integer;
+    procedure UpdatePanelsData(newPanelData: TArray<TVCSTrainCameraMergePatch>);
+    procedure CreatePartitionPanels(panelCount : integer);
+    function ConvertToMergePatch(mergeInfo: array of fmergeCamInfo): TArray<TVCSTrainCameraMergePatch>;
+    function GetPanelIndex(posX, posY: Integer): Integer;
+    procedure GetPanelPosition(index: Integer; var posX, posY: Integer);
+    procedure PanelMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure PanelDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
+    procedure PanelDragDrop(Sender, Source: TObject; X, Y: Integer);
+    procedure SwapPanelData(sourceIndex, targetIndex: Integer);
+    procedure MovePanelData(sourceIndex, targetIndex: Integer);
+
+
   public
     { Public declarations }
   end;
@@ -98,273 +109,110 @@ implementation
 
 {$R *.dfm}
 
-procedure TransparentPanel(var Target: TAdvPanel);
-var
-  I: Integer;
-  FullRgn, ClientRgn, ControlRgn: THandle;
-  Margin, MarginX, MarginY, X, Y: Integer;
-begin
-  Margin := (Target.Width - Target.ClientWidth) div 2;
-  FullRgn := CreateRectRgn(0, 0, Target.Width, Target.Height);
-
-  MarginX := Margin;
-  MarginY := Target.Height - Target.ClientHeight - Margin;
-
-  ClientRgn := CreateRectRgn(
-    MarginX,
-    MarginY,
-    MarginX + Target.ClientWidth,
-    MarginY + Target.ClientHeight
-  );
-
-  CombineRgn(FullRgn, FullRgn, ClientRgn, RGN_DIFF);
-
-  for I := 0 to Target.ControlCount-1 do
-  begin
-    X := MarginX + Target.Controls[I].Left;
-    Y := MarginY + Target.Controls[I].Top;
-    ControlRgn := CreateRectRgn(
-      X,
-      Y,
-      X + Target.Controls[I].Width,
-      Y + Target.Controls[I].Height
-    );
-    CombineRgn(FullRgn, FullRgn, ControlRgn, RGN_OR);
-  end;
-
-  SetWindowRgn(Target.Handle, FullRgn, True);
-end;
-
-procedure TfrmLayouts.CreatePartitionPanels;
-var
-  i: Integer;
-  newPanel: TAdvPanel;
-  panelWidth, panelHeight: Integer;
-begin
-  // 기존 패널들 제거
-  for i := 0 to Length(partitionPanels) - 1 do
-  begin
-    if Assigned(partitionPanels[i]) then
-      partitionPanels[i].Free;
-  end;
-  // 새 패널 배열 크기 설정 (실제 사용할 패널 수)
-  case selPartition of
-    4: SetLength(partitionPanels, 4);  // 4분할
-    9: SetLength(partitionPanels, 8);  // 8분할 (가운데 제외)
-  end;
-  // 패널 크기 설정
-  case selPartition of
-    4: begin
-      panelWidth := pnPartition.Width div 2;
-      panelHeight := pnPartition.Height div 2;
-    end;
-    9: begin
-      panelWidth := pnPartition.Width div 3;
-      panelHeight := pnPartition.Height div 3;
-    end;
-  else
-    Exit;
-  end;
-  // 패널 생성 및 배치
-  case selPartition of
-    4: begin  // 2x2 그리드
-      for i := 0 to 3 do
-      begin
-        newPanel := TAdvPanel.Create(pnPartition);
-        newPanel.Parent := pnPartition;
-        newPanel.BorderWidth := 1;
-        newPanel.HoverColor := clBlue;
-        newPanel.Left := (i mod 2) * panelWidth;
-        newPanel.Top := (i div 2) * panelHeight;
-        newPanel.Width := panelWidth;
-        newPanel.Height := panelHeight;
-        newPanel.Text := '';
-        partitionPanels[i] := newPanel;
-      end;
-    end;
-    9: begin  // 3x3 그리드 (가운데 제외)
-      var panelIndex := 0;
-      for i := 0 to 8 do
-      begin
-        // 가운데 패널(인덱스 4)은 건너뛰기
-        if i = 4 then
-        begin
-          // 가운데 빈 패널 생성 (배열에는 포함하지 않음)
-          newPanel := TAdvPanel.Create(pnPartition);
-          newPanel.Parent := pnPartition;
-          newPanel.BorderWidth := 1;
-          //newPanel.Color := clGray;  // 빈 패널 표시
-          newPanel.Left := panelWidth;
-          newPanel.Top := panelHeight;
-          newPanel.Width := panelWidth;
-          newPanel.Height := panelHeight;
-          newPanel.Text := '';
-          newPanel.Enabled := False;
-          newPanel.ParentColor := True;
-          Continue;
-        end;
-        newPanel := TAdvPanel.Create(pnPartition);
-        newPanel.Parent := pnPartition;
-        newPanel.BorderWidth := 1;
-        newPanel.HoverColor := clBlue;
-        newPanel.Left := (i mod 3) * panelWidth;
-        newPanel.Top := (i div 3) * panelHeight;
-        newPanel.Width := panelWidth;
-        newPanel.Height := panelHeight;
-        newPanel.Text := '';
-        //newPanel.Background := img;
-        partitionPanels[panelIndex] := newPanel;
-        Inc(panelIndex);
-      end;
-    end;
-  end;
-end;
-
-
-procedure TfrmLayouts.UpdatePartitionPanels;
-var
-  i: Integer;
-begin
-  for i := 0 to Length(partitionPanels) - 1 do
-  begin
-    if Assigned(partitionPanels[i]) then
-    begin
-      if Assigned(addMerge[i]) then
-      begin
-        partitionPanels[i].Text := selTrainCam.fname;
-        partitionPanels[i].BorderWidth := 1;
-
-      end
-
-
-      else
-        partitionPanels[i].Text := '';
-    end;
-  end;
-  pnPartition.BorderWidth := 1;
-end;
-
 procedure TfrmLayouts.btnAddCamClick(Sender: TObject);
 var
-  camMergePos: TVCSTrainCameraMergePost;
-  i, emptyIndex: Integer;
+  i, emptyIndex, maxPanels: Integer;
+  currentPanelCount: Integer;
+  posX, posY: Integer;
+  tempPanelData: TArray<TVCSTrainCameraMergePatch>;
 begin
-  // addMerge 배열이 초기화되어 있지 않은 경우 초기화
-  if grdTrainCams.Row > 0 then
-  begin
-    if Length(addMerge) = 0 then
-  begin
-    SetLength(addMerge, selPartition);
-    for i := 0 to Length(addMerge) - 1 do
-      addMerge[i] := nil;
+  if not (grdTrainCams.Row > 0) then
+    Exit;
 
-    // 패널 생성
-    CreatePartitionPanels;
+
+  if (TabAddCnt <= 0) and (tabMerge.AdvTabs.Count = 0) then
+  begin
+    ShowTVCSMessage('탭을 먼저 추가해주세요.');
+    Exit;
   end;
 
-  // 빈 위치 찾기
-  emptyIndex := -1;
-  for i := 0 to Length(addMerge) - 1 do
+  // 현재 사용중인 패널 수 계산
+  currentPanelCount := 0;
+  for i := 0 to Length(panelData) - 1 do
   begin
-    if addMerge[i] = nil then
+    if Assigned(panelData[i]) then
+      Inc(currentPanelCount);
+  end;
+
+  // 분할 방식에 따른 최대 패널 수 설정
+  case selPartition of
+    4: maxPanels := 4;  // 4분할
+    9: maxPanels := 8;  // 9분할 (가운데 패널 제외)
+    else Exit;
+  end;
+
+  // 최대 패널 수 체크
+  if currentPanelCount >= maxPanels then
+  begin
+    ShowMessage('더 이상 카메라를 추가할 수 없습니다.');
+    Exit;
+  end;
+
+  // 기존 데이터 임시 저장
+  SetLength(tempPanelData, Length(panelData));
+  for i := 0 to Length(panelData) - 1 do
+  begin
+    if Assigned(panelData[i]) then
+    begin
+      tempPanelData[i] := TVCSTrainCameraMergePatch.Create;
+      with tempPanelData[i] do
+      begin
+        fid := panelData[i].fid;
+        ftrainId := panelData[i].ftrainId;
+        fcameraId := panelData[i].fcameraId;
+        fname := panelData[i].fname;
+        fpositionX := panelData[i].fpositionX;
+        fpositionY := panelData[i].fpositionY;
+      end;
+    end
+    else
+      tempPanelData[i] := nil;
+  end;
+
+  // 빈 패널 위치 찾기
+  emptyIndex := -1;
+  for i := 0 to selPartition - 1 do
+  begin
+    if not Assigned(tempPanelData[i]) then
     begin
       emptyIndex := i;
       Break;
     end;
   end;
 
-  if not checkAddTab then
-  begin
-    ShowMessage('탭을 먼저 추가해주세요.');
-    Exit;
-  end;
-
-  // 빈 위치가 없으면 종료
   if emptyIndex = -1 then
   begin
     ShowMessage('더 이상 카메라를 추가할 수 없습니다.');
     Exit;
   end;
 
-  camMergePos := TVCSTrainCameraMergePost.Create;
-  camMergePos.ftrainId := selTrain.fid;
-  camMergePos.fname := edCamMerName.Text;
-  camMergePos.fcameraId := selTrainCam.fid;
+  // 새 패널 데이터 생성
+  tempPanelData[emptyIndex] := TVCSTrainCameraMergePatch.Create;
+  with tempPanelData[emptyIndex] do
+  begin
+    fid := 0;
+    ftrainId := selTrain.fid;
+    fcameraId := selTrainCam.fid;
+    fname := selTrainCam.fname;
 
-  // 분할 방식에 따라 좌표 설정 (9분할 기본값)
-  case selPartition of
-    4: begin  // 4분할
-      case emptyIndex of
-        0: begin  // 좌상
-          camMergePos.fpositionX := 0;
-          camMergePos.fpositionY := 0;
-        end;
-        1: begin  // 우상
-          camMergePos.fpositionX := 640;
-          camMergePos.fpositionY := 0;
-        end;
-        2: begin  // 좌하
-          camMergePos.fpositionX := 0;
-          camMergePos.fpositionY := 360;
-        end;
-        3: begin  // 우하
-          camMergePos.fpositionX := 640;
-          camMergePos.fpositionY := 360;
-        end;
-      end;
-    end;
-    else begin  // 9분할 (실제 8개 사용)
-      case emptyIndex of
-        0: begin  // 좌상
-          camMergePos.fpositionX := 0;
-          camMergePos.fpositionY := 0;
-        end;
-        1: begin  // 중상
-          camMergePos.fpositionX := 640;
-          camMergePos.fpositionY := 0;
-        end;
-        2: begin  // 우상
-          camMergePos.fpositionX := 1280;
-          camMergePos.fpositionY := 0;
-        end;
-        3: begin  // 좌중
-          camMergePos.fpositionX := 0;
-          camMergePos.fpositionY := 360;
-        end;
-        4: begin  // 우중
-          camMergePos.fpositionX := 1280;
-          camMergePos.fpositionY := 360;
-        end;
-        5: begin  // 좌하
-          camMergePos.fpositionX := 0;
-          camMergePos.fpositionY := 720;
-        end;
-        6: begin  // 중하
-          camMergePos.fpositionX := 640;
-          camMergePos.fpositionY := 720;
-        end;
-        7: begin  // 우하
-          camMergePos.fpositionX := 1280;
-          camMergePos.fpositionY := 720;
-        end;
-      end;
-    end;
+    GetPanelPosition(emptyIndex, posX, posY);
+    fpositionX := posX;
+    fpositionY := posY;
   end;
 
-  // addMerge 배열에 추가
-  addMerge[emptyIndex] := camMergePos;
+  // 패널 업데이트
+  UpdatePanelsData(tempPanelData);
 
-  // 패널 캡션 업데이트
-  UpdatePartitionPanels;
-  end;
-
-
-
+  // 임시 데이터 해제
+  for i := 0 to Length(tempPanelData) - 1 do
+    if Assigned(tempPanelData[i]) then
+      tempPanelData[i].Free;
 end;
+
 
 procedure TfrmLayouts.btnAddTabClick(Sender: TObject);
 begin
-  checkAddTab := true;
+  TabAddCnt := TabAddCnt + 1;
   with tabMerge do
   begin
 
@@ -461,9 +309,6 @@ begin
   //LoadMergeList;
 
 
-
-
-  selPartition := 9;
   grdTrains.OnClickCell := grdTrainsClickCell;
 
 end;
@@ -502,47 +347,138 @@ end;
 procedure TfrmLayouts.rbtnCheckPartitionRadioButtonClick(Sender: TObject);
 var
   i: Integer;
+  oldPartition: Integer;
+  tempPanelData: TArray<TVCSTrainCameraMergePatch>;
 begin
-  if rbtnCheckPartition.ItemIndex = 0 then
-    selPartition := 9  // 9분할 (실제 8개 패널)
-  else
-    selPartition := 4; // 4분할
 
-  // 기존 배열의 객체들 해제
-  for i := 0 to Length(addMerge) - 1 do
+  if ShowTVCSCheck(3) then
   begin
-    if Assigned(addMerge[i]) then
-      addMerge[i].Free;
+      oldPartition := selPartition;
+
+  // 새로운 분할 방식 설정
+  if rbtnCheckPartition.ItemIndex = 0 then
+    selPartition := 9
+  else
+    selPartition := 4;
+
+  // 기존 데이터 백업
+  SetLength(tempPanelData, Length(panelData));
+  for i := 0 to Length(panelData) - 1 do
+  begin
+    if Assigned(panelData[i]) then
+    begin
+      tempPanelData[i] := TVCSTrainCameraMergePatch.Create;
+      with tempPanelData[i] do
+      begin
+        fid := panelData[i].fid;
+        ftrainId := panelData[i].ftrainId;
+        fcameraId := panelData[i].fcameraId;
+        fname := panelData[i].fname;
+        fpositionX := panelData[i].fpositionX;
+        fpositionY := panelData[i].fpositionY;
+      end;
+    end
+    else
+      tempPanelData[i] := nil;
   end;
 
-  // 실제 사용할 패널 수에 맞게 배열 크기 설정
-  if selPartition = 9 then
-    setLength(addMerge, 8)  // 8개 패널
+  // 데이터 재배치를 위한 새 배열
+  var newData: TArray<TVCSTrainCameraMergePatch>;
+  SetLength(newData, selPartition);
+  for i := 0 to selPartition - 1 do
+    newData[i] := nil;
+
+  // 기존 데이터 새로운 위치에 배치
+  for i := 0 to Min(4, Length(tempPanelData)) - 1 do  // 처음 4개만 처리
+  begin
+    if Assigned(tempPanelData[i]) then
+    begin
+      newData[i] := TVCSTrainCameraMergePatch.Create;
+      with newData[i] do
+      begin
+        fid := tempPanelData[i].fid;
+        ftrainId := tempPanelData[i].ftrainId;
+        fcameraId := tempPanelData[i].fcameraId;
+        fname := tempPanelData[i].fname;
+      end;
+      // 새 위치 계산
+      GetPanelPosition(i, newData[i].fpositionX, newData[i].fpositionY);
+    end;
+  end;
+
+  // 패널 업데이트
+  UpdatePanelsData(newData);
+
+  // 임시 데이터 해제
+  for i := 0 to Length(tempPanelData) - 1 do
+    if Assigned(tempPanelData[i]) then
+      tempPanelData[i].Free;
+  for i := 0 to Length(newData) - 1 do
+    if Assigned(newData[i]) then
+      newData[i].Free;
+
+  end
   else
-    setLength(addMerge, 4); // 4개 패널
+  begin
+    // No를 선택한 경우 라디오 버튼을 이전 상태로 복원
+    if selPartition = 9 then
+      rbtnCheckPartition.ItemIndex := 0
+    else
+      rbtnCheckPartition.ItemIndex := 1;
+  end;
 
-  for i := 0 to Length(addMerge) - 1 do
-    addMerge[i] := nil;
 
-  CreatePartitionPanels;
 end;
 
 procedure TfrmLayouts.tabMergeChange(Sender: TObject; NewTab: Integer; var AllowChange: Boolean);
+var
+  convertedData: TArray<TVCSTrainCameraMergePatch>;
 begin
   if Assigned(LoadMerge) and (NewTab >= 0) and (NewTab < Length(LoadMerge)) then
   begin
+    TabAddCnt := 0;  // 기존 탭 선택
     edCamMerName.Text := LoadMerge[NewTab].fname;
     EdRtspIP.Text := LoadMerge[NewTab].ftvcsRtsp;
-    UpdatePartitionPanelsFromMerge(LoadMerge[NewTab]);
+
+    // 데이터 변환 및 업데이트
+    convertedData := ConvertToMergePatch(LoadMerge[NewTab].fitem);
+    try
+      UpdatePanelsData(convertedData);
+    finally
+      // 변환된 데이터 해제
+      for var i := 0 to Length(convertedData) - 1 do
+        if Assigned(convertedData[i]) then
+          convertedData[i].Free;
+    end;
   end
   else
   begin
     edCamMerName.Text := '';
     EdRtspIP.Text := '';
-    CreatePartitionPanels; // 빈 패널 생성
+    UpdatePanelsData(nil);
   end;
 
   AllowChange := True;
+end;
+
+function TfrmLayouts.ConvertToMergePatch(mergeInfo: array of fmergeCamInfo): TArray<TVCSTrainCameraMergePatch>;
+var
+  i: Integer;
+begin
+  SetLength(Result, Length(mergeInfo));
+  for i := 0 to Length(mergeInfo) - 1 do
+  begin
+    Result[i] := TVCSTrainCameraMergePatch.Create;
+    with Result[i] do
+    begin
+      fid := mergeInfo[i].fid;
+      ftrainId := mergeInfo[i].ftrainId;
+      fcameraId := mergeInfo[i].fcameraid;
+      fname := mergeInfo[i].fname;
+      fpositionX := mergeInfo[i].fpositionX;
+      fpositionY := mergeInfo[i].fpositionY;
+    end;
+  end;
 end;
 
 
@@ -591,6 +527,17 @@ procedure TfrmLayouts.LoadMergeList(trainId: Integer = -1);
 var
   i: integer;
 begin
+  // 기존 panelData 해제
+  for i := 0 to Length(panelData) - 1 do
+  begin
+    if Assigned(panelData[i]) then
+    begin
+      panelData[i].Free;
+      panelData[i] := nil;
+    end;
+  end;
+  SetLength(panelData, 0);
+
   if trainId <> -1 then
   begin
     LoadMerge := gapi.GetTrainCameraMerge(trainId);
@@ -613,88 +560,222 @@ begin
       begin
         tabMerge.TabIndex := 0;
         // 첫 번째 탭의 데이터로 패널 초기화
-        UpdatePartitionPanelsFromMerge(LoadMerge[0]);
+        var convertedData := ConvertToMergePatch(LoadMerge[0].fitem);
+        UpdatePanelsData(convertedData);
+      end;
+    end
+    else
+    begin
+      // LoadMerge가 없을 때 새 탭 자동 추가
+      TabAddCnt := TabAddCnt + 1;
+      with tabMerge do
+      begin
+        AdvTabs.Add;
+        AdvTabs[AdvTabs.Count-1].Caption := '새 다중영상 ' + IntToStr(AdvTabs.Count);
+        TabIndex := AdvTabs.Count-1;
+      end;
+
+      // 기본값 설정
+      edCamMerName.Text := '';
+      selPartition := 9;
+      rbtnCheckPartition.ItemIndex := 0;
+      UpdatePanelsData(nil);
+    end;
+  end;
+end;
+//실시간으로 패널 데이터 업데이트 분할변경, 카메라추가/제거,  열차클릭, 탭변경시 호출
+procedure TfrmLayouts.UpdatePanelsData(newPanelData: TArray<TVCSTrainCameraMergePatch>);
+var
+  i, idx, cameraCount: Integer;
+begin
+  // 기존 패널 데이터 해제
+  for i := 0 to Length(panelData) - 1 do
+  begin
+    if Assigned(panelData[i]) then
+      panelData[i].Free;
+  end;
+
+  // 패널 크기 설정
+  if rbtnCheckPartition.ItemIndex = 0 then
+    selPartition := 9
+  else
+    selPartition := 4;
+
+  // 새 패널 데이터 배열 초기화
+  SetLength(panelData, selPartition);
+  for i := 0 to selPartition - 1 do
+    panelData[i] := nil;
+
+  // 새로운 데이터가 있을 경우만 데이터 복사
+  if Assigned(newPanelData) then
+  begin
+    // 기존 데이터의 위치값에 따라 적절한 인덱스에 할당
+    for i := 0 to Length(newPanelData) - 1 do
+    begin
+      if Assigned(newPanelData[i]) then
+      begin
+        idx := GetPanelIndex(newPanelData[i].fpositionX, newPanelData[i].fpositionY);
+        if (idx >= 0) and (idx < selPartition) then
+        begin
+          panelData[idx] := TVCSTrainCameraMergePatch.Create;
+          with panelData[idx] do
+          begin
+            fid := newPanelData[i].fid;
+            ftrainId := newPanelData[i].ftrainId;
+            fcameraId := newPanelData[i].fcameraId;
+            fname := newPanelData[i].fname;
+            fpositionX := newPanelData[i].fpositionX;
+            fpositionY := newPanelData[i].fpositionY;
+          end;
+        end;
       end;
     end;
-
-
-
-  end;
-end;
-
-procedure TfrmLayouts.UpdatePartitionPanelsFromMerge(mergeCam: TVCSTrainCameraMerge);
-var
-  i, panelCount: Integer;
-  maxX, maxY: Integer;
-begin
-  // 패널 개수 결정 (위치 값으로부터 계산)
-  maxX := 0;
-  maxY := 0;
-  for i := 0 to Length(mergeCam.fitem) - 1 do
-  begin
-    if mergeCam.fitem[i].fpositionX + 640 > maxX then
-      maxX := mergeCam.fitem[i].fpositionX + 640;
-    if mergeCam.fitem[i].fpositionY + 360 > maxY then
-      maxY := mergeCam.fitem[i].fpositionY + 360;
   end;
 
-  // 패널 개수 결정 (9분할 또는 4분할)
-  if (maxX <= 1280) and (maxY <= 720) then
-    panelCount := 4
-  else
-    panelCount := 9;
-
-  // 라디오 버튼 상태 업데이트
-  if panelCount = 4 then
-    rbtnCheckPartition.ItemIndex := 1
-  else
-    rbtnCheckPartition.ItemIndex := 0;
-
-  selPartition := panelCount;
-
-  // 패널 생성
-  CreatePartitionPanels;
+  // 패널 UI 생성 및 업데이트
+  CreatePartitionPanels(selPartition);
 
   // 패널에 데이터 표시
-  for i := 0 to Length(mergeCam.fitem) - 1 do
+  for i := 0 to Length(partitionPanels) - 1 do
   begin
-    // 패널 인덱스 계산
-    var panelIndex := GetPanelIndexFromPosition(mergeCam.fitem[i].fpositionX,
-                                              mergeCam.fitem[i].fpositionY,
-                                              panelCount);
-    if (panelIndex >= 0) and (panelIndex < Length(partitionPanels)) then
+    if Assigned(partitionPanels[i]) then
     begin
-      partitionPanels[panelIndex].Text :=  '<FONT coler="#FFFFFF>"'+ mergeCam.fitem[i].fname + '</FONT>';
-      partitionPanels[panelIndex].Tag := mergeCam.fitem[i].fid; // ID 저장
+      if Assigned(panelData[i]) then
+      begin
+        partitionPanels[i].Text := '<FONT color="#FFFFFF">'+panelData[i].fname+'</FONT>';
+        partitionPanels[i].Background.LoadFromFile('../../icon-img/merCamOn.jpg');
+        partitionPanels[i].BackgroundPosition := bpStretched;
+        partitionPanels[i].Caption.CloseButton := true;
+        partitionPanels[i].Caption.CloseButtonColor := clWhite;
+        partitionPanels[i].Caption.CloseColor := clbtnface;
+      end
+      else
+      begin
+        partitionPanels[i].Text := '<FONT color="#FFFFFF">빈 패널</FONT>';
+        partitionPanels[i].Background.LoadFromFile('../../icon-img/merCamNone.jpg');
+        partitionPanels[i].BackgroundPosition := bpStretched;
+      end;
     end;
   end;
 end;
 
-function TfrmLayouts.GetPanelIndexFromPosition(posX, posY: Integer; panelCount: Integer): Integer;
+function TfrmLayouts.GetPanelIndex(posX, posY: Integer): Integer;
 begin
-  case panelCount of
-    4: begin // 2x2
-      if (posX = 0) and (posY = 0) then Result := 0
-      else if (posX = 640) and (posY = 0) then Result := 1
-      else if (posX = 0) and (posY = 360) then Result := 2
-      else if (posX = 640) and (posY = 360) then Result := 3
-      else Result := -1;
+  Result := -1;
+  case selPartition of
+    4: begin  // 2x2 배치
+      if (posX = 0) and (posY = 0) then Result := 0         // 좌상단
+      else if (posX = 960) and (posY = 0) then Result := 1  // 우상단
+      else if (posX = 0) and (posY = 540) then Result := 2  // 좌하단
+      else if (posX = 960) and (posY = 540) then Result := 3;  // 우하단
     end;
-    9: begin // 3x3
-      if (posX = 0) and (posY = 0) then Result := 0
-      else if (posX = 640) and (posY = 0) then Result := 1
-      else if (posX = 1280) and (posY = 0) then Result := 2
-      else if (posX = 0) and (posY = 360) then Result := 3
-      else if (posX = 640) and (posY = 360) then Result := 4
-      else if (posX = 1280) and (posY = 360) then Result := 5
-      else if (posX = 0) and (posY = 720) then Result := 6
-      else if (posX = 640) and (posY = 720) then Result := 7
-      else if (posX = 1280) and (posY = 720) then Result := 8
-      else Result := -1;
+    9: begin  // 3x3 배치
+      if (posX = 0) and (posY = 0) then Result := 0         // 좌상단
+      else if (posX = 640) and (posY = 0) then Result := 1  // 중상단
+      else if (posX = 1280) and (posY = 0) then Result := 2 // 우상단
+      else if (posX = 0) and (posY = 360) then Result := 3  // 좌중단
+      else if (posX = 640) and (posY = 360) then Result := 4 // 중앙
+      else if (posX = 1280) and (posY = 360) then Result := 5 // 우중단
+      else if (posX = 0) and (posY = 720) then Result := 6  // 좌하단
+      else if (posX = 640) and (posY = 720) then Result := 7 // 중하단
+      else if (posX = 1280) and (posY = 720) then Result := 8; // 우하단
     end;
-    else Result := -1;
   end;
 end;
+
+// 패널 인덱스에 따른 위치값 반환
+procedure TfrmLayouts.GetPanelPosition(index: Integer; var posX, posY: Integer);
+begin
+  case selPartition of
+    4: begin  // 2x2 배치 (각 패널 960x540)
+      case index of
+        0: begin posX := 0; posY := 0; end;          // 좌상단
+        1: begin posX := 960; posY := 0; end;        // 우상단
+        2: begin posX := 0; posY := 540; end;        // 좌하단
+        3: begin posX := 960; posY := 540; end;      // 우하단
+      end;
+    end;
+    9: begin  // 3x3 배치 (각 패널 640x360)
+      case index of
+        0: begin posX := 0; posY := 0; end;          // 좌상단
+        1: begin posX := 640; posY := 0; end;        // 중상단
+        2: begin posX := 1280; posY := 0; end;       // 우상단
+        3: begin posX := 0; posY := 360; end;        // 좌중단
+        4: begin posX := 640; posY := 360; end;
+        5: begin posX := 1280; posY := 360; end;     // 우중단
+        6: begin posX := 0; posY := 720; end;        // 좌하단
+        7: begin posX := 640; posY := 720; end;      // 중하단
+        8: begin posX := 1280; posY := 720; end;     // 우하단
+      end;
+    end;
+  end;
+end;
+
+procedure TfrmLayouts.CreatePartitionPanels(panelCount : integer);
+var
+  i : integer;
+  newPanel: TAdvPanel;
+  panelWidth, panelHeight: Integer;
+begin
+//
+  for i := 0 to Length(partitionPanels) - 1 do
+  begin
+    if Assigned(partitionPanels[i]) then
+      partitionPanels[i].Free;
+  end;
+
+  SetLength(partitionPanels, panelCount);
+
+  // 패널 크기 계산
+  if panelCount <= 4 then
+  begin
+    panelWidth := pnPartition.Width div 2;
+    panelHeight := pnPartition.Height div 2;
+  end
+  else
+  begin
+    panelWidth := pnPartition.Width div 3;
+    panelHeight := pnPartition.Height div 3;
+  end;
+
+  // 패널 생성
+  for i := 0 to panelCount - 1 do
+  begin
+    newPanel := TAdvPanel.Create(pnPartition);
+    newPanel.Parent := pnPartition;
+    newPanel.HoverColor := clBlue;
+
+    // 패널 위치 설정
+    if panelCount <= 4 then
+    begin
+      newPanel.Left := (i mod 2) * panelWidth;
+      newPanel.Top := (i div 2) * panelHeight;
+    end
+    else
+    begin
+      newPanel.Left := (i mod 3) * panelWidth;
+      newPanel.Top := (i div 3) * panelHeight;
+    end;
+
+    newPanel.Width := panelWidth;
+    newPanel.Height := panelHeight;
+    newPanel.Text := '';
+    newPanel.Background.LoadFromFile('../../icon-img/logo.jpg');
+    newPanel.BackgroundPosition := bpStretched;
+    newPanel.BorderWidth := 1;
+
+    newPanel.BorderColor := clWhite;
+    partitionPanels[i] := newPanel;
+
+    newPanel.DragMode := dmManual;
+    newPanel.OnMouseDown := PanelMouseDown;
+    newPanel.OnDragOver := PanelDragOver;
+    newPanel.OnDragDrop := PanelDragDrop;
+  end;
+
+
+end;
+
 
 
 
@@ -721,6 +802,150 @@ begin
   end;
 end;
 
+// 패널 드래그 관련
+procedure TfrmLayouts.PanelMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if Button = mbLeft then
+    (Sender as TAdvPanel).BeginDrag(true);
+end;
 
+procedure TfrmLayouts.PanelDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
+begin
+  Accept := (Source is TAdvPanel) and (Sender is TAdvPanel);
+end;
+
+procedure TfrmLayouts.PanelDragDrop(Sender, Source: TObject; X, Y: Integer);
+var
+  sourcePanel, targetPanel: TAdvPanel;
+  sourceIdx, targetIdx: Integer;
+  i: Integer;
+begin
+  sourcePanel := Source as TAdvPanel;
+  targetPanel := Sender as TAdvPanel;
+
+  // 패널의 인덱스 찾기
+  sourceIdx := -1;
+  targetIdx := -1;
+  for i := 0 to Length(partitionPanels) - 1 do
+  begin
+    if partitionPanels[i] = sourcePanel then
+      sourceIdx := i;
+    if partitionPanels[i] = targetPanel then
+      targetIdx := i;
+  end;
+
+  if (sourceIdx >= 0) and (targetIdx >= 0) then
+  begin
+    // 이동 정보 표시
+    {
+    if Assigned(panelData[targetIdx]) and Assigned(panelData[sourceIdx]) then
+      ShowMessage(Format('패널 교환: %d번 패널 <-> %d번 패널', [sourceIdx + 1, targetIdx + 1]))
+    else if Assigned(panelData[sourceIdx]) then
+      ShowMessage(Format('패널 이동: %d번 패널 -> %d번 패널', [sourceIdx + 1, targetIdx + 1]))
+    else if Assigned(panelData[targetIdx]) then
+      ShowMessage(Format('패널 이동: %d번 패널 -> %d번 패널', [targetIdx + 1, sourceIdx + 1]));
+    }
+    // 데이터 교환/이동 전 위치 정보 저장
+    var sourceX, sourceY, targetX, targetY: Integer;
+    if Assigned(panelData[sourceIdx]) then
+    begin
+      sourceX := panelData[sourceIdx].fpositionX;
+      sourceY := panelData[sourceIdx].fpositionY;
+    end;
+    if Assigned(panelData[targetIdx]) then
+    begin
+      targetX := panelData[targetIdx].fpositionX;
+      targetY := panelData[targetIdx].fpositionY;
+    end;
+
+    // 데이터 교환/이동
+    if Assigned(panelData[sourceIdx]) and Assigned(panelData[targetIdx]) then
+    begin
+      var temp := panelData[sourceIdx];
+      panelData[sourceIdx] := panelData[targetIdx];
+      panelData[targetIdx] := temp;
+
+      // 위치 정보 교환
+      if Assigned(panelData[sourceIdx]) then
+      begin
+        panelData[sourceIdx].fpositionX := sourceX;
+        panelData[sourceIdx].fpositionY := sourceY;
+      end;
+      if Assigned(panelData[targetIdx]) then
+      begin
+        panelData[targetIdx].fpositionX := targetX;
+        panelData[targetIdx].fpositionY := targetY;
+      end;
+    end
+    else if Assigned(panelData[sourceIdx]) then
+    begin
+      panelData[targetIdx] := panelData[sourceIdx];
+      panelData[sourceIdx] := nil;
+
+      // 새 위치 정보 설정
+      GetPanelPosition(targetIdx, panelData[targetIdx].fpositionX, panelData[targetIdx].fpositionY);
+    end
+    else if Assigned(panelData[targetIdx]) then
+    begin
+      panelData[sourceIdx] := panelData[targetIdx];
+      panelData[targetIdx] := nil;
+
+      // 새 위치 정보 설정
+      GetPanelPosition(sourceIdx, panelData[sourceIdx].fpositionX, panelData[sourceIdx].fpositionY);
+    end;
+
+    // UI 업데이트 (패널 데이터 복사 없이 직접 업데이트)
+    CreatePartitionPanels(selPartition);
+    for i := 0 to Length(partitionPanels) - 1 do
+    begin
+      if Assigned(partitionPanels[i]) then
+      begin
+        if Assigned(panelData[i]) then
+        begin
+          partitionPanels[i].Text := '<FONT color="#FFFFFF">' + panelData[i].fname + '</FONT>';
+          partitionPanels[i].Background.LoadFromFile('../../icon-img/merCamOn.jpg');
+          partitionPanels[i].BackgroundPosition := bpStretched;
+          partitionPanels[i].Caption.CloseButton := true;
+          partitionPanels[i].Caption.CloseButtonColor := clWhite;
+          partitionPanels[i].Caption.CloseColor := clbtnface;
+
+
+        end
+        else
+        begin
+          partitionPanels[i].Text := '<FONT color="#FFFFFF">빈 패널</FONT>';
+          partitionPanels[i].Background.LoadFromFile('../../icon-img/merCamNone.jpg');
+          partitionPanels[i].BackgroundPosition := bpStretched;
+        end;
+      end;
+    end;
+  end;
+end;
+
+procedure TfrmLayouts.SwapPanelData(sourceIndex, targetIndex: Integer);
+var
+  tempData: TVCSTrainCameraMergePatch;
+begin
+  tempData := panelData[sourceIndex];
+  panelData[sourceIndex] := panelData[targetIndex];
+  panelData[targetIndex] := tempData;
+
+  // 위치 정보 업데이트
+  if Assigned(panelData[sourceIndex]) then
+    GetPanelPosition(sourceIndex, panelData[sourceIndex].fpositionX, panelData[sourceIndex].fpositionY);
+  if Assigned(panelData[targetIndex]) then
+    GetPanelPosition(targetIndex, panelData[targetIndex].fpositionX, panelData[targetIndex].fpositionY);
+end;
+
+// 패널 데이터 이동
+procedure TfrmLayouts.MovePanelData(sourceIndex, targetIndex: Integer);
+begin
+  panelData[targetIndex] := panelData[sourceIndex];
+  panelData[sourceIndex] := nil;
+
+  // 새 위치 정보 업데이트
+  if Assigned(panelData[targetIndex]) then
+    GetPanelPosition(targetIndex, panelData[targetIndex].fpositionX, panelData[targetIndex].fpositionY);
+end;
 
 end.

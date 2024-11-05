@@ -92,6 +92,23 @@ begin
         end;
       end;
 
+      3:  // 레이아웃변경
+      begin
+        Dialog.Caption := '레이아웃 변경';
+        Dialog.HTMLText.Text := '<br><br><br><br><br>레이아웃 변경 시 추가된 카메라가 삭제될 수 있습니다.';
+
+        with Dialog.Buttons.Add do
+        begin
+          Caption := '확인';
+          ButtonResult := mrYes;
+          Color := $81330F;
+          ColorFocused := $81330F;
+          HoverColor := $6C260A;
+        end;
+      end;
+
+
+
 
 
     end;
