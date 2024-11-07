@@ -2,7 +2,7 @@ object frmDevices: TfrmDevices
   Left = 0
   Top = 0
   BorderStyle = bsDialog
-  Caption = 'frmDevices'
+  Caption = #51109#52824' '#44288#47532
   ClientHeight = 710
   ClientWidth = 860
   Color = clBtnFace
@@ -224,7 +224,7 @@ object frmDevices: TfrmDevices
       SortSettings.HeaderColorTo = clWhite
       SortSettings.HeaderMirrorColor = clWhite
       SortSettings.HeaderMirrorColorTo = clWhite
-      Version = '9.0.0.6'
+      Version = '9.1.3.0'
       ColWidths = (
         64
         55

@@ -2,6 +2,7 @@ object frmStation: TfrmStation
   Left = 0
   Top = 0
   BorderStyle = bsDialog
+  Caption = #50669#49324' '#51221#48372' '#44288#47532
   ClientHeight = 691
   ClientWidth = 1274
   Color = clBtnFace
@@ -218,8 +219,8 @@ object frmStation: TfrmStation
       ParentFont = False
     end
     object lblTitle: TLabel
-      Left = 328
-      Top = 4
+      Left = 577
+      Top = 18
       Width = 148
       Height = 19
       Caption = #50669#49324' '#51221#48372' '#44288#47532
@@ -282,19 +283,6 @@ object frmStation: TfrmStation
           Font.Style = [fsBold]
           ParentFont = False
         end
-        object lbTvcsIpaddr: TLabel
-          Left = 312
-          Top = 24
-          Width = 62
-          Height = 13
-          Caption = 'TVCSIP'#51452#49548
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-        end
         object edStcode: TEdit
           Left = 49
           Top = 18
@@ -309,13 +297,6 @@ object frmStation: TfrmStation
           Height = 21
           TabOrder = 1
         end
-        object edTvcsIpaddr: TEdit
-          Left = 380
-          Top = 18
-          Width = 93
-          Height = 21
-          TabOrder = 2
-        end
       end
       object pnT1Delay: TPanel
         Left = 0
@@ -327,11 +308,11 @@ object frmStation: TfrmStation
         ShowCaption = False
         TabOrder = 1
         object lblT1Delay: TLabel
-          Left = 9
+          Left = 185
           Top = 6
-          Width = 175
+          Width = 48
           Height = 16
-          Caption = #50689#49345' '#49892#54665' '#51648#50672' '#49884#44036' '#49444#51221'('#45800#50948' '#52488')'
+          Caption = #49345#54665' '#49444#51221
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -13
@@ -340,63 +321,136 @@ object frmStation: TfrmStation
           ParentFont = False
         end
         object lblT1UpDep: TLabel
-          Left = 10
-          Top = 38
-          Width = 68
+          Left = 20
+          Top = 35
+          Width = 80
           Height = 13
-          Caption = #49345#54665' '#52636#48156#49884' : '
+          Caption = #50689#49345#51116#49373' '#46364#47112#51060
         end
         object lblT1DownDep: TLabel
-          Left = 209
-          Top = 38
-          Width = 65
+          Left = 435
+          Top = 35
+          Width = 80
           Height = 13
-          Caption = #54616#54665' '#52636#48156#49884' :'
+          Caption = #50689#49345#51116#49373' '#46364#47112#51060
         end
         object lblT1UpArr: TLabel
-          Left = 35
-          Top = 68
-          Width = 43
+          Left = 55
+          Top = 72
+          Width = 44
           Height = 13
-          Caption = #46020#52265' '#49884' :'
+          Caption = #46020#52265#53076#46300
         end
         object lblT1DownArr: TLabel
-          Left = 231
-          Top = 68
-          Width = 43
+          Left = 230
+          Top = 72
+          Width = 44
           Height = 13
-          Caption = #46020#52265' '#49884' :'
+          Caption = #52636#48156#53076#46300
         end
-        object edT1DepDownDelay: TEdit
-          Left = 84
-          Top = 28
-          Width = 50
+        object lblT2Delay: TLabel
+          Left = 603
+          Top = 6
+          Width = 48
+          Height = 16
+          Caption = #54616#54665' '#49444#51221
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object Label1: TLabel
+          Left = 230
+          Top = 35
+          Width = 44
+          Height = 13
+          Caption = #51217#44540#53076#46300
+        end
+        object Label3: TLabel
+          Left = 635
+          Top = 35
+          Width = 44
+          Height = 13
+          Caption = #51217#44540#53076#46300
+        end
+        object Label4: TLabel
+          Left = 470
+          Top = 72
+          Width = 44
+          Height = 13
+          Caption = #46020#52265#53076#46300
+        end
+        object Label5: TLabel
+          Left = 635
+          Top = 72
+          Width = 44
+          Height = 13
+          Caption = #52636#48156#53076#46300
+        end
+        object edupDepartDelay: TEdit
+          Left = 110
+          Top = 30
+          Width = 75
           Height = 21
           TabOrder = 0
           Text = '0'
         end
-        object edT1DepUpDelay: TEdit
-          Left = 280
-          Top = 33
-          Width = 50
+        object eddnDepartDelay: TEdit
+          Left = 525
+          Top = 30
+          Width = 75
           Height = 21
           TabOrder = 1
           Text = '0'
         end
-        object edT1DownArrDelay: TEdit
-          Left = 84
-          Top = 67
-          Width = 50
+        object edupArrvTcode: TEdit
+          Left = 110
+          Top = 68
+          Width = 75
           Height = 21
           TabOrder = 2
           Text = '0'
         end
-        object edT1UpArrDelay: TEdit
+        object edupLeavTcode: TEdit
           Left = 280
-          Top = 61
-          Width = 50
+          Top = 68
+          Width = 75
           Height = 21
           TabOrder = 3
+          Text = '0'
+        end
+        object edupApprTcode: TEdit
+          Left = 280
+          Top = 30
+          Width = 77
+          Height = 21
+          TabOrder = 4
+          Text = '0'
+        end
+        object eddnArrvTcode: TEdit
+          Left = 525
+          Top = 68
+          Width = 77
+          Height = 21
+          TabOrder = 5
+          Text = '0'
+        end
+        object eddnApprTcode: TEdit
+          Left = 685
+          Top = 30
+          Width = 77
+          Height = 21
+          TabOrder = 6
+          Text = '0'
+        end
+        object eddnLeavTcode: TEdit
+          Left = 685
+          Top = 68
+          Width = 77
+          Height = 21
+          TabOrder = 7
           Text = '0'
         end
       end

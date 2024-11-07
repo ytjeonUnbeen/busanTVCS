@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
   Vcl.Samples.Spin, Vcl.DBCtrls, Vcl.Grids, AdvUtil, AdvObj, BaseGrid, AdvGrid,
-  TVCSPopupView, TVCSButtonStyle, tvcsAPI, tvcsProtocol;
+  TVCSPopupView, TVCSButtonStyle, tvcsAPI, tvcsProtocol, AdvGlowButton, Registry;
 
 type
   TfrmSystem = class(TForm)
@@ -31,7 +31,6 @@ type
     btnEvtRadio1: TRadioButton;
     btnEvtRadio2: TRadioButton;
     speEventPop: TSpinEdit;
-    cbxEventPop: TDBComboBox;
     lbLicenseTitle: TLabel;
     lbCamLicense: TLabel;
     lbAutoLoginTitle: TLabel;
@@ -41,13 +40,17 @@ type
     groupAutoLogin: TGroupBox;
     btnLoginRadio1: TRadioButton;
     btnLoginRadio2: TRadioButton;
-    btnAddCamLicense: TButton;
     lbCliPcLicense: TLabel;
     grdCliLocense: TAdvStringGrid;
-    btnAddCliLicense: TButton;
-    btnCancel: TButton;
-    btnSave: TButton;
-    btnDlgClose: TButton;
+    cbxEventPop: TDBComboBox;
+    Label1: TLabel;
+    edTCMSIP: TEdit;
+    Label2: TLabel;
+    btnAddCamLicense: TAdvGlowButton;
+    btnAddCliLicense: TAdvGlowButton;
+    btnSave: TAdvGlowButton;
+    btnCancel: TAdvGlowButton;
+    btnDlgClose: TAdvGlowButton;
     procedure FormCreate(Sender: TObject);
     procedure btnDlgCloseClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
@@ -60,8 +63,9 @@ type
 
   private
     { Private declarations }
-
+    tcmsIP : string;
     procedure loadCamLicenseList();
+    procedure LoadSettings;
 
   public
     { Public declarations }
@@ -69,6 +73,7 @@ type
 
 var
   frmSystem: TfrmSystem;
+  const PrgKey='Software\TVCSClient\Settings';
 
 implementation
 
@@ -94,9 +99,18 @@ begin
 end;
 
 procedure TfrmSystem.btnSaveClick(Sender: TObject);
+var
+  Registry: TRegIniFile;
 begin
+  // 올바른 생성 방식
+  Registry := TRegIniFile.Create(PrgKey);
+  try
+    Registry.WriteString('user', 'tcmsip', edTCMSIP.Text);
+  finally
+    Registry.Free;
+  end;
 
-  ModalResult:=mrOk;
+  ModalResult := mrOk;
 end;
 
 procedure TfrmSystem.FormCreate(Sender: TObject);
@@ -107,10 +121,24 @@ begin
 
 
   loadCamLicenseList;
+  loadSettings;
 
   TButtonStyler.ApplyGlobalStyle(Self);
 
 
+end;
+
+procedure TfrmSystem.LoadSettings;
+var
+  Registry: TRegIniFile;
+begin
+  Registry := TRegIniFile.Create(PrgKey);
+  try
+    tcmsIP := Registry.ReadString('user', 'tcmsip', edTCMSIP.Text);
+    edTCMSIP.Text := tcmsIP;
+  finally
+    Registry.Free;
+  end;
 end;
 
 procedure TfrmSystem.loadCamLicenseList();
@@ -120,8 +148,6 @@ var
   CliLicense: array of TVCSClientLicense;
 
 begin
-
-
 
   with gapi.GetLoinInfo.fsystem do
   begin

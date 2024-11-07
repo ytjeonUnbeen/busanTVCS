@@ -84,23 +84,22 @@ implementation
 
 procedure TfrmTrain.btnAddCamsClick(Sender: TObject);
 begin
-//
   addTrCamCnt := addTrCamCnt +1;
   with grdTrainCams do
   begin
     InsertChildRow(0);
     Cells[0,1] := '';
-    Cells[1,1] := '';
+    Cells[1,1] := '1';  // position의 기본값 설정
     Cells[2,1] := '';
-    Cells[3,1] := '80';
-    Cells[4,1] := '';
+    Cells[3,1] := '';
+    Cells[4,1] := '80';
     Cells[5,1] := '';
     Cells[6,1] := '';
     Cells[7,1] := '';
-    AddImageIdx(8, 1, VirtualImageList1.GetIndexByName('preview'), haCenter, vaCenter);
-    AddImageIdx(9, 1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
+    Cells[8,1] := '';
+    AddImageIdx(9, 1, VirtualImageList1.GetIndexByName('preview'), haCenter, vaCenter);
+    AddImageIdx(10, 1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
   end;
-
 end;
 
 procedure TfrmTrain.btnAddTrainClick(Sender: TObject);
@@ -212,6 +211,7 @@ begin
              with trainCamPos[i] do
              begin
                ftrainNo := IntToStr(BufTrainCams[i].ftrainNo);
+               fposition := BufTrainCams[i].fposition;
                fname := BufTrainCams[i].fname;
                fipaddr := BufTrainCams[i].fipaddr;
                fport := BufTrainCams[i].fport;
@@ -304,16 +304,14 @@ begin
           with trainCamPos[i-1] do
           begin
             ftrainNo := SelTrain.ftrainNo;
-            fname := grdTrainCams.Cells[1,i];
-            fipaddr := grdTrainCams.Cells[2,i];
-            fport := StrToInt(grdTrainCams.Cells[3,i]);
-            frtsp := grdTrainCams.Cells[4,i];
-            frtsp2 := grdTrainCams.Cells[5,i];
-
-            fuserId := grdTrainCams.Cells[6,i];
-            fuserPwd := grdTrainCams.Cells[7,i];
-
-            fposition := 0;
+            fposition := StrToInt(grdTrainCams.Cells[1,i]);  // 위치 정보 추가
+            fname := grdTrainCams.Cells[2,i];
+            fipaddr := grdTrainCams.Cells[3,i];
+            fport := StrToInt(grdTrainCams.Cells[4,i]);
+            frtsp := grdTrainCams.Cells[5,i];
+            frtsp2 := grdTrainCams.Cells[6,i];
+            fuserId := grdTrainCams.Cells[7,i];
+            fuserPwd := grdTrainCams.Cells[8,i];
           end;
         end;
 
@@ -348,17 +346,17 @@ begin
           j := i - addTrCamCnt - 1;
           if (j >= 0) and (j < Length(trainCams)) then
           begin
-            // 수정된 데이터 업데이트
             trainCamPatch := TVCSTrainCameraInPatch.Create;
             try
               trainCamPatch.fid := trainCams[j].fid;
               trainCamPatch.ftrainId := SelTrain.fid;
-              trainCamPatch.fname := grdTrainCams.Cells[1,i];
-              trainCamPatch.fipaddr := grdTrainCams.Cells[2,i];
-              trainCamPatch.fport := StrToInt(grdTrainCams.Cells[3,i]);
-              trainCamPatch.frtsp := grdTrainCams.Cells[4,i];
-              trainCamPatch.fuserId := grdTrainCams.Cells[5,i];
-              trainCamPatch.fuserPwd := grdTrainCams.Cells[6,i];
+              trainCamPatch.fposition := StrToInt(grdTrainCams.Cells[1,i]);  // 위치 정보 추가
+              trainCamPatch.fname := grdTrainCams.Cells[2,i];
+              trainCamPatch.fipaddr := grdTrainCams.Cells[3,i];
+              trainCamPatch.fport := StrToInt(grdTrainCams.Cells[4,i]);
+              trainCamPatch.frtsp := grdTrainCams.Cells[5,i];
+              trainCamPatch.fuserId := grdTrainCams.Cells[6,i];
+              trainCamPatch.fuserPwd := grdTrainCams.Cells[7,i];
 
               if nil = gapi.UpdateTrainCamera(trainCamPatch) then
                 allSuccess := False;
@@ -483,6 +481,7 @@ begin
             trains[i].fcarriageNum := StrToInt(GridBuf.Cells[3, k]);
             trains[i].fcameraNum := StrToInt(GridBuf.Cells[4, k]);
             trains[i].ftvcsIpaddr := GridBuf.Cells[5, k];
+
             Break;
           end;
         end;
@@ -541,31 +540,34 @@ begin
   with grdTrainCams do
   begin
     RowCount:=1;
-    ColCount:=10;
+    ColCount:=11;
     //760
-    ColWidths[0] := 60;   // 구분
-    ColWidths[1] := 100;  // 카메라명
-    ColWidths[2] := 120;  // IP Addr
-    ColWidths[3] := 60;   // Port
-    ColWidths[4] := 120;  // RTSP High
-    ColWidths[5] := 120;  // RTSP Low
+    ColWidths[0] := 60;   // 객차번호
+    ColWidths[1] := 40;  // 호위치
+    ColWidths[2] := 70;  // 카메라이름
+    ColWidths[3] := 100;   // Port
+    ColWidths[4] := 40;  // RTSP High
+    ColWidths[5] := 110;  // RTSP Low
 
-    ColWidths[6] := 72;   // ID
-    ColWidths[7] := 82;   // Password
-    ColWidths[8] := 45;   // 미리보기 버튼
-    ColWidths[9] := 45;   // 삭제 버튼
+    ColWidths[6] := 110;
+    ColWidths[7] := 72;   // Password
+    ColWidths[8] := 82;   // 미리보기 버튼
+    ColWidths[9] := 65;   // 삭제 버튼
+    ColWidths[10] := 45;
 
     Cells[0,0]:='객차번호';
-    Cells[1,0]:='카메라명';
-    Cells[2,0]:='IP Addr';
-    Cells[3,0]:= 'Port';
-    Cells[4,0]:='RTSP 주소1 ';
-    Cells[5,0]:='RTSP 주소2 ';
+    Cells[1,0]:='위치';
 
-    Cells[6,0]:='ID';
-    Cells[7,0]:='Password';
-    Cells[8,0]:='미리보기';
-    Cells[9,0]:='삭제';
+    Cells[2,0]:='카메라명';
+    Cells[3,0]:='IP Addr';
+    Cells[4,0]:= 'Port';
+    Cells[5,0]:='RTSP 주소1 ';
+    Cells[6,0]:='RTSP 주소2 ';
+
+    Cells[7,0]:='ID';
+    Cells[8,0]:='Password';
+    Cells[9,0]:='미리보기';
+    Cells[10,0]:='삭제';
 
     FixedRows := 0;
     FixedCols := 0;
@@ -589,6 +591,7 @@ begin
       begin
         BufTrainCams[i] := TVCSTrainCamera.Create;
         BufTrainCams[i].ftrainNo := StrToInt(GridBuf.Cells[2,i+2]);
+        BufTrainCams[i].fposition := StrToInt(GridBuf.Cells[6,i+2]);
         BufTrainCams[i].fname := GridBuf.Cells[7,i+2];
         BufTrainCams[i].fipaddr := GridBuf.Cells[8,i+2];
         BufTrainCams[i].fport := StrToInt(GridBuf.Cells[9,i+2]);
@@ -628,18 +631,20 @@ begin
        begin
          AddRow;
 
-         Cells[0,i+1] := IntToStr(trainCams[i].ftrainNo);
-         Cells[1,i+1] := trainCams[i].fname;
-         Cells[2,i+1] := trainCams[i].fipaddr;
-         Cells[3,i+1] := IntToStr(trainCams[i].fport);
-         Cells[4,i+1] := trainCams[i].frtsp;
+         Cells[0,i+1] := SelTrain.ftrainNo;
+         Cells[1,i+1] := IntToStr(trainCams[i].fposition);
+
+         Cells[2,i+1] := trainCams[i].fname;
+         Cells[3,i+1] := trainCams[i].fipaddr;
+         Cells[4,i+1] := IntToStr(trainCams[i].fport);
          Cells[5,i+1] := trainCams[i].frtsp;
+         Cells[6,i+1] := trainCams[i].frtsp2;
 
-         Cells[6,i+1] := trainCams[i].fuserId;
-         Cells[7,i+1] := trainCams[i].fuserPwd;
+         Cells[7,i+1] := trainCams[i].fuserId;
+         Cells[8,i+1] := trainCams[i].fuserPwd;
 
-         AddImageIdx(8, i+1, VirtualImageList1.GetIndexByName('preview'), haCenter, vaCenter);
-         AddImageIdx(9, i+1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
+         AddImageIdx(9, i+1, VirtualImageList1.GetIndexByName('preview'), haCenter, vaCenter);
+         AddImageIdx(10, i+1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
 
        end;
 

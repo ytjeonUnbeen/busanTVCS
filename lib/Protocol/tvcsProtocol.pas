@@ -78,24 +78,48 @@ type
     fcode:String;
     //fline:Integer;
     fname:String;
-    fdepartDelay:Integer;
-    farriveDelay:Integer;
+    fupDepartDelay:Integer;
+    fdnDepartDelay:Integer;
+    fupApprTcode:String;
+    fupArrvTcode:String;
+    fupLeavTcode:String;
+    fdnApprTcode:String;
+    fdnArrvTcode:String;
+    fdnLeavTcode:String;
     fprevCode:String;
     fprevName:String;
     fnextCode:String;
     fnextName:String;
-    ftvcsIpaddr:string;
   end;
 
 
   TvcsStationInPost=class
     fcode:String;
     fname:String;
-    fdepartDelay:Integer;
-    farriveDelaay:Integer;
+    fupDepartDelay:Integer;
+    fdnDepartDelay:Integer;
+    fupApprTcode:String;
+    fupArrvTcode:String;
+    fupLeavTcode:String;
+    fdnApprTcode:String;
+    fdnArrvTcode:String;
+    fdnLeavTcode:String;
+    //fline:Integer;
+  end;
+
+  TvcsStationInPatch=class
+    fcode:String;
+    fname:String;
+    fupDepartDelay:Integer;
+    fdnDepartDelay:Integer;
+    fupApprTcode:String;
+    fupArrvTcode:String;
+    fupLeavTcode:String;
+    fdnApprTcode:String;
+    fdnArrvTcode:String;
+    fdnLeavTcode:String;
     fprevCode:String;
     fnextCode:String;
-    ftvcsIpaddr:string;
     //fline:Integer;
   end;
 
@@ -194,7 +218,7 @@ type
   TVCSTrainCamera=class
     fid:Integer;
     ftrainNo:Integer;
-    fpostition:Integer;
+    fposition:Integer;
     fname:String;
     fipaddr:String;
     fport:Integer;
@@ -234,7 +258,7 @@ type
   fmergeCamInfo = class
     fid: Integer;
     ftrainId: Integer;
-    fcameraid: Integer;
+    fcameraId: Integer;
     fposition: Integer;
     fname: String;
     fipaddr: string;
@@ -247,21 +271,29 @@ type
     fpositionY: Integer;
   end;
 
+  fmergePostInfo=class
+    fcameraId:Integer;
+    fpositionX:Integer;
+    fpositionY:Integer;
+  end;
+
 
   TVCSTrainCameraMerge=class
     fname: String;
     ftvcsRtsp: String;
     fwidth : Integer;
     fheight: Integer;
+    fdivNum : Integer;
     fitem: array of fmergeCamInfo;
   end;
 
   TVCSTrainCameraMergePost=class
     ftrainId:Integer;
     fname:string;
-    fcameraId:Integer;
-    fpositionX:Integer;
-    fpositionY:Integer;
+    fdivNum:Integer;
+    fwidth:Integer;
+    fheight:Integer;
+    fitem: array of fmergePostInfo;
   end;
 
   TVCSTrainCameraMergePatch=class

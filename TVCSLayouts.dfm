@@ -86,6 +86,7 @@ object frmLayouts: TfrmLayouts
         Width = 200
         Height = 411
         ColCount = 3
+        DefaultRowHeight = 25
         DrawingStyle = gdsClassic
         FixedColor = clWhite
         RowCount = 3
@@ -152,7 +153,7 @@ object frmLayouts: TfrmLayouts
           'Larger than'
           'Smaller than'
           'Clear')
-        FixedRowHeight = 22
+        FixedRowHeight = 25
         FixedFont.Charset = DEFAULT_CHARSET
         FixedFont.Color = clWindowText
         FixedFont.Height = -11
@@ -401,10 +402,10 @@ object frmLayouts: TfrmLayouts
           Caption = 'Panel2'
           ShowCaption = False
           TabOrder = 0
-          ExplicitHeight = 386
+          ExplicitLeft = -47
           object lbCamMergeName: TAdvLabel
-            Left = 56
-            Top = 19
+            Left = 32
+            Top = 9
             Width = 65
             Height = 17
             Text = 
@@ -415,8 +416,8 @@ object frmLayouts: TfrmLayouts
             Version = '1.0.0.4'
           end
           object lbRtspIp: TAdvLabel
-            Left = 64
-            Top = 50
+            Left = 40
+            Top = 37
             Width = 65
             Height = 17
             Text = 
@@ -427,8 +428,8 @@ object frmLayouts: TfrmLayouts
             Version = '1.0.0.4'
           end
           object lbCheckPartition: TAdvLabel
-            Left = 48
-            Top = 73
+            Left = 16
+            Top = 65
             Width = 81
             Height = 17
             Text = 
@@ -439,10 +440,17 @@ object frmLayouts: TfrmLayouts
             WordWrap = False
             Version = '1.0.0.4'
           end
+          object Label1: TLabel
+            Left = 304
+            Top = 70
+            Width = 33
+            Height = 21
+            Caption = #54644#49345#46020
+          end
           object edCamMerName: TAdvEdit
-            Left = 152
-            Top = 16
-            Width = 321
+            Left = 111
+            Top = 6
+            Width = 241
             Height = 21
             EmptyTextStyle = []
             FlatLineColor = 11250603
@@ -460,15 +468,16 @@ object frmLayouts: TfrmLayouts
             Lookup.Font.Style = []
             Lookup.Separator = ';'
             Color = clWindow
+            Enabled = False
             TabOrder = 0
             Text = ''
             Visible = True
             Version = '4.0.5.1'
           end
           object EdRtspIP: TAdvEdit
-            Left = 152
-            Top = 43
-            Width = 321
+            Left = 111
+            Top = 33
+            Width = 241
             Height = 21
             EmptyTextStyle = []
             FlatLineColor = 11250603
@@ -493,9 +502,9 @@ object frmLayouts: TfrmLayouts
             Version = '4.0.5.1'
           end
           object rbtnCheckPartition: TAdvOfficeRadioGroup
-            Left = 152
-            Top = 70
-            Width = 217
+            Left = 111
+            Top = 60
+            Width = 162
             Height = 35
             BorderColor = 12895944
             BorderStyle = bsNone
@@ -505,6 +514,7 @@ object frmLayouts: TfrmLayouts
             CaptionFont.Name = 'Tahoma'
             CaptionFont.Style = []
             Version = '1.8.4.1'
+            Enabled = False
             Font.Charset = DEFAULT_CHARSET
             Font.Color = 3881787
             Font.Height = -11
@@ -525,16 +535,15 @@ object frmLayouts: TfrmLayouts
           end
           object pnPartition: TAdvPanel
             Left = 16
-            Top = 96
+            Top = 101
             Width = 540
             Height = 304
-            BorderStyle = bsSingle
             ParentColor = True
             TabOrder = 3
             UseDockManager = True
             Version = '2.7.0.0'
             BackgroundPosition = bpStretched
-            BorderColor = clWindow
+            BorderColor = clBlack
             BorderWidth = 1
             Caption.Color = clWhite
             Caption.ColorTo = clNone
@@ -549,7 +558,12 @@ object frmLayouts: TfrmLayouts
             Caption.GradientDirection = gdVertical
             Caption.Height = 30
             Caption.Indent = 0
-            Caption.ShadeLight = 255
+            Caption.MinMaxButtonColor = clFuchsia
+            Caption.OfficeHint.Title = 'sdf'
+            Caption.OfficeHint.Notes.Strings = (
+              'asdf')
+            Caption.ShadeLight = 250
+            Caption.ShadeType = stBitmap
             CollapsColor = clNone
             CollapsDelay = 0
             DoubleBuffered = True
@@ -568,6 +582,42 @@ object frmLayouts: TfrmLayouts
             StatusBar.GradientDirection = gdVertical
             Text = '<IMG src="0">'
             FullHeight = 304
+          end
+          object ComboBox1: TComboBox
+            Left = 358
+            Top = 65
+            Width = 130
+            Height = 21
+            Enabled = False
+            ItemIndex = 0
+            TabOrder = 4
+            Text = '1920x1080'
+            Items.Strings = (
+              '1920x1080'
+              '1280x720')
+          end
+          object AdvMetroButton1: TAdvMetroButton
+            Left = 358
+            Top = 28
+            Width = 27
+            Height = 31
+            Caption = ''
+            Picture.Data = {
+              89504E470D0A1A0A0000000D494844520000002100000021080600000057E4C2
+              6F000000097048597300000B1200000B1201D2DD7EFC0000011E494441545885
+              ED97C16D83301486BF54B9930D9A1118211B74057A79D7D209E806E5FC5FBA42
+              B3414648374837081390436D815C20A10925077F12427E58F6C7B3851F8BBAAE
+              999B87B905204A342CDB0D496B200372209960BE6FE0D3CCF27630CCC40E2826
+              120078045E2465EDE0B2A313C016D84F2051B8FB7A48C2539AD9EED606928AAE
+              F85D6CCC28E189129E28E189129E28E1E93B3B72499BB9259EDCF52F5CBB1C5B
+              E0F95A89301315E30A9ACD1FE73DB61B61267227722909E396AD025ECDAC6C07
+              17E17F87A415900E0C9402EF3DCFBEF879913EF666760C83BF24CE21E98DA64C
+              0BA9CC6C356A40466E4C97A56CA04B1216B13795909402079A62B88F0F97AD8B
+              E9FB4E747100CA739D1CA32AF5D17B620AEEE2EC88129E134206413F0DBB1BF5
+              0000000049454E44AE426082}
+            TabOrder = 5
+            Version = '1.2.0.0'
+            OnClick = AdvMetroButton1Click
           end
         end
         object tabMerge: TAdvTabSet
@@ -590,13 +640,10 @@ object frmLayouts: TfrmLayouts
           SoftTop = True
           AdvTabs = <
             item
-              Caption = 'TabSheet1'
+              Caption = #49352' '#45796#51473#50689#49345
+              Visible = False
               ShowClose = False
-              TabColor = clBtnFace
-            end
-            item
-              Caption = 'TabSheet2'
-              ShowClose = False
+              TextColor = clCream
               TabColor = clBtnFace
             end>
           TextColor = clWhite
@@ -978,7 +1025,6 @@ object frmLayouts: TfrmLayouts
           TabOverlap = 0
           ShowScroller = ssAuto
           TabHeight = 30
-          TabIndex = 1
           OnChange = tabMergeChange
         end
       end
@@ -1493,8 +1539,8 @@ object frmLayouts: TfrmLayouts
         Name = 'icon-remove'
       end>
     ImageCollection = ImageCollection1
-    Width = 30
-    Height = 60
+    Width = 20
+    Height = 20
     Left = 288
     Top = 624
   end

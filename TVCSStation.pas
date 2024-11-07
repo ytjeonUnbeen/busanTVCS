@@ -19,10 +19,10 @@ type
     pnCamStationInfo: TPanel;
     edStcode: TEdit;
     edStname: TEdit;
-    edT1DepUpDelay: TEdit;
-    edT1DepDownDelay: TEdit;
-    edT1UpArrDelay: TEdit;
-    edT1DownArrDelay: TEdit;
+    eddnDepartDelay: TEdit;
+    edupDepartDelay: TEdit;
+    edupLeavTcode: TEdit;
+    edupArrvTcode: TEdit;
     btnAddCams: TAdvGlowButton;
     btnUploadStations: TAdvGlowButton;
     btnStationDownload: TAdvGlowButton;
@@ -49,13 +49,20 @@ type
     grdStations: TAdvStringGrid;
     grdStationCams: TAdvStringGrid;
     ImageList1: TImageList;
-    lbTvcsIpaddr: TLabel;
-    edTvcsIpaddr: TEdit;
     VirtualImageList1: TVirtualImageList;
     ImageCollection1: TImageCollection;
     AdvFormStyler1: TAdvFormStyler;
     AdvAppStyler1: TAdvAppStyler;
     AdvGridExcelIO1: TAdvGridExcelIO;
+    lblT2Delay: TLabel;
+    Label1: TLabel;
+    edupApprTcode: TEdit;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    eddnArrvTcode: TEdit;
+    eddnApprTcode: TEdit;
+    eddnLeavTcode: TEdit;
 
 
     procedure FormCreate(Sender: TObject);
@@ -177,8 +184,16 @@ begin
 
   edStcode.Text := '';
   edStname.Text := '';
-  edT1DepDownDelay.Text := '0';
-  edT1DepUpDelay.Text := '0';
+  edupDepartDelay.Text := '0';
+  eddnDepartDelay.Text := '0';
+  eddnApprTcode.Text := '0';
+  edupArrvTcode.Text := '0';
+  edupLeavTcode.Text := '0';
+
+  eddnApprTcode.Text := '0';
+  eddnArrvTcode.Text := '0';
+  eddnLeavTcode.Text := '0';
+
   LoadCamInfoList;
 end;
 
@@ -249,9 +264,17 @@ begin
           try
             stationPos.fname := stations[i].fname;
             stationPos.fcode := stations[i].fcode;
-            stationPos.fdepartDelay := stations[i].fdepartDelay;
-            stationPos.farriveDelaay := stations[i].farriveDelay;
-            stationPos.ftvcsIpaddr := stations[i].ftvcsIpaddr;
+            stationPos.fupDepartDelay := stations[i].fupDepartDelay;
+            stationPos.fdnDepartDelay := stations[i].fdnDepartDelay;
+            stationPos.fupApprTcode := stations[i].fupApprTcode;
+            stationPos.fupArrvTcode := stations[i].fupArrvTcode;
+            stationPos.fupLeavTcode := stations[i].fupLeavTcode;
+            stationPos.fdnApprTcode := stations[i].fdnApprTcode;
+            stationPos.fdnArrvTcode := stations[i].fdnArrvTcode;
+            stationPos.fdnLeavTcode := stations[i].fdnLeavTcode;
+
+
+
 
             station := gapi.AddStation(stationPos);
             if station = nil then
@@ -324,9 +347,14 @@ begin
       // 역사 기본정보 설정
       stationPos.fname := edStname.Text;
       stationPos.fcode := edStcode.Text;
-      stationPos.fdepartDelay := StrToInt(edT1DepDownDelay.Text);
-      stationPos.farriveDelaay := StrToInt(edT1DepUpDelay.Text);
-      stationPos.ftvcsIpaddr := edTvcsIpaddr.Text;
+      stationPos.fupDepartDelay := StrtoInt(edupDepartDelay.Text);
+      stationPos.fdnDepartDelay := StrtoInt(edupDepartDelay.Text);
+      stationPos.fupApprTcode := edupApprTcode.Text;
+      stationPos.fupArrvTcode := edupArrvTcode.Text;
+      stationPos.fupLeavTcode := edupLeavTcode.Text;
+      stationPos.fdnApprTcode := eddnApprTcode.Text;
+      stationPos.fdnArrvTcode := eddnArrvTcode.Text;
+      stationPos.fdnLeavTcode := eddnLeavTcode.Text;
 
       allSuccess := True;
 
@@ -577,11 +605,17 @@ begin
             if GridBuf.Cells[1, k] = stations[i].fcode then
             begin
               stations[i].fname := GridBuf.Cells[2, k];
-              stations[i].fdepartDelay := StrToInt(GridBuf.Cells[3, k]);
-             // stations[i].상행도착지연 := StrToInt(GridBuf.Cells[3, k]);
-              stations[i].farriveDelay := StrToInt(GridBuf.Cells[5, k]);
-              //tations[i].하행도착지연 := StrToInt(GridBuf.Cells[3, k]);
-              stations[i].ftvcsIpaddr := GridBuf.Cells[7, k];
+              stations[i].fupDepartDelay := StrToInt(GridBuf.Cells[3, k]);
+              stations[i].fdnDepartDelay := StrToInt(GridBuf.Cells[4, k]);
+
+              stations[i].fupApprTcode := GridBuf.Cells[5, k];
+              stations[i].fupArrvTcode := GridBuf.Cells[6, k];
+              stations[i].fupLeavTcode := GridBuf.Cells[7, k];
+
+              stations[i].fdnApprTcode := GridBuf.Cells[8, k];
+              stations[i].fdnArrvTcode := GridBuf.Cells[9, k];
+              stations[i].fdnLeavTcode := GridBuf.Cells[10, k];
+
 
 
               // 필요한 다른 필드들도 여기에 추가
@@ -629,7 +663,6 @@ begin
       end;
     end
     else
-
     // api로리스트 호출하는 경우
     begin
       stations := gapi.GetStation('',gapi.GetLoinInfo.fsystem.fline);
@@ -729,17 +762,17 @@ begin
         begin
           BufstationCams[i] := TVCSStationCamera.Create;
           BufstationCams[i].fstationCode := GridBuf.Cells[1,i+2];
-          if GridBuf.Cells[8,i +2] = '상행' then
+          if GridBuf.Cells[12,i +2] = '상행' then
               BufstationCams[i].fdivision := 1
           else
               BufstationCams[i].fdivision := 2;
-          BufstationCams[i].fname := GridBuf.Cells[9,i+2];
-          BufstationCams[i].fipaddr := GridBuf.Cells[10,i+2];
-          BufstationCams[i].fport := StrToInt(GridBuf.Cells[11,i+2]);
-          BufstationCams[i].frtsp := GridBuf.Cells[12,i+2];
-          BufstationCams[i].ftvcsRtsp := GridBuf.Cells[13,i+2];
-          BufstationCams[i].fuserId := GridBuf.Cells[14,i+2];
-          BufstationCams[i].fuserPwd := GridBuf.Cells[15,i+2];
+          BufstationCams[i].fname := GridBuf.Cells[13,i+2];
+          BufstationCams[i].fipaddr := GridBuf.Cells[14,i+2];
+          BufstationCams[i].fport := StrToInt(GridBuf.Cells[15,i+2]);
+          BufstationCams[i].frtsp := GridBuf.Cells[16,i+2];
+          BufstationCams[i].ftvcsRtsp := GridBuf.Cells[17,i+2];
+          BufstationCams[i].fuserId := GridBuf.Cells[18,i+2];
+          BufstationCams[i].fuserPwd := GridBuf.Cells[19,i+2];
         end;
 
         // stationCode에 해당하는 카메라만 필터링
@@ -814,9 +847,17 @@ begin
                   LoadStationInfoList;
                   edStcode.Text := '';
                   edStname.Text := '';
-                  edT1DepDownDelay.Text := '0';
-                  edT1DepUpDelay.Text := '0';
-                  edTvcsIpaddr.Text := '';
+                  edupDepartDelay.Text := '0';
+                  eddnDepartDelay.Text := '0';
+
+                  eddnApprTcode.Text := '0';
+                  edupArrvTcode.Text := '0';
+                  edupLeavTcode.Text := '0';
+
+                  eddnApprTcode.Text := '0';
+                  eddnArrvTcode.Text := '0';
+                  eddnLeavTcode.Text := '0';
+
                   ShowTVCSMessage('삭제 되었습니다. ');
               end;
           finally
@@ -829,17 +870,32 @@ begin
           stationcode := SelectStation.fcode;
           edStcode.Text := SelectStation.fcode;
           edStname.Text := SelectStation.fname;
-          edT1DepDownDelay.Text := intTostr(SelectStation.fdepartDelay);
-          edT1DepUpDelay.Text := intToStr(SelectStation.farriveDelay);
-          edTvcsIpaddr.Text := SelectStation.ftvcsIpaddr;
+          edupDepartDelay.Text := intTostr(SelectStation.fupDepartDelay);
+          eddnDepartDelay.Text := intTostr(SelectStation.fdnDepartDelay);
+
+          edupApprTcode.Text := SelectStation.fupApprTcode;
+          edupArrvTcode.Text := SelectStation.fupArrvTcode;
+          edupLeavTcode.Text := SelectStation.fupLeavTcode;
+
+          eddnApprTcode.Text := SelectStation.fdnApprTcode;
+          eddnArrvTcode.Text := SelectStation.fdnArrvTcode;
+          eddnLeavTcode.Text := SelectStation.fdnLeavTcode;
+
           LoadCamInfoList(SelectStation.fcode);
 
         except
           edStcode.Text := '';
           edStname.Text := '';
-          edT1DepDownDelay.Text := '0';
-          edT1DepUpDelay.Text := '0';
-          edTvcsIpaddr.Text := '';
+          edupDepartDelay.Text := '0';
+          eddnDepartDelay.Text := '0';
+
+          eddnApprTcode.Text := '0';
+          edupArrvTcode.Text := '0';
+          edupLeavTcode.Text := '0';
+
+          eddnApprTcode.Text := '0';
+          eddnArrvTcode.Text := '0';
+          eddnLeavTcode.Text := '0';
           LoadCamInfoList;
         end;
       end;

@@ -3,8 +3,8 @@ object frmSystem: TfrmSystem
   Top = 0
   BorderStyle = bsDialog
   Caption = #49884#49828#53596' '#44288#47532
-  ClientHeight = 757
-  ClientWidth = 852
+  ClientHeight = 691
+  ClientWidth = 794
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,13 +19,15 @@ object frmSystem: TfrmSystem
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 852
-    Height = 687
+    Width = 794
+    Height = 621
     Align = alClient
     TabOrder = 0
+    ExplicitLeft = -40
+    ExplicitTop = -80
     object lblTitle: TLabel
-      Left = 376
-      Top = 8
+      Left = 360
+      Top = 16
       Width = 91
       Height = 23
       Caption = #49884#49828#53596' '#44288#47532
@@ -38,7 +40,7 @@ object frmSystem: TfrmSystem
     end
     object lbConViewSetTitle: TLabel
       Left = 40
-      Top = 80
+      Top = 72
       Width = 168
       Height = 16
       Caption = #9679' '#49688#46041' '#54868#47732' '#39#54868#47732#54364#52636' '#50689#50669#39' '#49444#51221
@@ -51,7 +53,7 @@ object frmSystem: TfrmSystem
     end
     object lbConViewSetMenu: TLabel
       Left = 67
-      Top = 110
+      Top = 94
       Width = 119
       Height = 16
       Caption = #50689#50669' '#44256#51221' ('#52395#48264#51704' '#49472') :'
@@ -63,8 +65,8 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbAutoSetTitle: TLabel
-      Left = 40
-      Top = 144
+      Left = 456
+      Top = 67
       Width = 86
       Height = 16
       Caption = #9679' '#51088#46041' '#54868#47732' '#49444#51221
@@ -76,8 +78,8 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbAutoSetMenu: TLabel
-      Left = 67
-      Top = 176
+      Left = 480
+      Top = 89
       Width = 156
       Height = 16
       Caption = #50676#52264#48324' '#45796#51473#50689#49345' Set '#54364#52636' '#44036#44201
@@ -89,8 +91,8 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbAutoSetCnt: TLabel
-      Left = 319
-      Top = 176
+      Left = 732
+      Top = 89
       Width = 11
       Height = 16
       Caption = #52488
@@ -103,7 +105,7 @@ object frmSystem: TfrmSystem
     end
     object lbVideoFormTitle: TLabel
       Left = 40
-      Top = 208
+      Top = 128
       Width = 86
       Height = 16
       Caption = #9679' '#50689#49345' '#54252#47607' '#49444#51221
@@ -116,7 +118,7 @@ object frmSystem: TfrmSystem
     end
     object lbVideoFormResol: TLabel
       Left = 67
-      Top = 240
+      Top = 160
       Width = 81
       Height = 16
       Caption = #49828#53944#47532#48141' '#54644#49345#46020
@@ -129,7 +131,7 @@ object frmSystem: TfrmSystem
     end
     object lbVideoFormFrm: TLabel
       Left = 67
-      Top = 272
+      Top = 192
       Width = 33
       Height = 16
       Caption = #54532#47112#51076
@@ -142,7 +144,7 @@ object frmSystem: TfrmSystem
     end
     object lbFrm: TLabel
       Left = 319
-      Top = 272
+      Top = 192
       Width = 17
       Height = 16
       Caption = 'fps'
@@ -155,7 +157,7 @@ object frmSystem: TfrmSystem
     end
     object lbEventPopTitle: TLabel
       Left = 40
-      Top = 304
+      Top = 224
       Width = 97
       Height = 16
       Caption = #9679' '#51060#48292#53944' '#54045#50629' '#49444#51221
@@ -168,7 +170,7 @@ object frmSystem: TfrmSystem
     end
     object lbEventPopMenu: TLabel
       Left = 67
-      Top = 336
+      Top = 256
       Width = 111
       Height = 16
       Caption = #51473#48373' '#51060#48292#53944' '#46041#51089' '#44036#44201
@@ -244,16 +246,42 @@ object frmSystem: TfrmSystem
       Font.Style = []
       ParentFont = False
     end
+    object Label1: TLabel
+      Left = 40
+      Top = 302
+      Width = 72
+      Height = 16
+      Caption = #9679' TCMS '#49444#51221
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object Label2: TLabel
+      Left = 123
+      Top = 337
+      Width = 55
+      Height = 16
+      Caption = #50500#51060#54588#51452#49548
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
     object chkConViewSet: TCheckBox
       Left = 192
-      Top = 111
+      Top = 94
       Width = 16
       Height = 17
       TabOrder = 0
     end
     object speAutoSetCnt: TSpinEdit
-      Left = 240
-      Top = 175
+      Left = 653
+      Top = 88
       Width = 73
       Height = 22
       MaxValue = 60
@@ -263,7 +291,7 @@ object frmSystem: TfrmSystem
     end
     object cboxVideoResol: TDBComboBox
       Left = 192
-      Top = 239
+      Top = 159
       Width = 121
       Height = 21
       Items.Strings = (
@@ -273,7 +301,7 @@ object frmSystem: TfrmSystem
     end
     object cboxVideoFrm: TDBComboBox
       Left = 192
-      Top = 271
+      Top = 191
       Width = 121
       Height = 21
       Items.Strings = (
@@ -284,25 +312,14 @@ object frmSystem: TfrmSystem
       TabOrder = 3
     end
     object speEventPop: TSpinEdit
-      Left = 399
-      Top = 335
+      Left = 378
+      Top = 255
       Width = 73
       Height = 22
       MaxValue = 0
       MinValue = 0
       TabOrder = 4
       Value = 30
-    end
-    object cbxEventPop: TDBComboBox
-      Left = 488
-      Top = 335
-      Width = 65
-      Height = 21
-      Items.Strings = (
-        #52488
-        #48516
-        #49884#44036)
-      TabOrder = 5
     end
     object grdCamLicense: TAdvStringGrid
       Left = 67
@@ -313,7 +330,7 @@ object frmSystem: TfrmSystem
       DrawingStyle = gdsClassic
       FixedColor = clWhite
       RowCount = 3
-      TabOrder = 6
+      TabOrder = 5
       GridLineColor = 13948116
       GridFixedLineColor = 11250603
       ActiveCellFont.Charset = DEFAULT_CHARSET
@@ -437,11 +454,15 @@ object frmSystem: TfrmSystem
         18)
     end
     object groupEvent: TGroupBox
-      Left = 200
-      Top = 333
+      Left = 192
+      Top = 256
       Width = 169
       Height = 24
-      TabOrder = 7
+      Color = clWhite
+      ParentBackground = False
+      ParentColor = False
+      TabOrder = 6
+      StyleElements = [seFont, seClient]
       object btnEvtRadio1: TRadioButton
         Left = 22
         Top = 4
@@ -454,7 +475,7 @@ object frmSystem: TfrmSystem
       end
       object btnEvtRadio2: TRadioButton
         Left = 107
-        Top = 3
+        Top = 4
         Width = 64
         Height = 17
         Caption = #51201#50857
@@ -466,7 +487,7 @@ object frmSystem: TfrmSystem
       Top = 656
       Width = 169
       Height = 24
-      TabOrder = 8
+      TabOrder = 7
       object btnLoginRadio1: TRadioButton
         Left = 22
         Top = 3
@@ -486,14 +507,6 @@ object frmSystem: TfrmSystem
         TabOrder = 1
       end
     end
-    object btnAddCamLicense: TButton
-      Left = 686
-      Top = 399
-      Width = 75
-      Height = 25
-      Caption = '+ '#49888#44508' '#52628#44032
-      TabOrder = 9
-    end
     object grdCliLocense: TAdvStringGrid
       Left = 67
       Top = 541
@@ -507,7 +520,7 @@ object frmSystem: TfrmSystem
       Font.Name = 'Times New Roman'
       Font.Style = []
       ParentFont = False
-      TabOrder = 10
+      TabOrder = 8
       GridLineColor = 13948116
       GridFixedLineColor = 11250603
       ActiveCellFont.Charset = DEFAULT_CHARSET
@@ -626,48 +639,309 @@ object frmSystem: TfrmSystem
       SortSettings.HeaderMirrorColorTo = clWhite
       Version = '9.1.3.0'
     end
-    object btnAddCliLicense: TButton
-      Left = 686
-      Top = 510
-      Width = 75
-      Height = 25
+    object cbxEventPop: TDBComboBox
+      Left = 457
+      Top = 255
+      Width = 65
+      Height = 21
+      Items.Strings = (
+        #52488
+        #48516
+        #49884#44036)
+      TabOrder = 9
+    end
+    object edTCMSIP: TEdit
+      Left = 192
+      Top = 336
+      Width = 121
+      Height = 21
+      TabOrder = 10
+    end
+    object btnAddCamLicense: TAdvGlowButton
+      Left = 672
+      Top = 392
+      Width = 89
+      Height = 24
       Caption = '+ '#49888#44508' '#52628#44032
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      NotesFont.Charset = DEFAULT_CHARSET
+      NotesFont.Color = clWindowText
+      NotesFont.Height = -11
+      NotesFont.Name = 'Tahoma'
+      NotesFont.Style = []
+      ParentFont = False
+      Rounded = True
       TabOrder = 11
+      Appearance.BorderColor = 11382963
+      Appearance.BorderColorHot = 11565130
+      Appearance.BorderColorCheckedHot = 11565130
+      Appearance.BorderColorDown = 11565130
+      Appearance.BorderColorChecked = 13744549
+      Appearance.BorderColorDisabled = 13948116
+      Appearance.Color = clWhite
+      Appearance.ColorTo = clWhite
+      Appearance.ColorChecked = 13744549
+      Appearance.ColorCheckedTo = 13744549
+      Appearance.ColorDisabled = clWhite
+      Appearance.ColorDisabledTo = clNone
+      Appearance.ColorDown = 11565130
+      Appearance.ColorDownTo = 11565130
+      Appearance.ColorHot = 16444643
+      Appearance.ColorHotTo = 16444643
+      Appearance.ColorMirror = clWhite
+      Appearance.ColorMirrorTo = clWhite
+      Appearance.ColorMirrorHot = 16444643
+      Appearance.ColorMirrorHotTo = 16444643
+      Appearance.ColorMirrorDown = 11565130
+      Appearance.ColorMirrorDownTo = 11565130
+      Appearance.ColorMirrorChecked = 13744549
+      Appearance.ColorMirrorCheckedTo = 13744549
+      Appearance.ColorMirrorDisabled = clWhite
+      Appearance.ColorMirrorDisabledTo = clNone
+      Appearance.GradientHot = ggVertical
+      Appearance.GradientMirrorHot = ggVertical
+      Appearance.GradientDown = ggVertical
+      Appearance.GradientMirrorDown = ggVertical
+      Appearance.GradientChecked = ggVertical
+      Appearance.TextColorChecked = 3750459
+      Appearance.TextColorDown = 2303013
+      Appearance.TextColorHot = 2303013
+      Appearance.TextColorDisabled = 13948116
+    end
+    object btnAddCliLicense: TAdvGlowButton
+      Left = 672
+      Top = 503
+      Width = 89
+      Height = 24
+      Caption = '+ '#49888#44508' '#52628#44032
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      NotesFont.Charset = DEFAULT_CHARSET
+      NotesFont.Color = clWindowText
+      NotesFont.Height = -11
+      NotesFont.Name = 'Tahoma'
+      NotesFont.Style = []
+      ParentFont = False
+      Rounded = True
+      TabOrder = 12
+      Appearance.BorderColor = 11382963
+      Appearance.BorderColorHot = 11565130
+      Appearance.BorderColorCheckedHot = 11565130
+      Appearance.BorderColorDown = 11565130
+      Appearance.BorderColorChecked = 13744549
+      Appearance.BorderColorDisabled = 13948116
+      Appearance.Color = clWhite
+      Appearance.ColorTo = clWhite
+      Appearance.ColorChecked = 13744549
+      Appearance.ColorCheckedTo = 13744549
+      Appearance.ColorDisabled = clWhite
+      Appearance.ColorDisabledTo = clNone
+      Appearance.ColorDown = 11565130
+      Appearance.ColorDownTo = 11565130
+      Appearance.ColorHot = 16444643
+      Appearance.ColorHotTo = 16444643
+      Appearance.ColorMirror = clWhite
+      Appearance.ColorMirrorTo = clWhite
+      Appearance.ColorMirrorHot = 16444643
+      Appearance.ColorMirrorHotTo = 16444643
+      Appearance.ColorMirrorDown = 11565130
+      Appearance.ColorMirrorDownTo = 11565130
+      Appearance.ColorMirrorChecked = 13744549
+      Appearance.ColorMirrorCheckedTo = 13744549
+      Appearance.ColorMirrorDisabled = clWhite
+      Appearance.ColorMirrorDisabledTo = clNone
+      Appearance.GradientHot = ggVertical
+      Appearance.GradientMirrorHot = ggVertical
+      Appearance.GradientDown = ggVertical
+      Appearance.GradientMirrorDown = ggVertical
+      Appearance.GradientChecked = ggVertical
+      Appearance.TextColorChecked = 3750459
+      Appearance.TextColorDown = 2303013
+      Appearance.TextColorHot = 2303013
+      Appearance.TextColorDisabled = 13948116
     end
   end
   object Panel2: TPanel
     Left = 0
-    Top = 687
-    Width = 852
+    Top = 621
+    Width = 794
     Height = 70
     Align = alBottom
     TabOrder = 1
-    object btnCancel: TButton
-      Left = 640
-      Top = 24
-      Width = 59
-      Height = 25
-      Caption = #52712#49548
-      TabOrder = 0
-      OnClick = btnCancelClick
-    end
-    object btnSave: TButton
-      Left = 702
-      Top = 24
-      Width = 59
-      Height = 25
+    ExplicitTop = 687
+    ExplicitWidth = 852
+    object btnSave: TAdvGlowButton
+      Left = 690
+      Top = 22
+      Width = 71
+      Height = 24
       Caption = #51200#51109
-      TabOrder = 1
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      NotesFont.Charset = DEFAULT_CHARSET
+      NotesFont.Color = clWindowText
+      NotesFont.Height = -11
+      NotesFont.Name = 'Tahoma'
+      NotesFont.Style = []
+      ParentFont = False
+      Rounded = True
+      TabOrder = 0
       OnClick = btnSaveClick
+      Appearance.BorderColor = 11382963
+      Appearance.BorderColorHot = 11565130
+      Appearance.BorderColorCheckedHot = 11565130
+      Appearance.BorderColorDown = 11565130
+      Appearance.BorderColorChecked = 13744549
+      Appearance.BorderColorDisabled = 13948116
+      Appearance.Color = clWhite
+      Appearance.ColorTo = clWhite
+      Appearance.ColorChecked = 13744549
+      Appearance.ColorCheckedTo = 13744549
+      Appearance.ColorDisabled = clWhite
+      Appearance.ColorDisabledTo = clNone
+      Appearance.ColorDown = 11565130
+      Appearance.ColorDownTo = 11565130
+      Appearance.ColorHot = 16444643
+      Appearance.ColorHotTo = 16444643
+      Appearance.ColorMirror = clWhite
+      Appearance.ColorMirrorTo = clWhite
+      Appearance.ColorMirrorHot = 16444643
+      Appearance.ColorMirrorHotTo = 16444643
+      Appearance.ColorMirrorDown = 11565130
+      Appearance.ColorMirrorDownTo = 11565130
+      Appearance.ColorMirrorChecked = 13744549
+      Appearance.ColorMirrorCheckedTo = 13744549
+      Appearance.ColorMirrorDisabled = clWhite
+      Appearance.ColorMirrorDisabledTo = clNone
+      Appearance.GradientHot = ggVertical
+      Appearance.GradientMirrorHot = ggVertical
+      Appearance.GradientDown = ggVertical
+      Appearance.GradientMirrorDown = ggVertical
+      Appearance.GradientChecked = ggVertical
+      Appearance.TextColorChecked = 3750459
+      Appearance.TextColorDown = 2303013
+      Appearance.TextColorHot = 2303013
+      Appearance.TextColorDisabled = 13948116
     end
-    object btnDlgClose: TButton
-      Left = 25
-      Top = 24
-      Width = 56
-      Height = 25
+    object btnCancel: TAdvGlowButton
+      Left = 605
+      Top = 22
+      Width = 71
+      Height = 24
+      Caption = #52712#49548
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      NotesFont.Charset = DEFAULT_CHARSET
+      NotesFont.Color = clWindowText
+      NotesFont.Height = -11
+      NotesFont.Name = 'Tahoma'
+      NotesFont.Style = []
+      ParentFont = False
+      Rounded = True
+      TabOrder = 1
+      Appearance.BorderColor = 11382963
+      Appearance.BorderColorHot = 11565130
+      Appearance.BorderColorCheckedHot = 11565130
+      Appearance.BorderColorDown = 11565130
+      Appearance.BorderColorChecked = 13744549
+      Appearance.BorderColorDisabled = 13948116
+      Appearance.Color = clWhite
+      Appearance.ColorTo = clWhite
+      Appearance.ColorChecked = 13744549
+      Appearance.ColorCheckedTo = 13744549
+      Appearance.ColorDisabled = clWhite
+      Appearance.ColorDisabledTo = clNone
+      Appearance.ColorDown = 11565130
+      Appearance.ColorDownTo = 11565130
+      Appearance.ColorHot = 16444643
+      Appearance.ColorHotTo = 16444643
+      Appearance.ColorMirror = clWhite
+      Appearance.ColorMirrorTo = clWhite
+      Appearance.ColorMirrorHot = 16444643
+      Appearance.ColorMirrorHotTo = 16444643
+      Appearance.ColorMirrorDown = 11565130
+      Appearance.ColorMirrorDownTo = 11565130
+      Appearance.ColorMirrorChecked = 13744549
+      Appearance.ColorMirrorCheckedTo = 13744549
+      Appearance.ColorMirrorDisabled = clWhite
+      Appearance.ColorMirrorDisabledTo = clNone
+      Appearance.GradientHot = ggVertical
+      Appearance.GradientMirrorHot = ggVertical
+      Appearance.GradientDown = ggVertical
+      Appearance.GradientMirrorDown = ggVertical
+      Appearance.GradientChecked = ggVertical
+      Appearance.TextColorChecked = 3750459
+      Appearance.TextColorDown = 2303013
+      Appearance.TextColorHot = 2303013
+      Appearance.TextColorDisabled = 13948116
+    end
+    object btnDlgClose: TAdvGlowButton
+      Left = 29
+      Top = 25
+      Width = 71
+      Height = 24
       Caption = #45803#44592
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      NotesFont.Charset = DEFAULT_CHARSET
+      NotesFont.Color = clWindowText
+      NotesFont.Height = -11
+      NotesFont.Name = 'Tahoma'
+      NotesFont.Style = []
+      ParentFont = False
+      Rounded = True
       TabOrder = 2
-      OnClick = btnDlgCloseClick
+      Appearance.BorderColor = 11382963
+      Appearance.BorderColorHot = 11565130
+      Appearance.BorderColorCheckedHot = 11565130
+      Appearance.BorderColorDown = 11565130
+      Appearance.BorderColorChecked = 13744549
+      Appearance.BorderColorDisabled = 13948116
+      Appearance.Color = clWhite
+      Appearance.ColorTo = clWhite
+      Appearance.ColorChecked = 13744549
+      Appearance.ColorCheckedTo = 13744549
+      Appearance.ColorDisabled = clWhite
+      Appearance.ColorDisabledTo = clNone
+      Appearance.ColorDown = 11565130
+      Appearance.ColorDownTo = 11565130
+      Appearance.ColorHot = 16444643
+      Appearance.ColorHotTo = 16444643
+      Appearance.ColorMirror = clWhite
+      Appearance.ColorMirrorTo = clWhite
+      Appearance.ColorMirrorHot = 16444643
+      Appearance.ColorMirrorHotTo = 16444643
+      Appearance.ColorMirrorDown = 11565130
+      Appearance.ColorMirrorDownTo = 11565130
+      Appearance.ColorMirrorChecked = 13744549
+      Appearance.ColorMirrorCheckedTo = 13744549
+      Appearance.ColorMirrorDisabled = clWhite
+      Appearance.ColorMirrorDisabledTo = clNone
+      Appearance.GradientHot = ggVertical
+      Appearance.GradientMirrorHot = ggVertical
+      Appearance.GradientDown = ggVertical
+      Appearance.GradientMirrorDown = ggVertical
+      Appearance.GradientChecked = ggVertical
+      Appearance.TextColorChecked = 3750459
+      Appearance.TextColorDown = 2303013
+      Appearance.TextColorHot = 2303013
+      Appearance.TextColorDisabled = 13948116
     end
   end
 end
