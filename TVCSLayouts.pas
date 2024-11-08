@@ -49,14 +49,14 @@ type
     tabMerge: TAdvTabSet;
     edCamMerName: TAdvEdit;
     EdRtspIP: TAdvEdit;
-    lbCamMergeName: TAdvLabel;
-    lbRtspIp: TAdvLabel;
-    lbCheckPartition: TAdvLabel;
     rbtnCheckPartition: TAdvOfficeRadioGroup;
     pnPartition: TAdvPanel;
     Label1: TLabel;
     ComboBox1: TComboBox;
     AdvMetroButton1: TAdvMetroButton;
+    lbmergeName: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure btnDlgCloseClick(Sender: TObject);
@@ -66,13 +66,26 @@ type
     procedure btnDeleteTabClick(Sender: TObject);
 
     procedure rbtnCheckPartitionRadioButtonClick(Sender: TObject);
-    procedure grdTrainCamsCanClickCell(Sender: TObject; ARow, ACol: Integer;
-      var Allow: Boolean);
+
     procedure btnRemoveCamClick(Sender: TObject);
     procedure tabMergeChange(Sender: TObject; NewTab: Integer;
       var AllowChange: Boolean);
     procedure pnPartitionClose(Sender: TObject);
+    procedure RemoveCameraFromPanel(panel: TAdvPanel);
     procedure AdvMetroButton1Click(Sender: TObject);
+    procedure grdTrainsClickCell(Sender: TObject; ARow, ACol: Integer);
+    procedure grdTrainCamsMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure grdTrainCamsDblClickCell(Sender: TObject; ARow, ACol: Integer);
+    procedure grdTrainCamsCanClickCell(Sender: TObject; ARow, ACol: Integer;
+      var Allow: Boolean);
+    procedure edCamMerNameExit(Sender: TObject);
+    procedure edCamMerNameKeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure grdTrainCamsDragDrop(Sender, Source: TObject; X, Y: Integer);
+    procedure grdTrainCamsDragOver(Sender, Source: TObject; X, Y: Integer;
+      State: TDragState; var Accept: Boolean);
+    
   private
     { Private declarations }
 
@@ -98,7 +111,7 @@ type
 
 
     procedure LoadTrainList(trainNo: string='');
-    procedure grdTrainsClickCell(Sender: TObject; ARow, ACol: Integer);
+    
     procedure LoadTrainCamList(trainId: Integer =-1);
     procedure LoadMergeList(trainId: Integer =-1);
     procedure InitTabSet;
@@ -275,64 +288,93 @@ end;
 
 procedure TfrmLayouts.btnSaveClick(Sender: TObject);
 var
-  i, j, tag, cameraId, posX, posY: Integer;
+  i, j, k, tag, cameraId, posX, posY: Integer;
   trainCameraMergePost: TVCSTrainCameraMergePost;
   mergePostInfo: fmergePostInfo;
+  currentTabIndex: Integer;
 begin
-  if ShowTVCSCheck(1) then
+  if ShowTVCSCheck(0) then
   begin
-      trainCameraMergePost := TVCSTrainCameraMergePost.Create;
     try
-      trainCameraMergePost.ftrainId := selTrain.fid;
-      trainCameraMergePost.fname := edCamMerName.Text;
-      trainCameraMergePost.fdivNum := selPartition;
-
-      if rbtnCheckPartition.ItemIndex = 0 then
+      // 현재 선택된 탭 저장
+      currentTabIndex := tabMerge.TabIndex;
+      
+      // 모든 기존 머지 삭제
+      for i := 0 to tabMerge.AdvTabs.Count - 1 do
       begin
-        trainCameraMergePost.fwidth := 1920;
-        trainCameraMergePost.fheight := 1080;
-      end
-      else
-      begin
-        trainCameraMergePost.fwidth := 1280;
-        trainCameraMergePost.fheight := 720;
+        gapi.DeleteTrainCameraMerge(selTrain.fid, tabMerge.AdvTabs.Items[i].Caption);
       end;
 
-      SetLength(trainCameraMergePost.fitem, 0);
-
-      for i := 0 to Length(partitionPanels) - 1 do
+      // 모든 탭의 머지 다시 추가
+      for i := 0 to tabMerge.AdvTabs.Count - 1 do
       begin
-        tag := partitionPanels[i].Tag;
-        cameraId := tag mod 10000;
+        // 탭 변경하여 각 탭의 패널 정보 가져오기
+        tabMerge.TabIndex := i;
+        
+        trainCameraMergePost := TVCSTrainCameraMergePost.Create;
+        try
+          trainCameraMergePost.ftrainId := selTrain.fid;
+          trainCameraMergePost.fname := tabMerge.AdvTabs.Items[i].Caption;
+          trainCameraMergePost.fdivNum := selPartition;
 
-        if cameraId > 0 then
-        begin
-          posX := (tag mod 10000000) div 1000000;
-          posY := (tag mod 1000000) div 100000;
+          if rbtnCheckPartition.ItemIndex = 0 then
+          begin
+            trainCameraMergePost.fwidth := 1920;
+            trainCameraMergePost.fheight := 1080;
+          end
+          else
+          begin
+            trainCameraMergePost.fwidth := 1280;
+            trainCameraMergePost.fheight := 720;
+          end;
 
-          mergePostInfo := fmergePostInfo.Create;
-          mergePostInfo.fcameraId := cameraId;
-          mergePostInfo.fPositionX := posX;
-          mergePostInfo.fPositionY := posY;
+          SetLength(trainCameraMergePost.fitem, 0);
 
-          j := Length(trainCameraMergePost.fitem);
-          SetLength(trainCameraMergePost.fitem, j + 1);
-          trainCameraMergePost.fitem[j] := mergePostInfo;
+          // 현재 탭의 패널 정보 저장
+          for j := 0 to Length(partitionPanels) - 1 do
+          begin
+            tag := partitionPanels[j].Tag;
+            cameraId := tag mod 10000;
+
+            if cameraId > 0 then
+            begin
+              posX := (tag mod 10000000) div 1000000;
+              posY := (tag mod 1000000) div 100000;
+
+              mergePostInfo := fmergePostInfo.Create;
+              mergePostInfo.fcameraId := cameraId;
+              mergePostInfo.fPositionX := posX;
+              mergePostInfo.fPositionY := posY;
+
+              k := Length(trainCameraMergePost.fitem);
+              SetLength(trainCameraMergePost.fitem, k + 1);
+              trainCameraMergePost.fitem[k] := mergePostInfo;
+            end;
+          end;
+
+          // 서버에 머지 추가
+          gapi.AddTrainCameraMerge(trainCameraMergePost);
+        finally
+          trainCameraMergePost.Free;
         end;
       end;
 
-    
-      // TODO: trainCameraMergePost 객체를 서버로 전송하는 코드 추가
-      gapi.DeleteTrainCameraMerge(tabMerge.AdvTabs.Items[tabMerge.TabIndex].Caption);
-      gapi.AddTrainCameraMerge(trainCameraMergePost);
-      ShowMessage(tabMerge.AdvTabs.Items[tabMerge.TabIndex].Caption);
-    finally
-      trainCameraMergePost.Free;
+      // 원래 선택된 탭으로 복귀
+      tabMerge.TabIndex := currentTabIndex;
+      ShowMessage('저장이 완료되었습니다.');
+      
+      // 변경사항 반영을 위해 데이터 다시 로드
+      LoadMergeList(selTrain.fid);
+      LoadTrainCamList(selTrain.fid);
+      
+    except
+      on E: Exception do
+        ShowMessage('저장 중 오류가 발생했습니다: ' + E.Message);
     end;
   end;
-  
-  
 end;
+
+
 
 procedure TfrmLayouts.btnDeleteTabClick(Sender: TObject);
 var
@@ -341,8 +383,8 @@ begin
 //if  
   if ShowTVCSCheck(1) then
     begin
-      gapi.DeleteTrainCameraMerge(tabMerge.AdvTabs.Items[tabMerge.TabIndex].Caption);
-      LoadMergeList(selTrain.fid);
+      gapi.DeleteTrainCameraMerge(selTrain.fid, tabMerge.AdvTabs.Items[tabMerge.TabIndex].Caption);
+      LoadMergeList(selTrain.fid);                           
     end;
 end;
 
@@ -405,17 +447,16 @@ var
     cameraId: Integer;
   end;
 begin
-  oldPartition := selPartition;
 
   // 9분할 -> 4분할 변경 시
-  if (oldPartition = 9) and (rbtnCheckPartition.ItemIndex = 1) then
+  if (rbtnCheckPartition.ItemIndex = 1) then
   begin
-    // 현재 패널 정보 저장
+    // 현재 카메라가 설정된 패널 정보만 저장
     SetLength(saveData, 9);
     cameraCnt := 0;
     for i := 0 to Length(partitionPanels) - 1 do
     begin
-      if ((partitionPanels[i].Tag mod 100000) div 10000) = 1 then
+      if ((partitionPanels[i].Tag mod 100000) div 10000) = 1 then  // 카메라가 설정된 패널만
       begin
         saveData[cameraCnt].panelNo := partitionPanels[i].Tag div 100000000;
         saveData[cameraCnt].cameraId := partitionPanels[i].Tag mod 10000;
@@ -430,32 +471,57 @@ begin
       Exit;
     end;
 
-    // 분할 변경 및 새 패널 생성 (selMerge 사용 안함)
+    // 4분할로 변경하기 전에 5번째 이후 패널의 카메라들 처리
+    if cameraCnt > 4 then
+    begin
+      // 5번째부터 마지막까지의 카메라들을 LoadMerge에서 제거
+      for i := 4 to cameraCnt - 1 do
+      begin
+        if saveData[i].cameraId > 0 then
+        begin
+          // 해당 패널에서 카메라 제거
+          for var j := 0 to Length(partitionPanels) - 1 do
+          begin
+            if (partitionPanels[j].Tag mod 10000) = saveData[i].cameraId then
+            begin
+              RemoveCameraFromPanel(partitionPanels[j]);
+              Break;
+            end;
+          end;
+        end;
+      end;
+    end;
+
+    // 4분할로 변경
     selPartition := 4;
     rbtnCheckPartition.ItemIndex := 1;
-    CreatePartitionPanels(4, False); // False로 selMerge 사용하지 않음
+    CreatePartitionPanels(4, False);
 
-    // 저장했던 데이터로 패널 업데이트
-    for i := 0 to cameraCnt - 1 do
+    // 저장했던 데이터로 앞에서부터 순서대로 4개 패널 업데이트
+    for i := 0 to Min(cameraCnt-1, 3) do  // 최대 4개까지만
     begin
-      if saveData[i].panelNo <= 4 then
-      begin
-        var row := (saveData[i].panelNo - 1) div 2;
-        var col := (saveData[i].panelNo - 1) mod 2;
-        partitionPanels[saveData[i].panelNo-1].Tag := 
-          CreatePanelTag(saveData[i].panelNo, 4, col, row, saveData[i].cameraId);
+      var row := i div 2;       // 0,0,1,1
+      var col := i mod 2;       // 0,1,0,1
+      var panelNo := i + 1;     // 1,2,3,4
 
-        partitionPanels[saveData[i].panelNo-1].Text := 
-          '<FONT color="#FFFFFF">' + CamIdToCamName(saveData[i].cameraId) + 
-          ' tag: ' + IntToStr(partitionPanels[saveData[i].panelNo-1].Tag) + '</FONT>';
-        partitionPanels[saveData[i].panelNo-1].Background.LoadFromFile('../../icon-img/merCamOn.jpg');
-        partitionPanels[saveData[i].panelNo-1].OnMouseMove := pnPartitionMouseMove;
-        partitionPanels[saveData[i].panelNo-1].OnMouseLeave := pnPartitionMouseLeave;
-      end;
+      partitionPanels[i].Tag := CreatePanelTag(panelNo, 4, col, row, saveData[i].cameraId);
+      partitionPanels[i].Text := 
+        '<FONT color="#FFFFFF">' + CamIdToCamName(saveData[i].cameraId) + 
+        ' tag: ' + IntToStr(partitionPanels[i].Tag) + '</FONT>';
+      partitionPanels[i].Background.LoadFromFile('../../icon-img/merCamOn.jpg');
+      partitionPanels[i].OnMouseMove := pnPartitionMouseMove;
+      partitionPanels[i].OnMouseLeave := pnPartitionMouseLeave;
+    end;
+
+    // 그리드 갱신하여 제거된 카메라들이 표시되도록 함
+    if selTrain <> nil then
+    begin
+      LoadTrainCamList(selTrain.fid);
+      grdTrainCams.Row := 0;
     end;
   end
   // 4분할 -> 9분할 변경
-  else if (oldPartition = 4) and (rbtnCheckPartition.ItemIndex = 0) then
+  else if (rbtnCheckPartition.ItemIndex = 0) then
   begin
     // 현재 패널 정보 저장
     SetLength(saveData, 4);
@@ -496,45 +562,95 @@ end;
 
 procedure TfrmLayouts.LoadTrainCamList(trainId: Integer =-1);
 var
-  i, size : integer;
-
+  i, j, k, size : integer;
+  isUsedCamera: Boolean;
+  temp: TVCSTrainCamera;
 begin
-//
   with grdTrainCams do
   begin
     RowCount := 1;
     ColCount := 3;
-
     ColWidths[0]:=30;
     ColWidths[1]:=100;
     ColWidths[2]:=60;
-
     Cells[0,0]:='No.';
     Cells[1,0]:='카메라명';
     Cells[2,0]:='미리보기';
-
   end;
-
 
   if trainId <> -1 then
   begin
-    trainCams := gapi.GetTrainCamera(trainId);
-    size := length(trainCams);
+
+    size := Length(trainCams);
 
     if size > 0 then
+    begin
+      // position으로 정렬
+      for i := 0 to size-2 do
+        for j := i+1 to size-1 do
+          if trainCams[i].fposition > trainCams[j].fposition then
+          begin
+            temp := trainCams[i];
+            trainCams[i] := trainCams[j];
+            trainCams[j] := temp;
+          end;
+
+      for i := 0 to size-1 do
       begin
-        for i := 0 to size-1 do
-         with grdTrainCams do
-         begin
-           AddRow;
-           Cells[0,i+1] := IntToStr(i+1);
-           Cells[1,i+1] := trainCams[i].fname;
-           AddImageIdx(2, i+1, VirtualImageList1.GetIndexByName('preview'), haCenter, vaCenter);
-         end;
+        isUsedCamera := False;
+        
+        // LoadMerge에서 사용중인지 확인 (서버 데이터 기준)
+        if Assigned(LoadMerge) then 
+        begin
+          for j := 0 to Length(LoadMerge) - 1 do
+          begin
+            if Assigned(LoadMerge[j].fitem) then
+            begin
+              for k := 0 to Length(LoadMerge[j].fitem) - 1 do
+              begin
+                if LoadMerge[j].fitem[k].fcameraId = trainCams[i].fid then
+                begin
+                  isUsedCamera := True;
+                  Break;
+                end;
+              end;
+            end;
+            if isUsedCamera then Break;
+          end;
+        end;
+
+        // 현재 작업중인 패널의 카메라도 체크
+        if not isUsedCamera and Assigned(partitionPanels) then
+        begin
+          for j := 0 to Length(partitionPanels) - 1 do
+          begin
+            // 현재 패널에 추가된 카메라만 체크 (close된 카메라는 체크하지 않음)
+            if ((partitionPanels[j].Tag mod 100000) div 10000) = 1 then
+            begin
+              if (partitionPanels[j].Tag mod 10000) = trainCams[i].fid then
+              begin
+                isUsedCamera := True;
+                Break;
+              end;
+            end;
+          end;
+        end;
+
+        // 사용중이지 않은 카메라만 그리드에 추가
+        if not isUsedCamera then
+        begin
+          with grdTrainCams do
+          begin
+            AddRow;
+            Cells[0, RowCount-1] := IntToStr(trainCams[i].fposition);
+            Cells[1, RowCount-1] := trainCams[i].fname;
+            AddImageIdx(2, RowCount-1, VirtualImageList1.GetIndexByName('preview'), haCenter, vaCenter);
+          end;
+        end;
       end;
     end;
+  end;
 end;
-
 
 // 열차번호로 머지영상 조회
 // LoadMergeList 수정
@@ -573,12 +689,8 @@ begin
       end;
 
       tabMerge.TabIndex := 0;
-
-      // LoadMerge의 fitem 데이터를 panelData로 변환
-      //panelData := ConvertToMergePatch(LoadMerge[0].fitem);
-
       CreatePartitionPanels(selMerge.fdivNum);
-      //UpdatePanelsData(panelData);
+
     end
     else
     begin
@@ -599,7 +711,7 @@ end;
 
 procedure TfrmLayouts.InitializeMergeTab(isNewTab: Boolean = True);
 var
-  i: Integer;
+  i, size: Integer;
   newPanelData: TArray<pnData>;
 begin
   // 새 탭 초기화
@@ -614,6 +726,11 @@ begin
   selMerge.fheight := 1080;
   selMerge.fdivNum := 9;
   selPartition := 9;
+
+  size := length(LoadMerge);
+  setLength(LoadMerge,size+1);
+  LoadMerge[length(LoadMerge)-1] := selMerge;
+  
 
   // 새 패널 데이터 초기화
   SetLength(newPanelData, 9);
@@ -637,23 +754,23 @@ end;
 
 // tabMergeChange 수정
 procedure TfrmLayouts.tabMergeChange(Sender: TObject; NewTab: Integer; var AllowChange: Boolean);
-var
-  convertedData: TArray<fmergePostInfo>;
 begin
   if Assigned(LoadMerge) and (NewTab >= 0) and (NewTab < Length(LoadMerge)) then
   begin
     TabAddCnt := 0;  // 기존 탭 선택
+    // 새로 추가한 탭
+
     edCamMerName.Text := LoadMerge[NewTab].fname;
     EdRtspIP.Text := LoadMerge[NewTab].ftvcsRtsp;
     selMerge := LoadMerge[NewTab];
     CreatePartitionPanels(selMerge.fdivNum);
-
-    // 기존 데이터로 패널 업데이트
-    //UpdatePanelsData(ConvertToMergePatch(LoadMerge[NewTab].fitem));
+    
+    // 그리드 갱신
+    if selTrain <> nil then
+      LoadTrainCamList(selTrain.fid);
   end
   else
   begin
-    // 새 탭 초기화
     InitializeMergeTab(False);
   end;
 
@@ -663,20 +780,39 @@ end;
 
 function TfrmLayouts.CamIdToCamName(cameraId: integer): String;
 var
-  i: Integer;
+  i, j: Integer;
 begin
-  Result := '';  // 기본값 설정
+  Result := '';
 
-  if not Assigned(trainCams) then
-    Exit;
-
-  // trainCams 배열을 순회하면서 일치하는 ID 검색
-  for i := 0 to Length(trainCams) - 1 do
+  // 1. trainCams에서 먼저 찾기
+  if Assigned(trainCams) then
   begin
-    if trainCams[i].fid = cameraId then
+    for i := 0 to Length(trainCams) - 1 do
     begin
-      Result := trainCams[i].fname;
-      Break;  // 찾았으면 반복문 종료
+      if trainCams[i].fid = cameraId then
+      begin
+        Result := trainCams[i].fname;
+        Exit;  // 찾았으면 종료
+      end;
+    end;
+  end;
+
+  // 2. LoadMerge의 fitem에서 찾기
+  if (Result = '') and Assigned(LoadMerge) then
+  begin
+    for i := 0 to Length(LoadMerge) - 1 do
+    begin
+      if Assigned(LoadMerge[i].fitem) then
+      begin
+        for j := 0 to Length(LoadMerge[i].fitem) - 1 do
+        begin
+          if LoadMerge[i].fitem[j].fcameraId = cameraId then
+          begin
+            Result := LoadMerge[i].fitem[j].fname;
+            Exit;
+          end;
+        end;
+      end;
     end;
   end;
 end;
@@ -808,9 +944,28 @@ begin
  end;
 end;
 
+procedure TfrmLayouts.edCamMerNameExit(Sender: TObject);
+begin
+   tabMerge.AdvTabs.Items[tabMerge.TabIndex].Caption := edCamMerName.Text;
+end;
+
+procedure TfrmLayouts.edCamMerNameKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+   tabMerge.AdvTabs.Items[tabMerge.TabIndex].Caption := edCamMerName.Text;
+end;
 
 procedure TfrmLayouts.grdTrainCamsCanClickCell(Sender: TObject; ARow,
   ACol: Integer; var Allow: Boolean);
+begin
+ if ARow > 0 then
+  begin
+    selTrainCam := trainCams[ARow-1];
+  end;
+end;
+
+procedure TfrmLayouts.grdTrainCamsDblClickCell(Sender: TObject; ARow,
+  ACol: Integer);
 var
 ShowPreview : TfrmPreview;
 
@@ -833,6 +988,64 @@ begin
 
 end;
 
+procedure TfrmLayouts.grdTrainCamsDragDrop(Sender, Source: TObject; X,
+  Y: Integer);
+var
+  sourcePanel: TAdvPanel;
+begin
+  if Source is TAdvPanel then
+  begin
+    sourcePanel := Source as TAdvPanel;
+    
+    // 패널에 카메라가 있는 경우에만 처리
+    if ((sourcePanel.Tag mod 100000) div 10000) = 1 then
+    begin
+      // 패널에서 카메라 제거
+      RemoveCameraFromPanel(sourcePanel);
+      
+      // 그리드 리로드 및 선택 해제
+      if selTrain <> nil then
+      begin
+        LoadTrainCamList(selTrain.fid);
+        grdTrainCams.Row := 0;
+      end;
+    end;
+  end;
+end;
+
+procedure TfrmLayouts.grdTrainCamsDragOver(Sender, Source: TObject; X,
+  Y: Integer; State: TDragState; var Accept: Boolean);
+begin
+//
+   if Source is TAdvPanel then
+    accept := true;
+end;
+
+procedure TfrmLayouts.grdTrainCamsMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  ACol, ARow: Integer;
+begin
+  grdTrainCams.MouseToCell(X, Y, ACol, ARow);
+  
+  if (ARow > 0) and (ACol = 1) then // 1번 열을 클릭했을 때만
+  begin
+    // 현재 선택된 셀의 카메라 이름으로 trainCams에서 찾기
+    var camName := grdTrainCams.Cells[1, ARow];
+    for var i := 0 to Length(trainCams) - 1 do
+      if trainCams[i].fname = camName then
+      begin
+        selTrainCam := trainCams[i];
+        Break;
+      end;
+
+    if (Button = mbLeft) then
+      (Sender as TAdvStringGrid).BeginDrag(true);
+  end;
+end;
+
+
+
 function TfrmLayouts.CreatePanelTag(panelNo, divType, posX, posY: Integer; cameraId: Integer = -1): Integer;
 begin
  if cameraId > 0 then
@@ -844,130 +1057,232 @@ begin
 end;
 
 procedure TfrmLayouts.grdTrainsClickCell(Sender: TObject; ARow, ACol: Integer);
-var
-  i : integer;
 begin
   if ARow <= 0 then Exit;
 
-  // 기존 데이터 정리
-
   selTrain := trains[ARow -1];
+  
+  // 먼저 trainCams와 LoadMerge를 한번에 로드
+  trainCams := gapi.GetTrainCamera(selTrain.fid);
+  LoadMerge := gapi.GetTrainCameraMerge(selTrain.fid);
 
-  // 카메라 목록 로드 (항상 필요)
+  // UI 세팅 (LoadMerge 기반으로 탭과 패널 생성)
+  tabMerge.AdvTabs.Clear;
+  edCamMerName.Text := '';
+  EdRtspIP.Text := '';
+
+  if Assigned(LoadMerge) and (Length(LoadMerge) > 0) then
+  begin
+    selMerge := LoadMerge[0];
+    selPartition := selMerge.fdivNum;
+    if selPartition = 4 then
+      rbtnCheckPartition.ItemIndex := 1
+    else
+      rbtnCheckPartition.ItemIndex := 0;
+
+    SetLength(panelData, selMerge.fdivNum);
+
+    for var i := 0 to Length(LoadMerge) - 1 do
+    begin
+      with tabMerge do
+      begin
+        AdvTabs.Add;
+        AdvTabs[i].Caption := LoadMerge[i].fname;
+      end;
+    end;
+
+    tabMerge.TabIndex := 0;
+    CreatePartitionPanels(selMerge.fdivNum);
+  end
+  else
+  begin
+    InitializeMergeTab;
+    CreatePartitionPanels(selMerge.fdivNum);
+  end;
+
+  // 마지막으로 그리드에 사용 가능한 카메라 표시
   LoadTrainCamList(selTrain.fid);
-  LoadMergeList(selTrain.fid);
+ 
   edCamMerName.Enabled := true;
   Combobox1.Enabled := true;
   rbtnCheckPartition.Enabled := true;
-
-
-  
-  // 기존 panelData 초기화
-  {
-  SetLength(panelData, 0);
-  if Assigned(LoadMerge) then
-  begin
-    for i := 0 to Length(LoadMerge) - 1 do
-      LoadMerge[i].Free;
-    SetLength(LoadMerge, 0);
-  end;
-  }
-  // 새로운 머지 데이터 로드
-
 end;
+
 
 procedure TfrmLayouts.pnVideoDragDrop(Sender, Source: TObject; X, Y: Integer);
 var
- sourcePanel, targetPanel: TAdvPanel;
- sourceTag, targetTag: Integer;
- sourcePanelNo, targetPanelNo: Integer;
- sourceDivType, targetDivType: Integer;
- sourceX, sourceY, targetX, targetY: Integer;
- sourceHasCamera, targetHasCamera: Boolean;
- sourceCamId, targetCamId: Integer;
+  sourcePanel, targetPanel: TAdvPanel;
+  sourceTag, targetTag: Integer;
+  sourcePanelNo, targetPanelNo: Integer;
+  sourceDivType, targetDivType: Integer;
+  sourceX, sourceY, targetX, targetY: Integer;
+  sourceHasCamera, targetHasCamera: Boolean;
+  sourceCamId, targetCamId: Integer;
 begin
- sourcePanel := Source as TAdvPanel;
- targetPanel := Sender as TAdvPanel;
+  targetPanel := Sender as TAdvPanel;
+  
+  // 패널 간 드래그/드롭
+  if Source is TAdvPanel then
+  begin
+    sourcePanel := Source as TAdvPanel;
+    sourceTag := sourcePanel.Tag;
+    targetTag := targetPanel.Tag;
 
- sourceTag := sourcePanel.Tag;
- targetTag := targetPanel.Tag;
+    // 기존 tag에서 정보 추출
+    sourcePanelNo := sourceTag div 100000000;
+    sourceDivType := (sourceTag mod 100000000) div 10000000;
+    sourceX := (sourceTag mod 10000000) div 1000000;
+    sourceY := (sourceTag mod 1000000) div 100000;
+    sourceHasCamera := ((sourceTag mod 100000) div 10000) = 1;
+    if sourceHasCamera then 
+      sourceCamId := sourceTag mod 10000
+    else 
+      sourceCamId := -1;
 
- // 기존 tag에서 정보 추출
- sourcePanelNo := sourceTag div 100000000;
- sourceDivType := (sourceTag mod 100000000) div 10000000;
- sourceX := (sourceTag mod 10000000) div 1000000;
- sourceY := (sourceTag mod 1000000) div 100000;
- sourceHasCamera := ((sourceTag mod 100000) div 10000) = 1;
- if sourceHasCamera then sourceCamId := sourceTag mod 10000
- else sourceCamId := -1;
+    targetPanelNo := targetTag div 100000000;
+    targetDivType := (targetTag mod 100000000) div 10000000;
+    targetX := (targetTag mod 10000000) div 1000000;
+    targetY := (targetTag mod 1000000) div 100000;
+    targetHasCamera := ((targetTag mod 100000) div 10000) = 1;
+    if targetHasCamera then 
+      targetCamId := targetTag mod 10000
+    else 
+      targetCamId := -1;
 
- targetPanelNo := targetTag div 100000000;
- targetDivType := (targetTag mod 100000000) div 10000000;
- targetX := (targetTag mod 10000000) div 1000000;
- targetY := (targetTag mod 1000000) div 100000;
- targetHasCamera := ((targetTag mod 100000) div 10000) = 1;
- if targetHasCamera then targetCamId := targetTag mod 10000
- else targetCamId := -1;
+    // 새 tag 생성 및 설정
+    sourcePanel.Tag := CreatePanelTag(sourcePanelNo, sourceDivType, sourceX, sourceY, targetCamId);
+    targetPanel.Tag := CreatePanelTag(targetPanelNo, targetDivType, targetX, targetY, sourceCamId);
 
- // 새 tag 생성 및 설정
- sourcePanel.Tag := CreatePanelTag(sourcePanelNo, sourceDivType, sourceX, sourceY, targetCamId);
- targetPanel.Tag := CreatePanelTag(targetPanelNo, targetDivType, targetX, targetY, sourceCamId);
+    // UI 업데이트
+    if sourceHasCamera then
+    begin
+      targetPanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(sourceCamId) + 
+        ' tag: ' + IntToStr(targetPanel.Tag) + '</FONT>';
+      targetPanel.Background.LoadFromFile('../../icon-img/merCamOn.jpg');
+      targetPanel.OnMouseMove := pnPartitionMouseMove;
+      targetPanel.OnMouseLeave := pnPartitionMouseLeave;
+    end
+    else
+    begin
+      targetPanel.Text := '<FONT color="#FFFFFF">카메라 없음' + 
+        ' tag: ' + IntToStr(targetPanel.Tag) + '</FONT>';
+      targetPanel.Background.LoadFromFile('../../icon-img/merCamOff.jpg');
+      targetPanel.OnMouseMove := nil;
+      targetPanel.OnMouseLeave := nil;
+    end;
 
- // UI 업데이트
- if sourceHasCamera then
- begin
-   targetPanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(sourceCamId) +' tag: ' + IntToStr(targetPanel.tag)+ '</FONT>';
-   targetPanel.Background.LoadFromFile('../../icon-img/merCamOn.jpg');
-   targetPanel.OnMouseMove := pnPartitionMouseMove;
-   targetPanel.OnMouseLeave := pnPartitionMouseLeave;
- end
- else
- begin
-   targetPanel.Text := '<FONT color="#FFFFFF">카메라 없음'+' tag: ' + IntToStr(targetPanel.tag)+'</FONT>';
-   targetPanel.Background.LoadFromFile('../../icon-img/merCamOff.jpg');
-   targetPanel.OnMouseMove := nil;
-   targetPanel.OnMouseLeave := nil;
- end;
+    if targetHasCamera then
+    begin
+      sourcePanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(targetCamId) + 
+        ' tag: ' + IntToStr(sourcePanel.Tag) + '</FONT>';
+      sourcePanel.Background.LoadFromFile('../../icon-img/merCamOn.jpg');
+      sourcePanel.OnMouseMove := pnPartitionMouseMove;
+      sourcePanel.OnMouseLeave := pnPartitionMouseLeave;
+    end
+    else
+    begin
+      sourcePanel.Text := '<FONT color="#FFFFFF">카메라 없음' + 
+        ' tag: ' + IntToStr(sourcePanel.Tag) + '</FONT>';
+      sourcePanel.Background.LoadFromFile('../../icon-img/merCamOff.jpg');
+      sourcePanel.OnMouseMove := nil;
+      sourcePanel.OnMouseLeave := nil;
+    end;
+   // 그리드 갱신 및 선택 해제
+    if selTrain <> nil then
+    begin
+      LoadTrainCamList(selTrain.fid);
+      grdTrainCams.Row := 0;
+    end;
+  end
+  // 그리드에서 패널로 드래그/드롭
+  else if Source = grdTrainCams then
+  begin
+    targetTag := targetPanel.Tag;
+    
+    // 기존 tag에서 정보 추출
+    targetPanelNo := targetTag div 100000000;
+    targetDivType := (targetTag mod 100000000) div 10000000;
+    targetX := (targetTag mod 10000000) div 1000000;
+    targetY := (targetTag mod 1000000) div 100000;
+    targetHasCamera := ((targetTag mod 100000) div 10000) = 1;
+    
+    // 대상 패널에 이미 카메라가 있는 경우
+    if targetHasCamera then
+    begin                                                                      
+      ShowTVCSMessage('이미 카메라가 배치되어 있습니다.');
+      Exit;
+    end;
+    
+    // 새 태그 설정
+    targetPanel.Tag := CreatePanelTag(targetPanelNo, targetDivType, targetX, targetY, selTrainCam.fid);
+    
+    // 패널 UI 업데이트
+    targetPanel.Text := '<FONT color="#FFFFFF">' + selTrainCam.fname + 
+      ' tag: ' + IntToStr(targetPanel.Tag) + '</FONT>';
+    targetPanel.Background.LoadFromFile('../../icon-img/merCamOn.jpg');
+    targetPanel.OnMouseMove := pnPartitionMouseMove;
+    targetPanel.OnMouseLeave := pnPartitionMouseLeave;
 
- if targetHasCamera then
- begin
-   sourcePanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(targetCamId) +' tag: ' + IntToStr(sourcePanel.tag)+ '</FONT>';
-   sourcePanel.Background.LoadFromFile('../../icon-img/merCamOn.jpg');
-   sourcePanel.OnMouseMove := pnPartitionMouseMove;
-   sourcePanel.OnMouseLeave := pnPartitionMouseLeave;
- end
- else
- begin
-   sourcePanel.Text := '<FONT color="#FFFFFF">카메라 없음'+' tag: ' + IntToStr(sourcePanel.tag)+'</FONT>';
-   sourcePanel.Background.LoadFromFile('../../icon-img/merCamOff.jpg');
-   sourcePanel.OnMouseMove := nil;
-   sourcePanel.OnMouseLeave := nil;
- end;
+    setLength(LoadMerge[tabMerge.TabIndex].fitem,Length(LoadMerge[tabMerge.TabIndex].fitem)+1);
+    LoadMerge[tabMerge.TabIndex].fitem[length(LoadMerge[tabMerge.TabIndex].fitem)-1] := fmergeCamInfo.Create;
+    LoadMerge[tabMerge.TabIndex].fitem[length(LoadMerge[tabMerge.TabIndex].fitem)-1].fcameraId := selTrainCam.fid;
+    LoadMerge[tabMerge.TabIndex].fitem[length(LoadMerge[tabMerge.TabIndex].fitem)-1].fpositionX := targetX;
+    LoadMerge[tabMerge.TabIndex].fitem[length(LoadMerge[tabMerge.TabIndex].fitem)-1].fpositionY := targetY;
+    
+    
+    // 그리드 리로드 및 선택 해제
+    if selTrain <> nil then
+    begin
+      LoadTrainCamList(selTrain.fid);
+      grdTrainCams.Row := 0;
+    end;
+  end;
 end;
 
-
-
-
+// 패널 이동관련
 procedure TfrmLayouts.pnVideoDragOver(Sender, Source: TObject; X, Y: Integer;
   State: TDragState; var Accept: Boolean);
+var
+  currentPanelCount: Integer;
+  i: Integer;
 begin
-  if (Sender is TAdvPanel) and (Source is TAdvPanel) then
-    Accept := true
-  else
-    Accept := false;
+  Accept := False;
+  
+  // 패널간 드래그인 경우
+  if (Source is TAdvPanel) and (Sender is TAdvPanel) then
+    Accept := True
+  // 그리드에서 패널로 드래그하는 경우
+  else if (Source = grdTrainCams) and (Sender is TAdvPanel) then
+  begin
+    // 현재 카메라가 설정된 패널 수 계산
+    currentPanelCount := 0;
+    for i := 0 to Length(partitionPanels) - 1 do
+    begin
+      if ((partitionPanels[i].Tag mod 100000) div 10000) = 1 then
+        Inc(currentPanelCount);
+    end;
+    
+    // 분할 방식에 따른 최대 패널 수 체크
+    if (selPartition = 4) and (currentPanelCount < 4) then
+      Accept := True
+    else if (selPartition = 9) and (currentPanelCount < 8) then
+      Accept := True;
+  end;
 end;
 
 Procedure TfrmLayouts.pnVideoMouseDown(Sender: TObject; Button: TMouseButton;
     Shift: TShiftState; X, Y: Integer);
+
 begin
   if y > 20 then
   begin
     if (Button=mbLeft) then
      (Sender as TAdvPanel).BeginDrag(true);
   end;
-  
 end;
 
+
+//캡션 설정
 procedure TfrmLayouts.pnPartitionMouseLeave(Sender: TObject);
 begin
   (Sender as TAdvPanel).Caption.CloseButton := false;
@@ -979,34 +1294,66 @@ begin
   (Sender as TAdvPanel).Caption.CloseButton := true;
 end;
 
-
-
-procedure TfrmLayouts.pnPartitionClose(Sender: TObject);
+procedure TfrmLayouts.RemoveCameraFromPanel(panel: TAdvPanel);
 var
-  closedPanel: TAdvPanel;
   tag: Integer;
   panelNo, divType, posX, posY: Integer;
+  cameraId: Integer;
+  i, j: Integer;
 begin
-  closedPanel := Sender as TAdvPanel;
+  tag := panel.Tag;
+  
+  // 제거되는 카메라 ID 저장
+  cameraId := tag mod 10000;
+
+  // LoadMerge의 현재 탭에서 카메라 제거
+  if Assigned(LoadMerge) and (tabMerge.TabIndex >= 0) and 
+     (tabMerge.TabIndex < Length(LoadMerge)) and 
+     Assigned(LoadMerge[tabMerge.TabIndex].fitem) then
+  begin
+    for i := Length(LoadMerge[tabMerge.TabIndex].fitem) - 1 downto 0 do
+    begin
+      if LoadMerge[tabMerge.TabIndex].fitem[i].fcameraId = cameraId then
+      begin
+        // 해당 카메라 항목 제거
+        for j := i to Length(LoadMerge[tabMerge.TabIndex].fitem) - 2 do
+          LoadMerge[tabMerge.TabIndex].fitem[j] := LoadMerge[tabMerge.TabIndex].fitem[j + 1];
+        SetLength(LoadMerge[tabMerge.TabIndex].fitem, Length(LoadMerge[tabMerge.TabIndex].fitem) - 1);
+        Break;
+      end;
+    end;
+  end;
 
   // 기존 tag에서 정보 추출
-  tag := closedPanel.Tag;
   panelNo := tag div 100000000;
   divType := (tag mod 100000000) div 10000000;
   posX := (tag mod 10000000) div 1000000;
   posY := (tag mod 1000000) div 100000;
 
-  // 카메라 ID 제거 (0으로 설정)
-  closedPanel.Tag := CreatePanelTag(panelNo, divType, posX, posY, 0);
+  // 카메라 ID 제거
+  panel.Tag := CreatePanelTag(panelNo, divType, posX, posY);
 
   // UI 업데이트
-  closedPanel.Text := '<FONT color="#FFFFFF">카메라 없음' + ' tag: ' + IntToStr(closedPanel.Tag) + '</FONT>';
-  closedPanel.Background.LoadFromFile('../../icon-img/merCamOff.jpg');
-  closedPanel.OnMouseMove := nil;
-  closedPanel.OnMouseLeave := nil;
-  closedPanel.Visible := true;
+  panel.Text := '<FONT color="#FFFFFF">카메라 없음' + 
+    ' tag: ' + IntToStr(panel.Tag) + '</FONT>';
+  panel.Background.LoadFromFile('../../icon-img/merCamOff.jpg');
+  panel.OnMouseMove := nil;
+  panel.OnMouseLeave := nil;
+  panel.Caption.CloseButton := false;
+  panel.Visible := true;
 end;
 
+procedure TfrmLayouts.pnPartitionClose(Sender: TObject);
+begin
+  RemoveCameraFromPanel(Sender as TAdvPanel);
+  
+  // 그리드 리로드 및 선택 해제
+  if selTrain <> nil then
+  begin
+    LoadTrainCamList(selTrain.fid);
+    grdTrainCams.Row := 0;
+  end;
+end;
 
 
 

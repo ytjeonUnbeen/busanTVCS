@@ -23,8 +23,6 @@ object frmSystem: TfrmSystem
     Height = 621
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = -40
-    ExplicitTop = -80
     object lblTitle: TLabel
       Left = 360
       Top = 16
@@ -157,7 +155,7 @@ object frmSystem: TfrmSystem
     end
     object lbEventPopTitle: TLabel
       Left = 40
-      Top = 224
+      Top = 232
       Width = 97
       Height = 16
       Caption = #9679' '#51060#48292#53944' '#54045#50629' '#49444#51221
@@ -170,7 +168,7 @@ object frmSystem: TfrmSystem
     end
     object lbEventPopMenu: TLabel
       Left = 67
-      Top = 256
+      Top = 264
       Width = 111
       Height = 16
       Caption = #51473#48373' '#51060#48292#53944' '#46041#51089' '#44036#44201
@@ -249,9 +247,9 @@ object frmSystem: TfrmSystem
     object Label1: TLabel
       Left = 40
       Top = 302
-      Width = 72
+      Width = 60
       Height = 16
-      Caption = #9679' TCMS '#49444#51221
+      Caption = #9679' TTC '#49444#51221
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -265,6 +263,19 @@ object frmSystem: TfrmSystem
       Width = 55
       Height = 16
       Caption = #50500#51060#54588#51452#49548
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label3: TLabel
+      Left = 386
+      Top = 337
+      Width = 44
+      Height = 16
+      Caption = #54252#53944#48264#54840
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -313,7 +324,7 @@ object frmSystem: TfrmSystem
     end
     object speEventPop: TSpinEdit
       Left = 378
-      Top = 255
+      Top = 263
       Width = 73
       Height = 22
       MaxValue = 0
@@ -455,7 +466,7 @@ object frmSystem: TfrmSystem
     end
     object groupEvent: TGroupBox
       Left = 192
-      Top = 256
+      Top = 264
       Width = 169
       Height = 24
       Color = clWhite
@@ -464,8 +475,8 @@ object frmSystem: TfrmSystem
       TabOrder = 6
       StyleElements = [seFont, seClient]
       object btnEvtRadio1: TRadioButton
-        Left = 22
-        Top = 4
+        Left = 14
+        Top = 3
         Width = 64
         Height = 17
         Caption = #48120#51201#50857
@@ -474,8 +485,8 @@ object frmSystem: TfrmSystem
         TabStop = True
       end
       object btnEvtRadio2: TRadioButton
-        Left = 107
-        Top = 4
+        Left = 99
+        Top = 3
         Width = 64
         Height = 17
         Caption = #51201#50857
@@ -641,7 +652,7 @@ object frmSystem: TfrmSystem
     end
     object cbxEventPop: TDBComboBox
       Left = 457
-      Top = 255
+      Top = 263
       Width = 65
       Height = 21
       Items.Strings = (
@@ -767,6 +778,13 @@ object frmSystem: TfrmSystem
       Appearance.TextColorHot = 2303013
       Appearance.TextColorDisabled = 13948116
     end
+    object Edit1: TEdit
+      Left = 448
+      Top = 336
+      Width = 74
+      Height = 21
+      TabOrder = 13
+    end
   end
   object Panel2: TPanel
     Left = 0
@@ -775,8 +793,6 @@ object frmSystem: TfrmSystem
     Height = 70
     Align = alBottom
     TabOrder = 1
-    ExplicitTop = 687
-    ExplicitWidth = 852
     object btnSave: TAdvGlowButton
       Left = 690
       Top = 22
@@ -852,6 +868,7 @@ object frmSystem: TfrmSystem
       ParentFont = False
       Rounded = True
       TabOrder = 1
+      OnClick = btnCancelClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130

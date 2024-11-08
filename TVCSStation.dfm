@@ -302,7 +302,7 @@ object frmStation: TfrmStation
         Left = 0
         Top = 49
         Width = 842
-        Height = 95
+        Height = 107
         Align = alTop
         Caption = 'pnT1Delay'
         ShowCaption = False
@@ -323,27 +323,27 @@ object frmStation: TfrmStation
         object lblT1UpDep: TLabel
           Left = 20
           Top = 35
-          Width = 80
+          Width = 119
           Height = 13
-          Caption = #50689#49345#51116#49373' '#46364#47112#51060
+          Caption = #52636#48156' '#49884' '#50689#49345#51116#49373' '#46364#47112#51060
         end
         object lblT1DownDep: TLabel
           Left = 435
           Top = 35
-          Width = 80
+          Width = 119
           Height = 13
-          Caption = #50689#49345#51116#49373' '#46364#47112#51060
+          Caption = #52636#48156' '#49884' '#50689#49345#51116#49373' '#46364#47112#51060
         end
         object lblT1UpArr: TLabel
-          Left = 55
-          Top = 72
+          Left = 60
+          Top = 75
           Width = 44
           Height = 13
           Caption = #46020#52265#53076#46300
         end
         object lblT1DownArr: TLabel
-          Left = 230
-          Top = 72
+          Left = 232
+          Top = 75
           Width = 44
           Height = 13
           Caption = #52636#48156#53076#46300
@@ -369,7 +369,7 @@ object frmStation: TfrmStation
           Caption = #51217#44540#53076#46300
         end
         object Label3: TLabel
-          Left = 635
+          Left = 651
           Top = 35
           Width = 44
           Height = 13
@@ -377,30 +377,30 @@ object frmStation: TfrmStation
         end
         object Label4: TLabel
           Left = 470
-          Top = 72
+          Top = 75
           Width = 44
           Height = 13
           Caption = #46020#52265#53076#46300
         end
         object Label5: TLabel
-          Left = 635
-          Top = 72
+          Left = 651
+          Top = 75
           Width = 44
           Height = 13
           Caption = #52636#48156#53076#46300
         end
         object edupDepartDelay: TEdit
-          Left = 110
-          Top = 30
-          Width = 75
+          Left = 145
+          Top = 28
+          Width = 40
           Height = 21
           TabOrder = 0
           Text = '0'
         end
         object eddnDepartDelay: TEdit
-          Left = 525
-          Top = 30
-          Width = 75
+          Left = 569
+          Top = 28
+          Width = 28
           Height = 21
           TabOrder = 1
           Text = '0'
@@ -416,21 +416,21 @@ object frmStation: TfrmStation
         object edupLeavTcode: TEdit
           Left = 280
           Top = 68
-          Width = 75
+          Width = 77
           Height = 21
           TabOrder = 3
           Text = '0'
         end
         object edupApprTcode: TEdit
           Left = 280
-          Top = 30
+          Top = 28
           Width = 77
           Height = 21
           TabOrder = 4
           Text = '0'
         end
         object eddnArrvTcode: TEdit
-          Left = 525
+          Left = 520
           Top = 68
           Width = 77
           Height = 21
@@ -438,7 +438,7 @@ object frmStation: TfrmStation
           Text = '0'
         end
         object eddnApprTcode: TEdit
-          Left = 685
+          Left = 701
           Top = 30
           Width = 77
           Height = 21
@@ -446,7 +446,7 @@ object frmStation: TfrmStation
           Text = '0'
         end
         object eddnLeavTcode: TEdit
-          Left = 685
+          Left = 701
           Top = 68
           Width = 77
           Height = 21
@@ -456,16 +456,18 @@ object frmStation: TfrmStation
       end
       object pnCamInfos: TPanel
         Left = 0
-        Top = 144
+        Top = 156
         Width = 842
-        Height = 337
+        Height = 325
         Align = alClient
         Caption = 'pnCamInfos'
         ShowCaption = False
         TabOrder = 2
+        ExplicitTop = 144
+        ExplicitHeight = 337
         object Label2: TLabel
-          Left = 10
-          Top = 6
+          Left = 354
+          Top = 18
           Width = 96
           Height = 16
           Caption = #49849#44053#44592' '#52852#47700#46972' '#51221#48372
@@ -485,7 +487,7 @@ object frmStation: TfrmStation
         end
         object btnAddCams: TAdvGlowButton
           Left = 712
-          Top = 10
+          Top = 18
           Width = 113
           Height = 24
           Caption = #52852#47700#46972' '#52628#44032
@@ -541,9 +543,9 @@ object frmStation: TfrmStation
         end
         object grdStationCams: TAdvStringGrid
           Left = 18
-          Top = 48
+          Top = 56
           Width = 807
-          Height = 273
+          Height = 265
           DefaultRowHeight = 25
           DrawingStyle = gdsClassic
           FixedColor = clWhite

@@ -686,7 +686,7 @@ object frmTrain: TfrmTrain
       Top = 550
       Width = 177
       Height = 24
-      Caption = #50669#49324' '#51221#48372' '#51068#44292' '#45236#47140#48155#44592
+      Caption = #50676#52264' '#52852#47700#46972' '#51068#44292' '#45236#47140#48155#44592
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -742,7 +742,7 @@ object frmTrain: TfrmTrain
       Top = 551
       Width = 170
       Height = 24
-      Caption = #50669#49324' '#51221#48372' '#51068#44292' '#46321#47197
+      Caption = #50676#52264' '#52852#47700#46972' '#51068#44292' '#46321#47197
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11

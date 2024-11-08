@@ -51,6 +51,8 @@ type
     btnSave: TAdvGlowButton;
     btnCancel: TAdvGlowButton;
     btnDlgClose: TAdvGlowButton;
+    Label3: TLabel;
+    Edit1: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure btnDlgCloseClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);

@@ -89,7 +89,7 @@ begin
   begin
     InsertChildRow(0);
     Cells[0,1] := '';
-    Cells[1,1] := '1';  // position의 기본값 설정
+    Cells[1,1] := '0';  // position의 기본값 설정
     Cells[2,1] := '';
     Cells[3,1] := '';
     Cells[4,1] := '80';
@@ -355,8 +355,9 @@ begin
               trainCamPatch.fipaddr := grdTrainCams.Cells[3,i];
               trainCamPatch.fport := StrToInt(grdTrainCams.Cells[4,i]);
               trainCamPatch.frtsp := grdTrainCams.Cells[5,i];
-              trainCamPatch.fuserId := grdTrainCams.Cells[6,i];
-              trainCamPatch.fuserPwd := grdTrainCams.Cells[7,i];
+              trainCamPatch.frtsp2 := grdTrainCams.Cells[6,i];
+              trainCamPatch.fuserId := grdTrainCams.Cells[7,i];
+              trainCamPatch.fuserPwd := grdTrainCams.Cells[8,i];
 
               if nil = gapi.UpdateTrainCamera(trainCamPatch) then
                 allSuccess := False;
@@ -719,7 +720,7 @@ begin
 //
 if ARow > 0 then
   begin
-    if ACol = 9 then
+    if ACol = 10 then
       begin
         if ShowTVCSCheck(1) then
         begin
@@ -732,7 +733,7 @@ if ARow > 0 then
       end;
 
     // 미리보기
-    if ACol = 8 then
+    if ACol = 9 then
       begin
         ShowPreview := TfrmPreview.Create(self);
         ShowPreview.SetRtspUrl(trainCams[ARow-1 -addTrCnt].frtsp);

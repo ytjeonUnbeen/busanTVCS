@@ -19,6 +19,7 @@ const
    api_license='/tvcs/license';
    api_system='/tvcs/system';
    api_list='/tvcs/apilist';
+   api_device='/tvcs/deviceMsg';
 
 
 type
@@ -185,7 +186,7 @@ type
          function GetTrainCameraMerge(trainId:integer=-1):TArray<TVCSTrainCameraMerge>;
          function AddTrainCameraMerge(trainCameraMergeInfo:TVCSTrainCameraMergePost):TVCSTrainCameraMerge;
          function UpdateTrainCameraMerge(trainCameraMergeInfo:TVCSTrainCameraMergePatch):TVCSTrainCameraMerge;
-         function DeleteTrainCameraMerge(fname:string):string;
+         function DeleteTrainCameraMerge(trinId: Integer; fname:string):string;
 
          //licsense
          function GetLicense():TArray<TVCSLicense>;
@@ -202,6 +203,14 @@ type
          procedure DisconnectTCMS(out ErrorMsg: string);
          function ReceiveData(): string;
 
+         //device
+
+         function GetDevice(ftype:integer=-1):TArray<TVCSDevice>;
+         {
+         function AddTrainCameraMerge(trainCameraMergeInfo:TVCSTrainCameraMergePost):TVCSTrainCameraMerge;
+         function UpdateTrainCameraMerge(trainCameraMergeInfo:TVCSTrainCameraMergePatch):TVCSTrainCameraMerge;
+         function DeleteTrainCameraMerge(trinId: Integer; fname:string):string;
+         }
          //TCMS 쓰레드
          property OnReceiveData: TReceiveDataEvent read FOnReceiveData write FOnReceiveData;
 
@@ -1608,13 +1617,13 @@ begin
   end;
 end;
 
-function TTVCSAPI.DeleteTrainCameraMerge(fname:string):string;
+function TTVCSAPI.DeleteTrainCameraMerge(trinId: Integer; fname:string):string;
 var
   ResponseStr : string;
   ResponseJson : TJSONObject;
   ErrorMsg : string;
 begin
-  ResponseStr := FAPIBase.DeleteAPI(API_TRAIN_CAMERA_MERGE,'name='+fname);
+  ResponseStr := FAPIBase.DeleteAPI(API_TRAIN_CAMERA_MERGE,'trinId='+IntToStr(trinId)+'&name='+fname);
   ResponseJson := TJSONObject.ParseJSONValue(ResponseStr) as TJSONObject;
 
   if CheckError(ResponseJson, ErrorMsg) <> 0 then
@@ -1654,6 +1663,92 @@ begin
   end
   else
     Result := nil;
+end;
+
+function TTVCSAPI.GetDevice(ftype:integer=-1):TArray<TVCSDevice>;
+var
+  ResponseStr, ErrorMsg: string;
+  ResponseJson: TJSONObject;
+  DeviceJSson: TJSONValue;
+  Devices: TArray<TVCSDevice>;
+  I: Integer;
+  JsonObj: TJSONObject;
+  JsonValue: TJSONValue;
+  Device : TVCSDevice;
+begin
+  if ftype <> -1 then
+    ResponseStr := FAPIBase.GetAPI(api_device, 'type=' + IntToStr(ftype))
+  else
+  begin
+    ResponseStr := FAPIBase.GetAPI(api_device);
+  end;
+
+  FResponseText := FAPIBase.ResponseText;
+  FResponseCode := FAPIBase.ResponseCode;
+
+  try
+    ResponseJson := TJSONObject.ParseJsonValue(ResponseStr) as TJSONObject;
+    if ResponseJson = nil then
+      Exit(nil);
+
+    if CheckError(ResponseJson, ErrorMsg) <> 0 then
+      Exit(nil);
+
+    DeviceJSson := ResponseJson.GetValue('reply');
+    if DeviceJSson is TJSONArray then
+    begin
+      SetLength(Devices, TJSONArray(DeviceJSson).Count);
+      for I := 0 to TJSONArray(DeviceJSson).Count - 1 do
+      begin
+        JsonObj := TJSONArray(DeviceJSson).Items[I] as TJSONObject;
+        Device := TVCSDevice.Create;
+
+        // id는 JSON에서 'id'로 되어있지만 객체는 'fid'를 사용
+        if JsonObj.TryGetValue('id', JsonValue) and (not JsonValue.Null) then
+          Device.fid := JsonValue.AsType<Integer>
+        else
+          Device.fid := 0;
+
+        if JsonObj.TryGetValue('type', JsonValue) and (not JsonValue.Null) then
+          Device.ftype := JsonValue.AsType<String>
+        else
+          Device.ftype := '';
+
+        if JsonObj.TryGetValue('stationCode', JsonValue) and (not JsonValue.Null) then
+          Device.fstationCode := JsonValue.AsType<String>
+        else
+          Device.fstationCode := '';
+
+        if JsonObj.TryGetValue('trainNo', JsonValue) and (not JsonValue.Null) then
+          Device.ftrainNo := JsonValue.AsType<Integer>
+        else
+          Device.ftrainNo := 0;
+
+        if JsonObj.TryGetValue('ipAddr', JsonValue) and (not JsonValue.Null) then
+          Device.fipAddr := JsonValue.AsType<String>
+        else
+          Device.fipAddr := '';
+
+        if JsonObj.TryGetValue('port', JsonValue) and (not JsonValue.Null) then
+          Device.fport := JsonValue.AsType<Integer>
+        else
+          Device.fport := 0;
+
+        if JsonObj.TryGetValue('memo', JsonValue) and (not JsonValue.Null) then
+          Device.fmemo := JsonValue.AsType<string>
+        else
+          Device.fmemo := '';
+
+
+        Devices[I] := Device;
+      end;
+      Result := Devices;
+    end
+    else
+      Result := nil;
+  except
+    Result := nil;
+  end;
 end;
 
 function TTVCSAPI.AddLicense(licenseinfo:TVCSLicensePost):TVCSLicense;

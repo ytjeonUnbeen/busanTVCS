@@ -365,6 +365,39 @@ type
     finterphone2: boolean;
   end;
 
+  TVCSDevice=class
+    fid: integer;
+    ftype: string;
+    fstationCode: string;
+    ftrainNo: integer;
+    fipAddr: string;
+    fport: integer;
+    fmemo: string;
+  end;
+
+  TVCSDevicePost=class
+    ftype: string;
+    fstationCode: string;
+    ftrainNo: integer;
+    fipAddr: string;
+    fport: integer;
+    fmemo: string;
+  end;
+
+  TVCSDeviceMsg=class
+    fdeviceId: integer;
+    ftype: integer;
+    fmsg: string;
+    fdttm: string;
+  end;
+
+  TVCSDeviceMsgPost=class
+    fdeviceId: integer;
+    ftype: integer;
+    fmsg: string;
+  end;
+
+
 
 
 

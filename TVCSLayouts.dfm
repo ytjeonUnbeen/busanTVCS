@@ -90,7 +90,12 @@ object frmLayouts: TfrmLayouts
         DrawingStyle = gdsClassic
         FixedColor = clWhite
         RowCount = 3
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goFixedRowDefAlign]
         TabOrder = 0
+        OnDragDrop = grdTrainCamsDragDrop
+        OnDragOver = grdTrainCamsDragOver
+        OnMouseDown = grdTrainCamsMouseDown
+        OnDblClickCell = grdTrainCamsDblClickCell
         OnCanClickCell = grdTrainCamsCanClickCell
         ActiveCellFont.Charset = DEFAULT_CHARSET
         ActiveCellFont.Color = 4474440
@@ -354,6 +359,7 @@ object frmLayouts: TfrmLayouts
           4E44AE426082}
         TabOrder = 3
         Version = '1.2.0.0'
+        Visible = False
         OnClick = btnAddCamClick
       end
       object btnRemoveCam: TAdvMetroButton
@@ -383,6 +389,7 @@ object frmLayouts: TfrmLayouts
           426082}
         TabOrder = 4
         Version = '1.2.0.0'
+        Visible = False
         OnClick = btnRemoveCamClick
       end
       object Panel1: TPanel
@@ -403,49 +410,33 @@ object frmLayouts: TfrmLayouts
           ShowCaption = False
           TabOrder = 0
           ExplicitLeft = -47
-          object lbCamMergeName: TAdvLabel
-            Left = 32
-            Top = 9
-            Width = 65
-            Height = 17
-            Text = 
-              '{\rtf1\ansi\ansicpg949\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial' +
-              ';}{\f1\fnil\fcharset129 Arial;}}'#13#10'\viewkind4\uc1\pard\lang1042\f' +
-              '0\fs16\u45796?\u51473?\u50689?\u49345? \u47749?\f1\par'#13#10'}'#13#10#0
-            WordWrap = False
-            Version = '1.0.0.4'
-          end
-          object lbRtspIp: TAdvLabel
-            Left = 40
-            Top = 37
-            Width = 65
-            Height = 17
-            Text = 
-              '{\rtf1\ansi\ansicpg949\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial' +
-              ';}{\f1\fnil\fcharset129 Arial;}}'#13#10'\viewkind4\uc1\pard\lang1042\f' +
-              '0\fs16 RTSP \u51452?\u49548?\f1\par'#13#10'}'#13#10#0
-            WordWrap = False
-            Version = '1.0.0.4'
-          end
-          object lbCheckPartition: TAdvLabel
-            Left = 16
-            Top = 65
-            Width = 81
-            Height = 17
-            Text = 
-              '{\rtf1\ansi\ansicpg949\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial' +
-              ';}{\f1\fnil\fcharset129 Arial;}}'#13#10'\viewkind4\uc1\pard\lang1042\f' +
-              '0\fs16\u54868?\u47732? \u48516?\u54624? \u48169?\u49885?\f1\par'#13 +
-              #10'}'#13#10#0
-            WordWrap = False
-            Version = '1.0.0.4'
-          end
           object Label1: TLabel
             Left = 304
             Top = 70
             Width = 33
             Height = 21
             Caption = #54644#49345#46020
+          end
+          object lbmergeName: TLabel
+            Left = 31
+            Top = 6
+            Width = 66
+            Height = 13
+            Caption = #45796#51473#50689#49345#51060#47492
+          end
+          object Label2: TLabel
+            Left = 47
+            Top = 36
+            Width = 47
+            Height = 13
+            Caption = 'RTSP'#51452#49548
+          end
+          object Label3: TLabel
+            Left = 50
+            Top = 68
+            Width = 47
+            Height = 13
+            Caption = #54868#47732' '#48516#54624
           end
           object edCamMerName: TAdvEdit
             Left = 111
@@ -472,6 +463,8 @@ object frmLayouts: TfrmLayouts
             TabOrder = 0
             Text = ''
             Visible = True
+            OnExit = edCamMerNameExit
+            OnKeyUp = edCamMerNameKeyUp
             Version = '4.0.5.1'
           end
           object EdRtspIP: TAdvEdit
@@ -1111,7 +1104,7 @@ object frmLayouts: TfrmLayouts
       Height = 400
       DrawingStyle = gdsClassic
       FixedColor = clSkyBlue
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSizing, goColSizing, goRowSelect, goFixedRowDefAlign]
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRowSizing, goColSizing, goRowSelect, goFixedRowDefAlign]
       TabOrder = 4
       ActiveCellFont.Charset = DEFAULT_CHARSET
       ActiveCellFont.Color = 4474440

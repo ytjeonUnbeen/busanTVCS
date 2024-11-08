@@ -58,7 +58,8 @@ begin
      frmLogin:=TfrmLogin.Create(Application);
      frmLogin.ShowModal;
      if (frmLogin.isLogged) then
-             Application.CreateForm(TfrmTVCSMain, frmTVCSMain);
+             TStyleManager.TrySetStyle('Onyx Blue');
+  Application.CreateForm(TfrmTVCSMain, frmTVCSMain);
   FreeAndNil(frmLogin);
 
 
