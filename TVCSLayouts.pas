@@ -26,10 +26,9 @@ type
     pnMainFrame: TPanel;
     lblInfoTitle: TLabel;
     lblTitle: TLabel;
-    lblSubLine: TLabel;
     pnCamStationInfo: TPanel;
     btnSearch: TAdvGlowButton;
-    cmbStation: TComboBox;
+    cbSearch: TComboBox;
     edSearchText: TEdit;
     grdTrains: TAdvStringGrid;
     pnBottom: TPanel;
@@ -85,6 +84,8 @@ type
     procedure grdTrainCamsDragDrop(Sender, Source: TObject; X, Y: Integer);
     procedure grdTrainCamsDragOver(Sender, Source: TObject; X, Y: Integer;
       State: TDragState; var Accept: Boolean);
+    procedure btnSearchClick(Sender: TObject);
+    procedure edSearchTextKeyPress(Sender: TObject; var Key: Char);
     
   private
     { Private declarations }
@@ -228,9 +229,8 @@ begin
     col, row, selTrainCam.fid);
     
   // UI 업데이트
-  partitionPanels[emptyPanelNo-1].Text := '<FONT color="#FFFFFF">' + 
-    CamIdToCamName(selTrainCam.fid) + ' tag: ' + 
-    IntToStr(partitionPanels[emptyPanelNo-1].Tag) + '</FONT>';
+  partitionPanels[emptyPanelNo-1].Text := '<FONT color="#FFFFFF">' +
+    CamIdToCamName(selTrainCam.fid)  + '</FONT>';
   partitionPanels[emptyPanelNo-1].Background.LoadFromFile('../../icon-img/merCamOn.jpg');
 
   partitionPanels[emptyPanelNo-1].OnMouseMove := pnPartitionMouseMove;
@@ -259,12 +259,13 @@ begin
   tabMerge.SelectedColor:=clRed;
   tabMerge.UnSelectedColor:=clBlack;
   tabMerge.Font.Color:=clWhite;
-  tabMerge.Font.size:=12;
+  tabMerge.Font.size:=11;
   tabMerge.TextColor:=clWhite;
   tabMerge.ActiveFont.Color:=clWhite;
-  tabMerge.ActiveFont.size:=12;
+  tabMerge.ActiveFont.size:=11;
   tabMerge.TabBorderColor:= clNone;
-  //tabMerge.Sele
+
+
 end;
 
 
@@ -376,6 +377,210 @@ end;
 
 
 
+procedure TfrmLayouts.btnSearchClick(Sender: TObject);
+var
+  searchText: string;
+  searchMode: integer;
+  i, j, v: integer;
+  found: boolean;
+  searchCams : TArray<TVCSTrainCamera>;
+  searchCamId : integer;
+  merges : TArray<TVCSTrainCameraMerge>;
+begin
+  searchText := edSearchText.Text;
+  if searchText = '' then Exit;
+
+  searchMode := cbSearch.ItemIndex;
+  found := false;
+
+  case searchMode of
+    0: // 전체 검색 (편성번호/열차번호/카메라이름/머지이름)
+    begin
+      // 1. 편성번호 검색
+      for i := 1 to grdTrains.RowCount - 1 do
+      begin
+        if grdTrains.Cells[1,i] = searchText then
+        begin
+          grdTrains.SelectCells(1,i,1,i);
+          grdTrainsClickCell(grdTrains, i, 1);
+          found := true;
+          Break;
+        end;
+      end;
+
+      // 2. 열차번호 검색
+      if not found then
+      begin
+        for i := 1 to grdTrains.RowCount - 1 do
+        begin
+          if grdTrains.Cells[2,i] = searchText then
+          begin
+            grdTrains.SelectCells(2,i,2,i);
+            grdTrainsClickCell(grdTrains, i, 2);
+            found := true;
+            Break;
+          end;
+        end;
+      end;
+
+      // 3. 카메라 이름 검색
+      if not found then
+      begin
+        searchCams := gapi.GetTrainCamera();
+        searchCamId := -1;
+
+        for i := 0 to Length(searchCams)-1 do
+        begin
+          if searchCams[i].fname = searchText then
+          begin
+            searchCamId := searchCams[i].fid;
+            break;
+          end;
+        end;
+
+        if searchCamId <> -1 then
+        begin
+          for i := 0 to Length(trains)-1 do
+          begin
+            merges := gapi.GetTrainCameraMerge(trains[i].fid);
+            for j := 0 to Length(merges)-1 do
+            begin
+              for v := 0 to Length(merges[j].fitem)-1 do
+              begin
+                if merges[j].fitem[v].fcameraId = searchCamId then
+                begin
+                  grdTrains.Row := i + 1;
+                  grdTrains.SelectCells(1,i+1,1,i+1);
+                  grdTrainsClickCell(grdTrains, i+1, 1);
+                  tabMerge.TabIndex := j;
+                  found := true;
+                  break;
+                end;
+              end;
+              if found then break;
+            end;
+            if found then break;
+          end;
+        end;
+      end;
+
+      // 4. 머지 이름 검색
+      if not found then
+      begin
+        for i := 0 to Length(trains)-1 do
+        begin
+          merges := gapi.GetTrainCameraMerge(trains[i].fid);
+          for j := 0 to Length(merges)-1 do
+          begin
+            if merges[j].fname = searchText then
+            begin
+              grdTrains.Row := i + 1;
+              grdTrains.SelectCells(1,i+1,1,i+1);
+              grdTrainsClickCell(grdTrains, i+1, 1);
+              tabMerge.TabIndex := j;
+              found := true;
+              break;
+            end;
+          end;
+          if found then break;
+        end;
+      end;
+    end;
+
+    1: // 편성번호 검색
+    begin
+      for i := 1 to grdTrains.RowCount - 1 do
+      begin
+        if grdTrains.Cells[1,i] = searchText then
+        begin
+          grdTrains.SelectCells(1,i,1,i);
+          grdTrainsClickCell(grdTrains, i, 1);
+          found := true;
+          Break;
+        end;
+      end;
+    end;
+
+    2: // 열차번호 검색
+    begin
+      for i := 1 to grdTrains.RowCount - 1 do
+      begin
+        if grdTrains.Cells[2,i] = searchText then
+        begin
+          grdTrains.SelectCells(2,i,2,i);
+          grdTrainsClickCell(grdTrains, i, 2);
+          found := true;
+          Break;
+        end;
+      end;
+    end;
+
+    3: // 카메라 이름 검색
+    begin
+      searchCams := gapi.GetTrainCamera();
+      searchCamId := -1;
+
+      for i := 0 to Length(searchCams)-1 do
+      begin
+        if searchCams[i].fname = searchText then
+        begin
+          searchCamId := searchCams[i].fid;
+          break;
+        end;
+      end;
+
+      if searchCamId <> -1 then
+      begin
+        for i := 0 to Length(trains)-1 do
+        begin
+          merges := gapi.GetTrainCameraMerge(trains[i].fid);
+          for j := 0 to Length(merges)-1 do
+          begin
+            for v := 0 to Length(merges[j].fitem)-1 do
+            begin
+              if merges[j].fitem[v].fcameraId = searchCamId then
+              begin
+                grdTrains.Row := i + 1;
+                grdTrains.SelectCells(1,i+1,1,i+1);
+                grdTrainsClickCell(grdTrains, i+1, 1);
+                tabMerge.TabIndex := j;
+                found := true;
+                break;
+              end;
+            end;
+            if found then break;
+          end;
+          if found then break;
+        end;
+      end;
+    end;
+
+    4: // 머지 이름 검색
+    begin
+      for i := 0 to Length(trains)-1 do
+      begin
+        merges := gapi.GetTrainCameraMerge(trains[i].fid);
+        for j := 0 to Length(merges)-1 do
+        begin
+          if merges[j].fname = searchText then
+          begin
+            grdTrains.Row := i + 1;
+            grdTrains.SelectCells(1,i+1,1,i+1);
+            grdTrainsClickCell(grdTrains, i+1, 1);
+            tabMerge.TabIndex := j;
+            found := true;
+            break;
+          end;
+        end;
+        if found then break;
+      end;
+    end;
+  end;
+
+  if not found then
+    ShowTVCSMessage('검색 결과가 없습니다.');
+end;
+
 procedure TfrmLayouts.btnDeleteTabClick(Sender: TObject);
 var
   i : integer;
@@ -402,7 +607,8 @@ begin
   CamOffImg.LoadFromFile('../../icon-img/merCamOff.jpg');
 
   grdTrains.OnClickCell := grdTrainsClickCell;
-  
+  lblTitle.Caption := '다중 영상 관리 ('+IntToStr(gapi.GetLoinInfo.fsystem.fline) +'호선)'
+
 end;
 
 procedure TfrmLayouts.LoadTrainList(trainNo: string='');
@@ -506,8 +712,7 @@ begin
 
       partitionPanels[i].Tag := CreatePanelTag(panelNo, 4, col, row, saveData[i].cameraId);
       partitionPanels[i].Text := 
-        '<FONT color="#FFFFFF">' + CamIdToCamName(saveData[i].cameraId) + 
-        ' tag: ' + IntToStr(partitionPanels[i].Tag) + '</FONT>';
+        '<FONT color="#FFFFFF">' + CamIdToCamName(saveData[i].cameraId) + '</FONT>';
       partitionPanels[i].Background.LoadFromFile('../../icon-img/merCamOn.jpg');
       partitionPanels[i].OnMouseMove := pnPartitionMouseMove;
       partitionPanels[i].OnMouseLeave := pnPartitionMouseLeave;
@@ -550,8 +755,7 @@ begin
         CreatePanelTag(saveData[i].panelNo, 9, col, row, saveData[i].cameraId);
 
       partitionPanels[saveData[i].panelNo-1].Text := 
-        '<FONT color="#FFFFFF">' + CamIdToCamName(saveData[i].cameraId) + 
-        ' tag: ' + IntToStr(partitionPanels[saveData[i].panelNo-1].Tag) + '</FONT>';
+        '<FONT color="#FFFFFF">' + CamIdToCamName(saveData[i].cameraId)  + '</FONT>';
       partitionPanels[saveData[i].panelNo-1].Background.LoadFromFile('../../icon-img/merCamOn.jpg');
       partitionPanels[saveData[i].panelNo-1].OnMouseMove := pnPartitionMouseMove;
       partitionPanels[saveData[i].panelNo-1].OnMouseLeave := pnPartitionMouseLeave;
@@ -900,7 +1104,7 @@ begin
 
 
    newPanel.Tag := CreatePanelTag(panelNo, selPartition, col, row, cameraId);
-   newPanel.Text := '<FONT color="#FFFFFF">' + IntToStr(tag) + '</FONT>';  // tag 값 확인용
+   //newPanel.Text := '<FONT color="#FFFFFF">' + IntToStr(tag) + '</FONT>';  // tag 값 확인용
 
    // 패널 위치 설정
    newPanel.Left := OUTER_MARGIN + col * (panelWidth + MARGIN);
@@ -911,14 +1115,14 @@ begin
    // 패널 텍스트 및 배경 설정
    if cameraId > 0 then
    begin
-     newPanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(cameraId) +' tag: ' + IntToStr(newPanel.tag)+ '</FONT>';
+     newPanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(cameraId)+ '</FONT>';
      newPanel.Background := CamOnImg;
      newPanel.OnMouseMove := pnPartitionMouseMove;
      newPanel.OnMouseLeave := pnPartitionMouseLeave;
    end
    else
    begin
-     newPanel.Text := '<FONT color="#FFFFFF">카메라 없음'+' tag: ' + IntToStr(newPanel.tag)+ '</FONT>';
+     newPanel.Text := '<FONT color="#FFFFFF">카메라 없음'+ '</FONT>';
      newPanel.Background := CamOffImg;
    end;
 
@@ -953,6 +1157,13 @@ procedure TfrmLayouts.edCamMerNameKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
    tabMerge.AdvTabs.Items[tabMerge.TabIndex].Caption := edCamMerName.Text;
+end;
+
+procedure TfrmLayouts.edSearchTextKeyPress(Sender: TObject; var Key: Char);
+begin
+//
+  if Key = #13 then
+    btnSearchClick(Sender)
 end;
 
 procedure TfrmLayouts.grdTrainCamsCanClickCell(Sender: TObject; ARow,
@@ -1156,16 +1367,16 @@ begin
     // UI 업데이트
     if sourceHasCamera then
     begin
-      targetPanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(sourceCamId) + 
-        ' tag: ' + IntToStr(targetPanel.Tag) + '</FONT>';
+      {targetPanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(sourceCamId) +
+        ' tag: ' + IntToStr(targetPanel.Tag) + '</FONT>';}
+      targetPanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(sourceCamId)+ '</FONT>';
       targetPanel.Background.LoadFromFile('../../icon-img/merCamOn.jpg');
       targetPanel.OnMouseMove := pnPartitionMouseMove;
       targetPanel.OnMouseLeave := pnPartitionMouseLeave;
     end
     else
     begin
-      targetPanel.Text := '<FONT color="#FFFFFF">카메라 없음' + 
-        ' tag: ' + IntToStr(targetPanel.Tag) + '</FONT>';
+      targetPanel.Text := '<FONT color="#FFFFFF">' + '카메라 없음</FONT>';
       targetPanel.Background.LoadFromFile('../../icon-img/merCamOff.jpg');
       targetPanel.OnMouseMove := nil;
       targetPanel.OnMouseLeave := nil;
@@ -1173,16 +1384,14 @@ begin
 
     if targetHasCamera then
     begin
-      sourcePanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(targetCamId) + 
-        ' tag: ' + IntToStr(sourcePanel.Tag) + '</FONT>';
+      sourcePanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(targetCamId) + '</FONT>';
       sourcePanel.Background.LoadFromFile('../../icon-img/merCamOn.jpg');
       sourcePanel.OnMouseMove := pnPartitionMouseMove;
       sourcePanel.OnMouseLeave := pnPartitionMouseLeave;
     end
     else
     begin
-      sourcePanel.Text := '<FONT color="#FFFFFF">카메라 없음' + 
-        ' tag: ' + IntToStr(sourcePanel.Tag) + '</FONT>';
+      sourcePanel.Text := '<FONT color="#FFFFFF">카메라 없음' +'</FONT>';
       sourcePanel.Background.LoadFromFile('../../icon-img/merCamOff.jpg');
       sourcePanel.OnMouseMove := nil;
       sourcePanel.OnMouseLeave := nil;
@@ -1217,8 +1426,8 @@ begin
     targetPanel.Tag := CreatePanelTag(targetPanelNo, targetDivType, targetX, targetY, selTrainCam.fid);
     
     // 패널 UI 업데이트
-    targetPanel.Text := '<FONT color="#FFFFFF">' + selTrainCam.fname + 
-      ' tag: ' + IntToStr(targetPanel.Tag) + '</FONT>';
+    targetPanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(selTrainCam.fid) + '</FONT>';
+
     targetPanel.Background.LoadFromFile('../../icon-img/merCamOn.jpg');
     targetPanel.OnMouseMove := pnPartitionMouseMove;
     targetPanel.OnMouseLeave := pnPartitionMouseLeave;
@@ -1334,8 +1543,7 @@ begin
   panel.Tag := CreatePanelTag(panelNo, divType, posX, posY);
 
   // UI 업데이트
-  panel.Text := '<FONT color="#FFFFFF">카메라 없음' + 
-    ' tag: ' + IntToStr(panel.Tag) + '</FONT>';
+  panel.Text := '<FONT color="#FFFFFF">카메라 없음' + '</FONT>';
   panel.Background.LoadFromFile('../../icon-img/merCamOff.jpg');
   panel.OnMouseMove := nil;
   panel.OnMouseLeave := nil;

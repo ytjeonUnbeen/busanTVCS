@@ -21,10 +21,12 @@ begin
     // 기본 설정
     Font.Name := '맑은 고딕';
     Font.Size := 10;
+
     Font.Color := clWhite;
+    //ont.Style := [fsBold];
 
     //width := 60;
-    Height := 30;
+    Height := 25;
 
     with Appearance do
     begin

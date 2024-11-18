@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
   Vcl.Samples.Spin, Vcl.DBCtrls, Vcl.Grids, AdvUtil, AdvObj, BaseGrid, AdvGrid,
-  TVCSPopupView, TVCSButtonStyle, tvcsAPI, tvcsProtocol, AdvGlowButton, Registry;
+  TVCSPopupView, TVCSButtonStyle, tvcsAPI, tvcsProtocol, AdvGlowButton, Registry, TVCSCheckDialog;
 
 type
   TfrmSystem = class(TForm)
@@ -44,15 +44,20 @@ type
     grdCliLocense: TAdvStringGrid;
     cbxEventPop: TDBComboBox;
     Label1: TLabel;
-    edTCMSIP: TEdit;
-    Label2: TLabel;
+    edttcpip: TEdit;
+    lbttcsip: TLabel;
     btnAddCamLicense: TAdvGlowButton;
     btnAddCliLicense: TAdvGlowButton;
     btnSave: TAdvGlowButton;
     btnCancel: TAdvGlowButton;
     btnDlgClose: TAdvGlowButton;
-    Label3: TLabel;
-    Edit1: TEdit;
+    lbttcpport: TLabel;
+    edttcsport: TEdit;
+    lbttcpip: TLabel;
+    edttcsip: TEdit;
+    lbttcsprot: TLabel;
+    edttcpport: TEdit;
+    Label2: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure btnDlgCloseClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
@@ -65,7 +70,10 @@ type
 
   private
     { Private declarations }
-    tcmsIP : string;
+    ttcpip : string;
+    ttcpport : string;
+    ttcsip : string;
+    ttcsport : string;
     procedure loadCamLicenseList();
     procedure LoadSettings;
 
@@ -83,16 +91,8 @@ implementation
 
 
 procedure TfrmSystem.btnCancelClick(Sender: TObject);
-var
-  popView: TfrmPopupView;
 begin
-  popView:= TfrmPopupView.Create(Self);
-  popView.Label1.Caption := '변경 사항이 존재합니다.' + sLineBreak + sLineBreak +' 저장 없이 창을 닫으시겠습니까? ';
-  popView.btnAgree.Caption := '닫기';
-  popView.ShowModal;
-
   ModalResult:=mrCancel;
-  FreeAndNil(popView);
 end;
 
 procedure TfrmSystem.btnDlgCloseClick(Sender: TObject);
@@ -104,15 +104,21 @@ procedure TfrmSystem.btnSaveClick(Sender: TObject);
 var
   Registry: TRegIniFile;
 begin
-  // 올바른 생성 방식
-  Registry := TRegIniFile.Create(PrgKey);
-  try
-    Registry.WriteString('user', 'tcmsip', edTCMSIP.Text);
-  finally
-    Registry.Free;
+  // 올바른 생성 방식  ]
+  if ShowTVCSCheck(0) then
+  begin
+    Registry := TRegIniFile.Create(PrgKey);
+    try
+      Registry.WriteString('user', 'ttcpip', edttcpip.Text);
+      Registry.WriteString('user', 'ttcsip', edttcsip.Text);
+      Registry.WriteString('user', 'ttcpport', edttcpport.Text);
+      Registry.WriteString('user', 'ttcsport', edttcsport.Text);
+    finally
+      Registry.Free;
+    end;
+    ModalResult := mrOk;
   end;
 
-  ModalResult := mrOk;
 end;
 
 procedure TfrmSystem.FormCreate(Sender: TObject);
@@ -126,6 +132,9 @@ begin
   loadSettings;
 
   TButtonStyler.ApplyGlobalStyle(Self);
+  lblTitle.Caption := '시스템 관리 ('+IntToStr(gapi.GetLoinInfo.fsystem.fline) +'호선)';
+  //lblTitle.Left := (Panel1.Width - Label1.Width) div 2;
+
 
 
 end;
@@ -136,8 +145,18 @@ var
 begin
   Registry := TRegIniFile.Create(PrgKey);
   try
-    tcmsIP := Registry.ReadString('user', 'tcmsip', edTCMSIP.Text);
-    edTCMSIP.Text := tcmsIP;
+    ttcpip := Registry.ReadString('user', 'ttcpip', edttcpip.Text);
+    edttcpip.Text := ttcpip;
+    ttcpport := Registry.ReadString('user', 'ttcpport', edttcpport.Text);
+    edttcpport.Text := ttcpport;
+
+    ttcsip := Registry.ReadString('user', 'ttcsip', edttcsip.Text);
+    edttcsip.Text := ttcsip;
+    ttcsport := Registry.ReadString('user', 'ttcsport', edttcsport.Text);
+    edttcsport.Text := ttcsport;
+
+
+
   finally
     Registry.Free;
   end;

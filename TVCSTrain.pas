@@ -35,17 +35,17 @@ type
     btnAddCams: TAdvGlowButton;
     grdTrains: TAdvStringGrid;
     btnAddTrain: TAdvGlowButton;
-    btnSearch: TAdvGlowButton;
     btnStationDownload: TAdvGlowButton;
     btnUploadStations: TAdvGlowButton;
-    cmbStation: TComboBox;
-    edSearchText: TEdit;
     grdTrainCams: TAdvStringGrid;
     lblTrainCnt: TLabel;
     edTrainCnt: TEdit;
     VirtualImageList1: TVirtualImageList;
     ImageCollection1: TImageCollection;
     AdvGridExcelIO1: TAdvGridExcelIO;
+    cbSearch: TComboBox;
+    edSearchText: TEdit;
+    btnSearch: TAdvGlowButton;
     procedure btnCancelClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure btnDlgCloseClick(Sender: TObject);
@@ -60,6 +60,8 @@ type
     procedure grdTrainCamsClickCell(Sender: TObject; ARow, ACol: Integer);
     procedure btnUploadStationsClick(Sender: TObject);
     procedure btnStationDownloadClick(Sender: TObject);
+    procedure btnSearchClick(Sender: TObject);
+    procedure edSearchTextKeyPress(Sender: TObject; var Key: Char);
 
 
   private
@@ -389,19 +391,143 @@ end;
 
 
 
+procedure TfrmTrain.btnSearchClick(Sender: TObject);
+var
+  searchText: string;
+  searchMode: integer;
+  i: integer;
+  found: boolean;
+begin
+  searchText := edSearchText.Text;
+  if searchText = '' then Exit;
+
+  searchMode := cbSearch.ItemIndex;
+  found := false;
+
+  for i := 1 to grdTrains.RowCount - 1 do
+  begin
+    case searchMode of
+      0: // 전체 검색
+        if  grdTrains.Cells[1,i] = searchText then  // 역사명에서 찾은 경우
+        begin
+          grdTrains.SelectCells(1,i,1,i);
+          grdTrainsClickCell(grdTrains, i, 1);
+          found := true;
+          Break;
+        end
+        else if grdTrains.Cells[2,i] = searchText then  // 편성명에서 찾은 경우
+        begin
+          grdTrains.SelectCells(2,i,2,i);
+          grdTrainsClickCell(grdTrains, i, 2);
+          found := true;
+          Break;
+        end;
+      1: // 편성 검색
+        if grdTrains.Cells[1,i] = searchText then  // 역사명에서 찾은 경우
+        begin
+          grdTrains.SelectCells(1,i,1,i);
+          grdTrainsClickCell(grdTrains, i, 1);
+          found := true;
+          Break;
+        end;
+      2: // 역사명 검색
+         if grdTrains.Cells[2,i] = searchText then
+        begin
+          grdTrains.SelectCells(2,i,2,i);
+          grdTrainsClickCell(grdTrains, i, 2);
+          found := true;
+          Break;
+        end;
+    end;
+  end;
+
+  if not found then
+    ShowTVCSMessage('검색 결과가 없습니다.');
+end;
+
 procedure TfrmTrain.btnStationDownloadClick(Sender: TObject);
 var
-  SaveDialog : TSaveDialog;
+  SaveDialog: TSaveDialog;
+  ExcelGrid: TAdvStringGrid;
+  i, j, currentRow: Integer;
+  train: tvcsProtocol.TVCSTrain;
+  trainCameras: TArray<TVCSTrainCamera>;
 begin
-//
   SaveDialog := TSaveDialog.Create(nil);
-  SaveDialog.Filter := 'Excel Files (*.xlsx)|*.xlsx|Excel 97-2003 (*.xls)|*.xls';
-  SaveDialog.DefaultExt := 'xls';
-  SaveDialog.FilterIndex := 2;
+  ExcelGrid := TAdvStringGrid.Create(nil);
+  try
+    SaveDialog.Filter := 'Excel Files (*.xlsx)|*.xlsx|Excel 97-2003 (*.xls)|*.xls';
+    SaveDialog.DefaultExt := 'xls';
+    SaveDialog.FilterIndex := 2;
 
-  if SaveDialog.Execute then
-  begin
-    AdvGridExcelIO1.XLSExport(SaveDialog.FileName);
+    if SaveDialog.Execute then
+    begin
+      // 엑셀 그리드 초기 설정
+      with ExcelGrid do
+      begin
+        ColCount := 14;  // 전체 컬럼 수
+        RowCount := 1;   // 헤더 row
+
+        // 헤더 설정
+        Cells[1,1] := '편성번호';
+        Cells[2,1] := '열차번호';
+        Cells[3,1] := '객차수';
+        Cells[4,1] := '카메라수';
+        Cells[5,1] := 'TVCSIP';
+        Cells[6,1] := '설치위치';
+        Cells[7,1] := '카메라이름';
+        Cells[8,1] := '카메라ip주소';
+        Cells[9,1] := '포트번호';
+        Cells[10,1] := 'RTSP주소(main)';
+        Cells[11,1] := 'RTSP주소(sub)';
+        Cells[12,1] := '카메라ID';
+        Cells[13,1] := '카메라PW';
+      end;
+
+      currentRow := 2;
+
+      // 각 열차별로 처리
+      for i := 0 to Length(trains) - 1 do
+      begin
+        train := trains[i];
+        // 해당 열차의 카메라 정보 가져오기
+        trainCameras := gapi.GetTrainCamera(train.fid);
+
+        // 각 카메라별로 row 추가
+        for j := 0 to Length(trainCameras) - 1 do
+        begin
+          ExcelGrid.RowCount := currentRow + 1;
+
+          // 열차 정보
+          ExcelGrid.Cells[1,currentRow] := IntToStr(train.fformatNo);
+          ExcelGrid.Cells[2,currentRow] := train.ftrainNo;
+          ExcelGrid.Cells[3,currentRow] := IntToStr(train.fcarriageNum);
+          ExcelGrid.Cells[4,currentRow] := IntToStr(train.fcameraNum);
+          ExcelGrid.Cells[5,currentRow] := train.ftvcsIpaddr;
+
+          // 카메라 정보
+          ExcelGrid.Cells[6,currentRow] := IntToStr(trainCameras[j].fposition);
+          ExcelGrid.Cells[7,currentRow] := trainCameras[j].fname;
+          ExcelGrid.Cells[8,currentRow] := trainCameras[j].fipaddr;
+          ExcelGrid.Cells[9,currentRow] := IntToStr(trainCameras[j].fport);
+          ExcelGrid.Cells[10,currentRow] := trainCameras[j].frtsp;
+          ExcelGrid.Cells[11,currentRow] := trainCameras[j].frtsp2;
+          ExcelGrid.Cells[12,currentRow] := trainCameras[j].fuserId;
+          ExcelGrid.Cells[13,currentRow] := trainCameras[j].fuserPwd;
+
+          Inc(currentRow);
+        end;
+      end;
+
+      // 엑셀로 저장
+      AdvGridExcelIO1.AdvStringGrid := ExcelGrid;
+      AdvGridExcelIO1.XLSExport(SaveDialog.FileName);
+      ShowTVCSMessage('엑셀 파일이 저장되었습니다.');
+    end;
+
+  finally
+    SaveDialog.Free;
+    ExcelGrid.Free;
   end;
 end;
 
@@ -431,6 +557,12 @@ begin
 end;
 
 
+procedure TfrmTrain.edSearchTextKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #13 then
+    btnSearchClick(Sender);
+end;
+
 procedure TfrmTrain.FormCreate(Sender: TObject);
 begin
 
@@ -444,6 +576,8 @@ begin
   TButtonStyler.ApplyGlobalStyle(Self);
 
   grdTrains.OnClickCell := grdTrainsClickCell;
+  lblTitle.Caption := '열차 정보 관리 ('+IntToStr(gapi.GetLoinInfo.fsystem.fline) +'호선)'
+
 end;
 
 procedure TfrmTrain.LoadTrainList(trainNo: string='');
@@ -545,18 +679,18 @@ begin
     //760
     ColWidths[0] := 60;   // 객차번호
     ColWidths[1] := 40;  // 호위치
-    ColWidths[2] := 70;  // 카메라이름
-    ColWidths[3] := 100;   // Port
-    ColWidths[4] := 40;  // RTSP High
-    ColWidths[5] := 110;  // RTSP Low
+    ColWidths[2] := 90;  // 카메라이름
+    ColWidths[3] := 100;   // IP
+    ColWidths[4] := 40;  // Port
+    ColWidths[5] := 100;  // RTSP High
 
-    ColWidths[6] := 110;
-    ColWidths[7] := 72;   // Password
+    ColWidths[6] := 100;  // RTSP Low
+    ColWidths[7] := 65;   // Password
     ColWidths[8] := 82;   // 미리보기 버튼
     ColWidths[9] := 65;   // 삭제 버튼
     ColWidths[10] := 45;
 
-    Cells[0,0]:='객차번호';
+    Cells[0,0]:='열차번호';
     Cells[1,0]:='위치';
 
     Cells[2,0]:='카메라명';

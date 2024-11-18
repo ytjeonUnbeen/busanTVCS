@@ -26,12 +26,13 @@ const
 type
 
   TvcsUser=class
+      fuserId: string;
       ffirstName:String;
       flastName:String;
       femail:String;
-      fisStaff:Integer;
+      fisStaff:integer;
       fisSuperUser:boolean;
-      fActive:boolean;
+      fisActive:boolean;
       flastLogin:String;
       fdateJoined:String;
       fversion:String;
@@ -104,6 +105,8 @@ type
     fdnApprTcode:String;
     fdnArrvTcode:String;
     fdnLeavTcode:String;
+    fprevCode:String;
+    fnextCode:String;
     //fline:Integer;
   end;
 
@@ -368,25 +371,29 @@ type
   TVCSDevice=class
     fid: integer;
     ftype: string;
-    fstationCode: string;
+    fstationCode: integer;
     ftrainNo: integer;
     fipAddr: string;
     fport: integer;
     fmemo: string;
+    floginId: string;
+    floginPwd: string;
   end;
 
   TVCSDevicePost=class
     ftype: string;
-    fstationCode: string;
+    fstationCode: integer;
     ftrainNo: integer;
     fipAddr: string;
     fport: integer;
     fmemo: string;
+    floginId: string;
+    floginPwd: string;
   end;
 
   TVCSDeviceMsg=class
     fdeviceId: integer;
-    ftype: integer;
+    ftype: string;
     fmsg: string;
     fdttm: string;
   end;
@@ -395,6 +402,15 @@ type
     fdeviceId: integer;
     ftype: integer;
     fmsg: string;
+  end;
+
+  TVCSInfo=class
+    fdata: string;
+  end;
+
+  TVCSInfoPatch=class
+    fdataKey: string;
+    fdata: string;
   end;
 
 

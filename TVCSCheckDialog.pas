@@ -18,6 +18,7 @@ begin
   Dialog.Fill.Color := clWhite;
   Dialog.Fill.ColorTo := clWhite;
   Dialog.Position := poScreenCenter;
+  Dialog.fill.Opacity := 255;
 
   Dialog.MinimumWidth := 500;
   Dialog.MinimumHeight := 300;
@@ -26,11 +27,12 @@ begin
   Dialog.ButtonAreaFill.ColorTo := clWhite;
 
   Dialog.HTMLText.Location := hlCenterCenter;
-  Dialog.CaptionFill.Color := $B26A43;
+  Dialog.CaptionFill.Color := $964315;
 
   Dialog.CaptionHeight := 50;
   Dialog.CaptionFill.GradientType := gtSolid;
   Dialog.ButtonAreaFill.GradientType := gtSolid;
+
 
   Dialog.Fill.GradientType := gtSolid;
   Dialog.Fill.GradientMirrorType := gtNone;
@@ -46,6 +48,8 @@ begin
     InitializeDialog(Dialog);
     Dialog.Buttons.Clear;
 
+
+
     case DialogType of
       0:  // 수정
       begin
@@ -57,8 +61,12 @@ begin
           Caption := '수정';
           ButtonResult := mrYes;
           Color := $81330F;
-          ColorFocused := $81330F;
+          ColorDown := $81330F;      // 클릭했을 때의 색상도 동일하게
+          ColorFocused := $81330F;   // 포커스됐을 때의 색상도 동일하게
           HoverColor := $6C260A;
+          BorderWidth := 0;          // 테두리 제거
+          BorderOpacity := 0;        // 테두리 투명도 0
+          Opacity := 255;
         end;
       end;
 

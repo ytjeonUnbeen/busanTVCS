@@ -63,7 +63,6 @@ begin
   if isLogged then
   begin
     SaveSettings;
-    //Globalapi := api;
 
     ModalResult := mrOK;
     Exit;

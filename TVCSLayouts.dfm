@@ -20,14 +20,14 @@ object frmLayouts: TfrmLayouts
     Left = 0
     Top = 0
     Width = 1274
-    Height = 608
+    Height = 628
     Align = alClient
     Caption = 'pnMainFrame'
     ShowCaption = False
     TabOrder = 0
     object lblInfoTitle: TLabel
-      Left = 96
-      Top = 106
+      Left = 65
+      Top = 82
       Width = 56
       Height = 18
       Caption = #54200#49457' '#51221#48372
@@ -51,25 +51,18 @@ object frmLayouts: TfrmLayouts
       Font.Style = [fsBold]
       ParentFont = False
     end
-    object lblSubLine: TLabel
-      Left = 758
-      Top = 8
-      Width = 36
-      Height = 13
-      Caption = '(0'#54840#49440')'
-    end
     object pnCamStationInfo: TPanel
-      Left = 358
-      Top = 82
+      Left = 322
+      Top = 96
       Width = 888
-      Height = 509
+      Height = 495
       Caption = 'edit'
       ParentColor = True
       ShowCaption = False
       TabOrder = 0
       object lbTrainCamInfo: TLabel
         Left = 17
-        Top = 21
+        Top = 40
         Width = 108
         Height = 13
         Caption = #50676#52264' '#44061#49892' '#52852#47700#46972' '#51221#48372
@@ -219,118 +212,6 @@ object frmLayouts: TfrmLayouts
           40
           38)
       end
-      object btnAddTab: TAdvGlowButton
-        Left = 672
-        Top = 10
-        Width = 71
-        Height = 24
-        Caption = #53485#52628#44032
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        NotesFont.Charset = DEFAULT_CHARSET
-        NotesFont.Color = clWindowText
-        NotesFont.Height = -11
-        NotesFont.Name = 'Tahoma'
-        NotesFont.Style = []
-        ParentFont = False
-        Rounded = True
-        TabOrder = 1
-        OnClick = btnAddTabClick
-        Appearance.BorderColor = 11382963
-        Appearance.BorderColorHot = 11565130
-        Appearance.BorderColorCheckedHot = 11565130
-        Appearance.BorderColorDown = 11565130
-        Appearance.BorderColorChecked = 13744549
-        Appearance.BorderColorDisabled = 13948116
-        Appearance.Color = clWhite
-        Appearance.ColorTo = clWhite
-        Appearance.ColorChecked = 13744549
-        Appearance.ColorCheckedTo = 13744549
-        Appearance.ColorDisabled = clWhite
-        Appearance.ColorDisabledTo = clNone
-        Appearance.ColorDown = 11565130
-        Appearance.ColorDownTo = 11565130
-        Appearance.ColorHot = 16444643
-        Appearance.ColorHotTo = 16444643
-        Appearance.ColorMirror = clWhite
-        Appearance.ColorMirrorTo = clWhite
-        Appearance.ColorMirrorHot = 16444643
-        Appearance.ColorMirrorHotTo = 16444643
-        Appearance.ColorMirrorDown = 11565130
-        Appearance.ColorMirrorDownTo = 11565130
-        Appearance.ColorMirrorChecked = 13744549
-        Appearance.ColorMirrorCheckedTo = 13744549
-        Appearance.ColorMirrorDisabled = clWhite
-        Appearance.ColorMirrorDisabledTo = clNone
-        Appearance.GradientHot = ggVertical
-        Appearance.GradientMirrorHot = ggVertical
-        Appearance.GradientDown = ggVertical
-        Appearance.GradientMirrorDown = ggVertical
-        Appearance.GradientChecked = ggVertical
-        Appearance.TextColorChecked = 3750459
-        Appearance.TextColorDown = 2303013
-        Appearance.TextColorHot = 2303013
-        Appearance.TextColorDisabled = 13948116
-      end
-      object btnDeleteTab: TAdvGlowButton
-        Left = 789
-        Top = 10
-        Width = 71
-        Height = 24
-        Caption = #53485#51228#44144
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        NotesFont.Charset = DEFAULT_CHARSET
-        NotesFont.Color = clWindowText
-        NotesFont.Height = -11
-        NotesFont.Name = 'Tahoma'
-        NotesFont.Style = []
-        ParentFont = False
-        Rounded = True
-        TabOrder = 2
-        OnClick = btnDeleteTabClick
-        Appearance.BorderColor = 11382963
-        Appearance.BorderColorHot = 11565130
-        Appearance.BorderColorCheckedHot = 11565130
-        Appearance.BorderColorDown = 11565130
-        Appearance.BorderColorChecked = 13744549
-        Appearance.BorderColorDisabled = 13948116
-        Appearance.Color = clWhite
-        Appearance.ColorTo = clWhite
-        Appearance.ColorChecked = 13744549
-        Appearance.ColorCheckedTo = 13744549
-        Appearance.ColorDisabled = clWhite
-        Appearance.ColorDisabledTo = clNone
-        Appearance.ColorDown = 11565130
-        Appearance.ColorDownTo = 11565130
-        Appearance.ColorHot = 16444643
-        Appearance.ColorHotTo = 16444643
-        Appearance.ColorMirror = clWhite
-        Appearance.ColorMirrorTo = clWhite
-        Appearance.ColorMirrorHot = 16444643
-        Appearance.ColorMirrorHotTo = 16444643
-        Appearance.ColorMirrorDown = 11565130
-        Appearance.ColorMirrorDownTo = 11565130
-        Appearance.ColorMirrorChecked = 13744549
-        Appearance.ColorMirrorCheckedTo = 13744549
-        Appearance.ColorMirrorDisabled = clWhite
-        Appearance.ColorMirrorDisabledTo = clNone
-        Appearance.GradientHot = ggVertical
-        Appearance.GradientMirrorHot = ggVertical
-        Appearance.GradientDown = ggVertical
-        Appearance.GradientMirrorDown = ggVertical
-        Appearance.GradientChecked = ggVertical
-        Appearance.TextColorChecked = 3750459
-        Appearance.TextColorDown = 2303013
-        Appearance.TextColorHot = 2303013
-        Appearance.TextColorDisabled = 13948116
-      end
       object btnAddCam: TAdvMetroButton
         Left = 236
         Top = 160
@@ -357,7 +238,7 @@ object frmLayouts: TfrmLayouts
           429706E815A194003D22B412A055845A02B488D04B802B911012E04C248C04E8
           193B354722A1D2D8836B4A947F1CA8B06D3F99A62CBB91515C3F000000004945
           4E44AE426082}
-        TabOrder = 3
+        TabOrder = 1
         Version = '1.2.0.0'
         Visible = False
         OnClick = btnAddCamClick
@@ -387,60 +268,59 @@ object frmLayouts: TfrmLayouts
           122AFAA42C54F64E69A8704B79A83459022A7EB50C54FED552D00187E5A02376
           CB4147EC96E4CF1C72F07BC4B67D03B9D92B628B0126C40000000049454E44AE
           426082}
-        TabOrder = 4
+        TabOrder = 2
         Version = '1.2.0.0'
         Visible = False
         OnClick = btnRemoveCamClick
       end
       object Panel1: TPanel
         Left = 280
-        Top = 54
-        Width = 577
+        Top = 40
+        Width = 585
         Height = 443
         Caption = 'Panel1'
         ShowCaption = False
-        TabOrder = 5
+        TabOrder = 3
         object Panel2: TPanel
           Left = 1
-          Top = 25
-          Width = 575
-          Height = 417
+          Top = 37
+          Width = 583
+          Height = 405
           Align = alClient
           Caption = 'Panel2'
           ShowCaption = False
           TabOrder = 0
-          ExplicitLeft = -47
           object Label1: TLabel
             Left = 304
-            Top = 70
+            Top = 76
             Width = 33
-            Height = 21
+            Height = 13
             Caption = #54644#49345#46020
           end
           object lbmergeName: TLabel
             Left = 31
-            Top = 6
+            Top = 15
             Width = 66
             Height = 13
             Caption = #45796#51473#50689#49345#51060#47492
           end
           object Label2: TLabel
             Left = 47
-            Top = 36
+            Top = 45
             Width = 47
             Height = 13
             Caption = 'RTSP'#51452#49548
           end
           object Label3: TLabel
             Left = 50
-            Top = 68
+            Top = 74
             Width = 47
             Height = 13
             Caption = #54868#47732' '#48516#54624
           end
           object edCamMerName: TAdvEdit
             Left = 111
-            Top = 6
+            Top = 15
             Width = 241
             Height = 21
             EmptyTextStyle = []
@@ -469,7 +349,7 @@ object frmLayouts: TfrmLayouts
           end
           object EdRtspIP: TAdvEdit
             Left = 111
-            Top = 33
+            Top = 42
             Width = 241
             Height = 21
             EmptyTextStyle = []
@@ -496,7 +376,7 @@ object frmLayouts: TfrmLayouts
           end
           object rbtnCheckPartition: TAdvOfficeRadioGroup
             Left = 111
-            Top = 60
+            Top = 66
             Width = 162
             Height = 35
             BorderColor = 12895944
@@ -529,8 +409,8 @@ object frmLayouts: TfrmLayouts
           object pnPartition: TAdvPanel
             Left = 16
             Top = 101
-            Width = 540
-            Height = 304
+            Width = 553
+            Height = 292
             ParentColor = True
             TabOrder = 3
             UseDockManager = True
@@ -578,7 +458,7 @@ object frmLayouts: TfrmLayouts
           end
           object ComboBox1: TComboBox
             Left = 358
-            Top = 65
+            Top = 71
             Width = 130
             Height = 21
             Enabled = False
@@ -591,7 +471,7 @@ object frmLayouts: TfrmLayouts
           end
           object AdvMetroButton1: TAdvMetroButton
             Left = 358
-            Top = 28
+            Top = 37
             Width = 27
             Height = 31
             Caption = ''
@@ -614,22 +494,25 @@ object frmLayouts: TfrmLayouts
           end
         end
         object tabMerge: TAdvTabSet
-          Left = 1
-          Top = 1
-          Width = 575
-          Height = 24
+          AlignWithMargins = True
+          Left = 4
+          Top = 4
+          Width = 577
+          Height = 30
           Version = '1.7.5.0'
           Align = alTop
           ActiveFont.Charset = DEFAULT_CHARSET
           ActiveFont.Color = clWindowText
           ActiveFont.Height = -11
           ActiveFont.Name = 'Tahoma'
-          ActiveFont.Style = []
+          ActiveFont.Style = [fsBold]
+          ClosePosition = cpRight
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
+          StartMargin = 0
           SoftTop = True
           AdvTabs = <
             item
@@ -637,7 +520,7 @@ object frmLayouts: TfrmLayouts
               Visible = False
               ShowClose = False
               TextColor = clCream
-              TabColor = clBtnFace
+              TabColor = clBackground
             end>
           TextColor = clWhite
           TabBorderColor = clNone
@@ -1013,13 +896,125 @@ object frmLayouts: TfrmLayouts
             00FFFF00FFFF00FF0000}
           GradientDirection = gdVertical
           TabMargin.LeftMargin = 10
-          TabMargin.TopMargin = 2
+          TabMargin.TopMargin = 5
           TabMargin.RightMargin = 10
           TabOverlap = 0
           ShowScroller = ssAuto
-          TabHeight = 30
+          TabHeight = 25
           OnChange = tabMergeChange
         end
+      end
+      object btnAddTab: TAdvGlowButton
+        Left = 696
+        Top = 10
+        Width = 71
+        Height = 24
+        Caption = #53485#52628#44032
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        NotesFont.Charset = DEFAULT_CHARSET
+        NotesFont.Color = clWindowText
+        NotesFont.Height = -11
+        NotesFont.Name = 'Tahoma'
+        NotesFont.Style = []
+        ParentFont = False
+        Rounded = True
+        TabOrder = 4
+        OnClick = btnAddTabClick
+        Appearance.BorderColor = 11382963
+        Appearance.BorderColorHot = 11565130
+        Appearance.BorderColorCheckedHot = 11565130
+        Appearance.BorderColorDown = 11565130
+        Appearance.BorderColorChecked = 13744549
+        Appearance.BorderColorDisabled = 13948116
+        Appearance.Color = clWhite
+        Appearance.ColorTo = clWhite
+        Appearance.ColorChecked = 13744549
+        Appearance.ColorCheckedTo = 13744549
+        Appearance.ColorDisabled = clWhite
+        Appearance.ColorDisabledTo = clNone
+        Appearance.ColorDown = 11565130
+        Appearance.ColorDownTo = 11565130
+        Appearance.ColorHot = 16444643
+        Appearance.ColorHotTo = 16444643
+        Appearance.ColorMirror = clWhite
+        Appearance.ColorMirrorTo = clWhite
+        Appearance.ColorMirrorHot = 16444643
+        Appearance.ColorMirrorHotTo = 16444643
+        Appearance.ColorMirrorDown = 11565130
+        Appearance.ColorMirrorDownTo = 11565130
+        Appearance.ColorMirrorChecked = 13744549
+        Appearance.ColorMirrorCheckedTo = 13744549
+        Appearance.ColorMirrorDisabled = clWhite
+        Appearance.ColorMirrorDisabledTo = clNone
+        Appearance.GradientHot = ggVertical
+        Appearance.GradientMirrorHot = ggVertical
+        Appearance.GradientDown = ggVertical
+        Appearance.GradientMirrorDown = ggVertical
+        Appearance.GradientChecked = ggVertical
+        Appearance.TextColorChecked = 3750459
+        Appearance.TextColorDown = 2303013
+        Appearance.TextColorHot = 2303013
+        Appearance.TextColorDisabled = 13948116
+      end
+      object btnDeleteTab: TAdvGlowButton
+        Left = 792
+        Top = 10
+        Width = 71
+        Height = 24
+        Caption = #53485#51228#44144
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        NotesFont.Charset = DEFAULT_CHARSET
+        NotesFont.Color = clWindowText
+        NotesFont.Height = -11
+        NotesFont.Name = 'Tahoma'
+        NotesFont.Style = []
+        ParentFont = False
+        Rounded = True
+        TabOrder = 5
+        OnClick = btnDeleteTabClick
+        Appearance.BorderColor = 11382963
+        Appearance.BorderColorHot = 11565130
+        Appearance.BorderColorCheckedHot = 11565130
+        Appearance.BorderColorDown = 11565130
+        Appearance.BorderColorChecked = 13744549
+        Appearance.BorderColorDisabled = 13948116
+        Appearance.Color = clWhite
+        Appearance.ColorTo = clWhite
+        Appearance.ColorChecked = 13744549
+        Appearance.ColorCheckedTo = 13744549
+        Appearance.ColorDisabled = clWhite
+        Appearance.ColorDisabledTo = clNone
+        Appearance.ColorDown = 11565130
+        Appearance.ColorDownTo = 11565130
+        Appearance.ColorHot = 16444643
+        Appearance.ColorHotTo = 16444643
+        Appearance.ColorMirror = clWhite
+        Appearance.ColorMirrorTo = clWhite
+        Appearance.ColorMirrorHot = 16444643
+        Appearance.ColorMirrorHotTo = 16444643
+        Appearance.ColorMirrorDown = 11565130
+        Appearance.ColorMirrorDownTo = 11565130
+        Appearance.ColorMirrorChecked = 13744549
+        Appearance.ColorMirrorCheckedTo = 13744549
+        Appearance.ColorMirrorDisabled = clWhite
+        Appearance.ColorMirrorDisabledTo = clNone
+        Appearance.GradientHot = ggVertical
+        Appearance.GradientMirrorHot = ggVertical
+        Appearance.GradientDown = ggVertical
+        Appearance.GradientMirrorDown = ggVertical
+        Appearance.GradientChecked = ggVertical
+        Appearance.TextColorChecked = 3750459
+        Appearance.TextColorDown = 2303013
+        Appearance.TextColorHot = 2303013
+        Appearance.TextColorDisabled = 13948116
       end
     end
     object btnSearch: TAdvGlowButton
@@ -1041,6 +1036,7 @@ object frmLayouts: TfrmLayouts
       ParentFont = False
       Rounded = True
       TabOrder = 1
+      OnClick = btnSearchClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130
@@ -1077,18 +1073,21 @@ object frmLayouts: TfrmLayouts
       Appearance.TextColorHot = 2303013
       Appearance.TextColorDisabled = 13948116
     end
-    object cmbStation: TComboBox
+    object cbSearch: TComboBox
       Left = 505
       Top = 43
       Width = 97
       Height = 21
+      Style = csDropDownList
       ItemIndex = 0
       TabOrder = 2
-      Text = '== '#51204#52404' =='
+      Text = #51204#52404
       Items.Strings = (
-        '== '#51204#52404' =='
-        #50669#49324#47749
-        #50669#48264#54840)
+        #51204#52404
+        #54200#49457' '#48264#54840
+        #50676#52264' '#48264#54840
+        #52852#47700#46972#47749
+        #45796#51473#50689#49345#47749)
     end
     object edSearchText: TEdit
       Left = 608
@@ -1096,12 +1095,13 @@ object frmLayouts: TfrmLayouts
       Width = 186
       Height = 21
       TabOrder = 3
+      OnKeyPress = edSearchTextKeyPress
     end
     object grdTrains: TAdvStringGrid
-      Left = 96
-      Top = 144
+      Left = 65
+      Top = 106
       Width = 200
-      Height = 400
+      Height = 480
       DrawingStyle = gdsClassic
       FixedColor = clSkyBlue
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRowSizing, goColSizing, goRowSelect, goFixedRowDefAlign]
@@ -1226,19 +1226,17 @@ object frmLayouts: TfrmLayouts
   end
   object pnBottom: TPanel
     Left = 0
-    Top = 608
+    Top = 628
     Width = 1274
-    Height = 70
+    Height = 50
     Align = alBottom
     Caption = 'pnBottom'
     ShowCaption = False
     TabOrder = 1
-    ExplicitLeft = 40
-    ExplicitTop = 583
     object btnCancel: TAdvGlowButton
-      Left = 664
-      Top = 23
-      Width = 40
+      Left = 1055
+      Top = 15
+      Width = 65
       Height = 24
       Caption = #52712#49548
       Font.Charset = DEFAULT_CHARSET
@@ -1292,9 +1290,9 @@ object frmLayouts: TfrmLayouts
       Appearance.TextColorDisabled = 13948116
     end
     object btnDlgClose: TAdvGlowButton
-      Left = 55
-      Top = 31
-      Width = 40
+      Left = 65
+      Top = 15
+      Width = 65
       Height = 24
       Caption = #45803#44592
       Font.Charset = DEFAULT_CHARSET
@@ -1348,9 +1346,9 @@ object frmLayouts: TfrmLayouts
       Appearance.TextColorDisabled = 13948116
     end
     object btnSave: TAdvGlowButton
-      Left = 735
-      Top = 23
-      Width = 40
+      Left = 1145
+      Top = 15
+      Width = 65
       Height = 24
       Caption = #51200#51109
       Font.Charset = DEFAULT_CHARSET

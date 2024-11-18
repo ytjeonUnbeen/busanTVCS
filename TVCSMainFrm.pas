@@ -98,6 +98,7 @@ type
     tabRoute: TAdvTabSet;
     pnRoute: TPanel;
     tabImgList: TVirtualImageList;
+    AdvMetroToolButton1: TAdvMetroToolButton;
     procedure ToolbtnCloseClick(Sender: TObject);
     procedure toolBtnMaxClick(Sender: TObject);
     procedure toolBtnMinimizeClick(Sender: TObject);

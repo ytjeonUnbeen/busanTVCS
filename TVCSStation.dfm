@@ -27,9 +27,9 @@ object frmStation: TfrmStation
     ShowCaption = False
     TabOrder = 0
     object btnCancel: TAdvGlowButton
-      Left = 544
-      Top = 6
-      Width = 75
+      Left = 1055
+      Top = 15
+      Width = 65
       Height = 24
       Caption = #52712#49548
       Font.Charset = DEFAULT_CHARSET
@@ -86,7 +86,7 @@ object frmStation: TfrmStation
     object btnDlgClose: TAdvGlowButton
       Left = 60
       Top = 15
-      Width = 40
+      Width = 65
       Height = 24
       Caption = #45803#44592
       Font.Charset = DEFAULT_CHARSET
@@ -140,9 +140,9 @@ object frmStation: TfrmStation
       Appearance.TextColorDisabled = 13948116
     end
     object btnSave: TAdvGlowButton
-      Left = 688
-      Top = 6
-      Width = 75
+      Left = 1145
+      Top = 15
+      Width = 65
       Height = 24
       Caption = #51200#51109
       Font.Charset = DEFAULT_CHARSET
@@ -206,21 +206,21 @@ object frmStation: TfrmStation
     ShowCaption = False
     TabOrder = 1
     object lblInfoTitle: TLabel
-      Left = 450
-      Top = 80
-      Width = 112
-      Height = 18
-      Caption = #49849#44053#44592' '#52852#47700#46972' '#51221#48372
+      Left = 408
+      Top = 74
+      Width = 140
+      Height = 24
+      Caption = #49849#44053#51109' '#52852#47700#46972' '#51221#48372
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -20
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
     end
     object lblTitle: TLabel
-      Left = 577
-      Top = 18
+      Left = 560
+      Top = 13
       Width = 148
       Height = 19
       Caption = #50669#49324' '#51221#48372' '#44288#47532
@@ -233,15 +233,21 @@ object frmStation: TfrmStation
     end
     object lblTotal: TLabel
       Left = 65
-      Top = 85
-      Width = 35
-      Height = 13
+      Top = 80
+      Width = 44
+      Height = 18
       Caption = #52509': 0'#44060
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
     end
     object pnCamStationInfo: TPanel
       Left = 408
       Top = 104
-      Width = 842
+      Width = 801
       Height = 481
       BevelEdges = []
       BevelOuter = bvNone
@@ -251,7 +257,7 @@ object frmStation: TfrmStation
       object pnDefStation: TPanel
         Left = 0
         Top = 0
-        Width = 842
+        Width = 801
         Height = 49
         Align = alTop
         Caption = 'pnDefStation'
@@ -301,7 +307,7 @@ object frmStation: TfrmStation
       object pnT1Delay: TPanel
         Left = 0
         Top = 49
-        Width = 842
+        Width = 801
         Height = 107
         Align = alTop
         Caption = 'pnT1Delay'
@@ -369,7 +375,7 @@ object frmStation: TfrmStation
           Caption = #51217#44540#53076#46300
         end
         object Label3: TLabel
-          Left = 651
+          Left = 659
           Top = 35
           Width = 44
           Height = 13
@@ -383,7 +389,7 @@ object frmStation: TfrmStation
           Caption = #46020#52265#53076#46300
         end
         object Label5: TLabel
-          Left = 651
+          Left = 659
           Top = 75
           Width = 44
           Height = 13
@@ -438,7 +444,7 @@ object frmStation: TfrmStation
           Text = '0'
         end
         object eddnApprTcode: TEdit
-          Left = 701
+          Left = 709
           Top = 30
           Width = 77
           Height = 21
@@ -446,7 +452,7 @@ object frmStation: TfrmStation
           Text = '0'
         end
         object eddnLeavTcode: TEdit
-          Left = 701
+          Left = 709
           Top = 68
           Width = 77
           Height = 21
@@ -457,38 +463,23 @@ object frmStation: TfrmStation
       object pnCamInfos: TPanel
         Left = 0
         Top = 156
-        Width = 842
+        Width = 801
         Height = 325
         Align = alClient
         Caption = 'pnCamInfos'
         ShowCaption = False
         TabOrder = 2
-        ExplicitTop = 144
-        ExplicitHeight = 337
-        object Label2: TLabel
-          Left = 354
-          Top = 18
-          Width = 96
-          Height = 16
-          Caption = #49849#44053#44592' '#52852#47700#46972' '#51221#48372
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-        end
         object lbStCamCnt: TLabel
           Left = 18
-          Top = 29
+          Top = 18
           Width = 35
           Height = 13
           Caption = #52509': 0'#44060
         end
         object btnAddCams: TAdvGlowButton
-          Left = 712
-          Top = 18
-          Width = 113
+          Left = 688
+          Top = 12
+          Width = 97
           Height = 24
           Caption = #52852#47700#46972' '#52628#44032
           Font.Charset = DEFAULT_CHARSET
@@ -543,8 +534,8 @@ object frmStation: TfrmStation
         end
         object grdStationCams: TAdvStringGrid
           Left = 18
-          Top = 56
-          Width = 807
+          Top = 48
+          Width = 767
           Height = 265
           DefaultRowHeight = 25
           DrawingStyle = gdsClassic
@@ -686,9 +677,9 @@ object frmStation: TfrmStation
       end
     end
     object btnAddStation: TAdvGlowButton
-      Left = 282
-      Top = 74
-      Width = 104
+      Left = 301
+      Top = 70
+      Width = 85
       Height = 24
       Caption = #50669#49324' '#52628#44032
       Font.Charset = DEFAULT_CHARSET
@@ -744,7 +735,7 @@ object frmStation: TfrmStation
     end
     object btnSearch: TAdvGlowButton
       Left = 769
-      Top = 40
+      Top = 38
       Width = 50
       Height = 24
       Caption = #44160#49353
@@ -761,6 +752,7 @@ object frmStation: TfrmStation
       ParentFont = False
       Rounded = True
       TabOrder = 2
+      OnClick = btnSearchClick
       Appearance.BorderColor = clBlue
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130
@@ -798,7 +790,7 @@ object frmStation: TfrmStation
       Appearance.TextColorDisabled = 13948116
     end
     object btnStationDownload: TAdvGlowButton
-      Left = 1072
+      Left = 1034
       Top = 599
       Width = 175
       Height = 24
@@ -854,7 +846,7 @@ object frmStation: TfrmStation
       Appearance.TextColorDisabled = 13948116
     end
     object btnUploadStations: TAdvGlowButton
-      Left = 888
+      Left = 850
       Top = 599
       Width = 175
       Height = 24
@@ -909,31 +901,33 @@ object frmStation: TfrmStation
       Appearance.TextColorHot = 2303013
       Appearance.TextColorDisabled = 13948116
     end
-    object cmbStation: TComboBox
+    object cbSearch: TComboBox
       Left = 474
-      Top = 43
-      Width = 97
+      Top = 40
+      Width = 95
       Height = 21
+      Style = csDropDownList
       ItemIndex = 0
       TabOrder = 5
-      Text = '== '#51204#52404' =='
+      Text = #51204#52404
       Items.Strings = (
-        '== '#51204#52404' =='
-        #50669#49324#47749
-        #50669#48264#54840)
+        #51204#52404
+        #50669#48264#54840
+        #50669#49324#47749)
     end
     object edSearchText: TEdit
       Left = 577
-      Top = 43
+      Top = 40
       Width = 186
       Height = 21
       TabOrder = 6
+      OnKeyPress = edSearchTextKeyPress
     end
     object grdStations: TAdvStringGrid
       Left = 65
-      Top = 104
+      Top = 100
       Width = 321
-      Height = 481
+      Height = 480
       DrawingStyle = gdsClassic
       FixedColor = clSkyBlue
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSizing, goColSizing, goFixedRowDefAlign]
@@ -1703,15 +1697,15 @@ object frmStation: TfrmStation
   end
   object AdvFormStyler1: TAdvFormStyler
     AppColor = 14851584
-    Left = 728
-    Top = 592
+    Left = 560
+    Top = 600
   end
   object AdvAppStyler1: TAdvAppStyler
     AppColor = clHighlight
     Metro = True
     MetroColor = clHotLight
-    Left = 840
-    Top = 592
+    Left = 672
+    Top = 600
   end
   object AdvGridExcelIO1: TAdvGridExcelIO
     AdvStringGrid = grdStationCams

@@ -34,9 +34,11 @@ uses
   CustomPageControl in 'CustomPageControl.pas',
   TVCSMulView in 'TVCSMulView.pas',
   TVCSCheckDelete in 'TVCSCheckDelete.pas' {frmCheckDelete},
-  TVCSCheckDialog in 'TVCSCheckDialog.pas',
   TVCSPreview in 'TVCSPreview.pas' {frmPreview},
-  TVCSButtonStyle in 'TVCSButtonStyle.pas';
+  TVCSButtonStyle in 'TVCSButtonStyle.pas',
+  TVCSCheckDialog in 'TVCSCheckDialog.pas',
+  TVCSPasswordChange in 'TVCSPasswordChange.pas' {frmPasswordChange},
+  TVCSAddUser in 'TVCSAddUser.pas' {frmAddUser};
 
 {$R *.res}
 var
@@ -60,6 +62,8 @@ begin
      if (frmLogin.isLogged) then
              TStyleManager.TrySetStyle('Onyx Blue');
   Application.CreateForm(TfrmTVCSMain, frmTVCSMain);
+  Application.CreateForm(TfrmPasswordChange, frmPasswordChange);
+  Application.CreateForm(TfrmAddUser, frmAddUser);
   FreeAndNil(frmLogin);
 
 

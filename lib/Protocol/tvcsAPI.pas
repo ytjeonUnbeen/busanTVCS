@@ -19,7 +19,8 @@ const
    api_license='/tvcs/license';
    api_system='/tvcs/system';
    api_list='/tvcs/apilist';
-   api_device='/tvcs/deviceMsg';
+   api_device='/tvcs/device';
+   api_deviceMsg='/tvcs/deviceMsg';
 
 
 type
@@ -158,7 +159,7 @@ type
          //station
          function GetStation(code:String=''; line:Integer=0):TArray<TvcsStation>;
          function AddStation(stationinfo:TvcsStationInPost):TvcsStation;
-         function UpdateStation(stationinfo:TvcsStationInPost):TvcsStation;
+         function UpdateStation(stationinfo:TvcsStationInPatch):TvcsStation;
          function DeleteStation(code:String=''):string;
 
          //train
@@ -206,11 +207,15 @@ type
          //device
 
          function GetDevice(ftype:integer=-1):TArray<TVCSDevice>;
-         {
-         function AddTrainCameraMerge(trainCameraMergeInfo:TVCSTrainCameraMergePost):TVCSTrainCameraMerge;
-         function UpdateTrainCameraMerge(trainCameraMergeInfo:TVCSTrainCameraMergePatch):TVCSTrainCameraMerge;
-         function DeleteTrainCameraMerge(trinId: Integer; fname:string):string;
-         }
+         function AddDevice(deviceInfo:TVCSDevicePost):TVCSDevice;
+         function UpdateDevice(deviceInfo:TVCSDevice):TVCSDevice;
+         function DeleteDevice(deviceId: Integer):string;
+
+         //deviceMsg
+
+         function GetDeviceMsg(fdeviceId:integer=-1; ftype:string=''; fyy: string=''; fmm: string=''):TArray<TVCSDeviceMsg>;
+         function AddDeviceMsg(deviceMsgInfo:TVCSDeviceMsgPost):TVCSDeviceMsg;
+
          //TCMS 쓰레드
          property OnReceiveData: TReceiveDataEvent read FOnReceiveData write FOnReceiveData;
 
@@ -453,28 +458,97 @@ var
   UsersJson: TJSONValue;
   Users: TArray<TvcsUser>;
   I: Integer;
+  JsonObj: TJSONObject;
+  JsonValue: TJSONValue;
+  User: TvcsUser;
 begin
-  if UserId <> '' then
-    UserId := 'userId=' + UserId;
+  try
+    // Parameter 설정
+    if UserId <> '' then
+      UserId := 'userId=' + UserId;
 
-  ResponseStr := FAPIBase.GetAPI(API_USER, UserId);
-  FResponseText := FAPIBase.ResponseText;
-  FResponseCode := FAPIBase.ResponseCode;
-  ResponseJson := TJSONObject.ParseJsonValue(ResponseStr) as TJSONObject;
+    // API 호출
+    ResponseStr := FAPIBase.GetAPI(API_USER, UserId);
+    FResponseText := FAPIBase.ResponseText;
+    FResponseCode := FAPIBase.ResponseCode;
 
-  if CheckError(ResponseJson, ErrorMsg) <> 0 then
-    Exit(nil);
+    // JSON 파싱
+    ResponseJson := TJSONObject.ParseJSONValue(ResponseStr) as TJSONObject;
+    if ResponseJson = nil then
+      Exit(nil);
 
-  UsersJson := ResponseJson.GetValue('reply');
-  if UsersJson is TJSONArray then
-  begin
-    SetLength(Users, TJSONArray(UsersJson).Count);
-    for I := 0 to TJSONArray(UsersJson).Count - 1 do
-      Users[I] := TJSON.JsonToObject<TvcsUser>(TJSONArray(UsersJson).Items[I] as TJSONObject);
-    Result := Users;
-  end
-  else
+    if CheckError(ResponseJson, ErrorMsg) <> 0 then
+      Exit(nil);
+
+    UsersJson := ResponseJson.GetValue('reply');
+    if UsersJson is TJSONArray then
+    begin
+      SetLength(Users, TJSONArray(UsersJson).Count);
+      for I := 0 to TJSONArray(UsersJson).Count - 1 do
+      begin
+        JsonObj := TJSONArray(UsersJson).Items[I] as TJSONObject;
+        User := TvcsUser.Create;
+
+        // 각 필드별 명시적 파싱
+        if JsonObj.TryGetValue('userId', JsonValue) and (not JsonValue.Null) then
+          User.fuserId := JsonValue.AsType<string>
+        else
+          User.fuserId := '';
+
+        if JsonObj.TryGetValue('firstName', JsonValue) and (not JsonValue.Null) then
+          User.ffirstName := JsonValue.AsType<string>
+        else
+          User.ffirstName := '';
+
+        if JsonObj.TryGetValue('lastName', JsonValue) and (not JsonValue.Null) then
+          User.flastName := JsonValue.AsType<string>
+        else
+          User.flastName := '';
+
+        if JsonObj.TryGetValue('email', JsonValue) and (not JsonValue.Null) then
+          User.femail := JsonValue.AsType<string>
+        else
+          User.femail := '';
+
+        if JsonObj.TryGetValue('isStaff', JsonValue) and (not JsonValue.Null) then
+          User.fisStaff := JsonValue.AsType<Integer>
+        else
+          User.fisStaff := 0;
+
+        if JsonObj.TryGetValue('isSuperUser', JsonValue) and (not JsonValue.Null) then
+          User.fisSuperUser := JsonValue.AsType<Boolean>
+        else
+          User.fisSuperUser := False;
+
+        if JsonObj.TryGetValue('isActive', JsonValue) and (not JsonValue.Null) then
+          User.fisActive := JsonValue.AsType<Boolean>
+        else
+          User.fisActive := False;
+
+        if JsonObj.TryGetValue('lastLogin', JsonValue) and (not JsonValue.Null) then
+          User.flastLogin := JsonValue.AsType<string>
+        else
+          User.flastLogin := '';
+
+        if JsonObj.TryGetValue('dateJoined', JsonValue) and (not JsonValue.Null) then
+          User.fdateJoined := JsonValue.AsType<string>
+        else
+          User.fdateJoined := '';
+
+        if JsonObj.TryGetValue('version', JsonValue) and (not JsonValue.Null) then
+          User.fversion := JsonValue.AsType<string>
+        else
+          User.fversion := '';
+
+        Users[I] := User;
+      end;
+      Result := Users;
+    end
+    else
+      Result := nil;
+  except
     Result := nil;
+  end;
 end;
 
 function TTVCSAPI.AddUser(UserInfo: TvcsUserIn): TvcsUser;
@@ -696,7 +770,7 @@ begin
   end;
 end;
 
-function TTVCSAPI.UpdateStation(stationinfo: TvcsStationInPost):TvcsStation;
+function TTVCSAPI.UpdateStation(stationinfo: TvcsStationInPatch):TvcsStation;
 var
  RequestJson, ResponseJson: TJSONObject;
  StationJson: TJSONValue;
@@ -1715,9 +1789,9 @@ begin
           Device.ftype := '';
 
         if JsonObj.TryGetValue('stationCode', JsonValue) and (not JsonValue.Null) then
-          Device.fstationCode := JsonValue.AsType<String>
+          Device.fstationCode := JsonValue.AsType<integer>
         else
-          Device.fstationCode := '';
+          Device.fstationCode := 0;
 
         if JsonObj.TryGetValue('trainNo', JsonValue) and (not JsonValue.Null) then
           Device.ftrainNo := JsonValue.AsType<Integer>
@@ -1739,6 +1813,16 @@ begin
         else
           Device.fmemo := '';
 
+        if JsonObj.TryGetValue('loginId', JsonValue) and (not JsonValue.Null) then
+          Device.floginId := JsonValue.AsType<string>
+        else
+          Device.floginId := '';
+
+        if JsonObj.TryGetValue('loginPwd', JsonValue) and (not JsonValue.Null) then
+          Device.floginPwd := JsonValue.AsType<string>
+        else
+          Device.floginPwd := '';
+
 
         Devices[I] := Device;
       end;
@@ -1749,6 +1833,83 @@ begin
   except
     Result := nil;
   end;
+end;
+
+function TTVCSAPI.AddDevice(deviceInfo:TVCSDevicePost):TVCSDevice;
+var
+  RequestJson, ResponseJson: TJSONObject;
+  DeviceJson: TJSONValue;
+  ResultDevice: TVCSDevice;
+  ErrorMsg: string;
+begin
+  RequestJson := TJson.ObjectToJsonObject(deviceInfo);
+  try
+    ResponseJson := FAPIBase.PostAPI(api_device, RequestJson);
+    try
+      if CheckError(ResponseJson, ErrorMsg) <> 0 then
+      begin
+        ShowMessage(FErrorMsg);
+        Exit(nil);
+      end;
+
+      DeviceJson := ResponseJson.GetValue('reply');
+      ResultDevice := TJson.JsonToObject<TVCSDevice>(DeviceJson.ToString);
+      Result := ResultDevice;
+    finally
+      ResponseJson.Free;
+    end;
+  finally
+    RequestJson.Free;
+  end;
+end;
+
+function TTVCSAPI.UpdateDevice(deviceInfo:TVCSDevice):TVCSDevice;
+var
+ RequestJson, ResponseJson: TJSONObject;
+ DeviceJson: TJSONValue;
+ ResultDevice: TVCSDevice;
+ ErrorMsg: string;
+begin
+  RequestJson := TJson.ObjectToJsonObject(deviceInfo);
+
+  try
+    ResponseJson := FAPIBase.PatchAPI(api_device, RequestJson);
+
+    try
+    if CheckError(ResponseJson, ErrorMsg)<> 0 then
+    begin
+      ShowMessage(FErrorMsg);
+      Exit(nil);
+    end;
+
+    DeviceJson := ResponseJson.GetValue('reply');
+    ResultDevice := TJSON.JsonToObject<TVCSDevice>(DeviceJson.ToString);
+    Result := ResultDevice;
+
+    finally
+    ResponseJson.Free;
+
+    end;
+  finally
+    RequestJson.Free;
+  end;
+end;
+
+function TTVCSAPI.DeleteDevice(deviceId: Integer):string;
+var
+  ResponseStr : string;
+  ResponseJson : TJSONObject;
+  ErrorMsg : string;
+begin
+  ResponseStr := FAPIBase.DeleteAPI(api_device,'id='+IntToStr(deviceId));
+  ResponseJson := TJSONObject.ParseJSONValue(ResponseStr) as TJSONObject;
+
+  if CheckError(ResponseJson, ErrorMsg) <> 0 then
+  begin
+    ShowMessage(FErrorMsg);
+    Exit('');
+  end;
+  Result := ResponseStr;
 end;
 
 function TTVCSAPI.AddLicense(licenseinfo:TVCSLicensePost):TVCSLicense;
@@ -1778,6 +1939,104 @@ begin
     RequestJson.Free;
   end;
 end;
+
+function TTVCSAPI.GetDeviceMsg(fdeviceId:integer=-1; ftype:string=''; fyy: string=''; fmm: string=''):TArray<TVCSDeviceMsg>;
+var
+  ResponseStr, ErrorMsg: string;
+  ResponseJson: TJSONObject;
+  DeviceMsgJSson: TJSONValue;
+  DeviceMsgs: TArray<TVCSDeviceMsg>;
+  I: Integer;
+  JsonObj: TJSONObject;
+  JsonValue: TJSONValue;
+  DeviceMsg : TVCSDeviceMsg;
+begin
+  if fdeviceId <> -1 then
+    ResponseStr := FAPIBase.GetAPI(api_deviceMsg, 'deviceId=' + IntToStr(fdeviceId)+'&type='+ftype+'&yy='+fyy+'&mm='+fmm)
+  else
+  begin
+    ResponseStr := FAPIBase.GetAPI(api_deviceMsg);
+  end;
+
+  FResponseText := FAPIBase.ResponseText;
+  FResponseCode := FAPIBase.ResponseCode;
+
+  try
+    ResponseJson := TJSONObject.ParseJsonValue(ResponseStr) as TJSONObject;
+    if ResponseJson = nil then
+      Exit(nil);
+
+    if CheckError(ResponseJson, ErrorMsg) <> 0 then
+      Exit(nil);
+
+    DeviceMsgJSson := ResponseJson.GetValue('reply');
+    if DeviceMsgJSson is TJSONArray then
+    begin
+      SetLength(DeviceMsgs, TJSONArray(DeviceMsgJSson).Count);
+      for I := 0 to TJSONArray(DeviceMsgJSson).Count - 1 do
+      begin
+        JsonObj := TJSONArray(DeviceMsgJSson).Items[I] as TJSONObject;
+        DeviceMsg := TVCSDeviceMsg.Create;
+
+        // id는 JSON에서 'id'로 되어있지만 객체는 'fid'를 사용
+        if JsonObj.TryGetValue('DeviceMsg', JsonValue) and (not JsonValue.Null) then
+          DeviceMsg.fdeviceId := JsonValue.AsType<Integer>
+        else
+          DeviceMsg.fdeviceId := 0;
+
+        if JsonObj.TryGetValue('type', JsonValue) and (not JsonValue.Null) then
+          DeviceMsg.ftype := JsonValue.AsType<String>
+        else
+          DeviceMsg.ftype := '';
+
+        if JsonObj.TryGetValue('msg', JsonValue) and (not JsonValue.Null) then
+          DeviceMsg.fmsg := JsonValue.AsType<String>
+        else
+          DeviceMsg.fmsg := '';
+
+        if JsonObj.TryGetValue('dttm', JsonValue) and (not JsonValue.Null) then
+          DeviceMsg.fdttm := JsonValue.AsType<string>
+        else
+          DeviceMsg.fdttm := '';
+        DeviceMsgs[I] := DeviceMsg;
+      end;
+      Result := DeviceMsgs;
+    end
+    else
+      Result := nil;
+  except
+    Result := nil;
+  end;
+end;
+
+function TTVCSAPI.AddDeviceMsg(deviceMsgInfo:TVCSDeviceMsgPost):TVCSDeviceMsg;
+var
+  RequestJson, ResponseJson: TJSONObject;
+  DeviceMsgJson: TJSONValue;
+  ResultDeviceMsg: TVCSDeviceMsg;
+  ErrorMsg: string;
+begin
+  RequestJson := TJson.ObjectToJsonObject(deviceMsgInfo);
+  try
+    ResponseJson := FAPIBase.PostAPI(API_LICENSE, RequestJson);
+    try
+      if CheckError(ResponseJson, ErrorMsg) <> 0 then
+      begin
+        ShowMessage(FErrorMsg);
+        Exit(nil);
+      end;
+
+      DeviceMsgJson := ResponseJson.GetValue('reply');
+      ResultDeviceMsg := TJson.JsonToObject<TVCSDeviceMsg>(DeviceMsgJson.ToString);
+      Result := ResultDeviceMsg;
+    finally
+      ResponseJson.Free;
+    end;
+  finally
+    RequestJson.Free;
+  end;
+end;
+
 
 //system
 function TTVCSAPI.UpdateSystem(SystemInfo:TvcsSystem):TVCSSystem;

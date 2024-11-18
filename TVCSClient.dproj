@@ -190,12 +190,20 @@
             <Form>frmCheckDelete</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="TVCSCheckDialog.pas"/>
         <DCCReference Include="TVCSPreview.pas">
             <Form>frmPreview</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="TVCSButtonStyle.pas"/>
+        <DCCReference Include="TVCSCheckDialog.pas"/>
+        <DCCReference Include="TVCSPasswordChange.pas">
+            <Form>frmPasswordChange</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="TVCSAddUser.pas">
+            <Form>frmAddUser</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

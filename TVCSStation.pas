@@ -12,7 +12,7 @@ uses
 
 type
   TfrmStation = class(TForm)
-    cmbStation: TComboBox;
+    cbSearch: TComboBox;
     edSearchText: TEdit;
     btnSearch: TAdvGlowButton;
     btnAddStation: TAdvGlowButton;
@@ -42,7 +42,6 @@ type
     lblT1UpArr: TLabel;
     lblT1DownArr: TLabel;
     lblInfoTitle: TLabel;
-    Label2: TLabel;
     lbStCamCnt: TLabel;
     pnBottom: TPanel;
     pnMainFrame: TPanel;
@@ -80,6 +79,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure btnUploadStationsClick(Sender: TObject);
     procedure btnStationDownloadClick(Sender: TObject);
+    procedure btnSearchClick(Sender: TObject);
+    procedure edSearchTextKeyPress(Sender: TObject; var Key: Char);
 
 
   private
@@ -212,6 +213,7 @@ end;
 procedure TfrmStation.btnSaveClick(Sender: TObject);
 var
   stationPos: TvcsStationInPost;
+  stationPatch: TvcsStationInPatch;
   station: tvcsProtocol.TvcsStation;
   stationCamsPos: TArray<TVCSStationCameraPost>;
   stationCamPatch: TVCSStationCameraPatch;
@@ -221,10 +223,31 @@ var
   isModified: Boolean;
   existingStations: TArray<tvcsProtocol.TvcsStation>;
   existingCams: TArray<TVCSStationCamera>;
+  StationNames: array of string;
+  lineInfo: integer;
 begin
   if ShowTVCSCheck(0) then
   begin
 // 엑셀업로드
+    lineInfo := gapi.GetLoinInfo.fsystem.fline;
+    case lineInfo of
+        2: begin
+             SetLength(StationNames, Length(Line2StationName));
+             for i := Low(Line2StationName) to High(Line2StationName) do
+               StationNames[i] := Line2StationName[i];
+           end;
+        3: begin
+             SetLength(StationNames, Length(Line3StationName));
+             for i := Low(Line3StationName) to High(Line3StationName) do
+               StationNames[i] := Line3StationName[i];
+           end;
+        4: begin
+             SetLength(StationNames, Length(Line4StationName));
+             for i := Low(Line4StationName) to High(Line4StationName) do
+               StationNames[i] := Line4StationName[i];
+           end;
+      end;
+
     if CheckExcel then
     begin
       allSuccess := True;
@@ -272,7 +295,8 @@ begin
             stationPos.fdnApprTcode := stations[i].fdnApprTcode;
             stationPos.fdnArrvTcode := stations[i].fdnArrvTcode;
             stationPos.fdnLeavTcode := stations[i].fdnLeavTcode;
-
+            stationPos.fprevCode := stations[i].fprevCode;
+            stationPos.fnextCode := stations[i].fnextCode;
 
 
 
@@ -342,19 +366,22 @@ begin
     else
     // 기존업로드
     begin
-      stationPos := TvcsStationInPost.Create;
+      stationPatch := TvcsStationInPatch.Create;
     try
       // 역사 기본정보 설정
-      stationPos.fname := edStname.Text;
-      stationPos.fcode := edStcode.Text;
-      stationPos.fupDepartDelay := StrtoInt(edupDepartDelay.Text);
-      stationPos.fdnDepartDelay := StrtoInt(edupDepartDelay.Text);
-      stationPos.fupApprTcode := edupApprTcode.Text;
-      stationPos.fupArrvTcode := edupArrvTcode.Text;
-      stationPos.fupLeavTcode := edupLeavTcode.Text;
-      stationPos.fdnApprTcode := eddnApprTcode.Text;
-      stationPos.fdnArrvTcode := eddnArrvTcode.Text;
-      stationPos.fdnLeavTcode := eddnLeavTcode.Text;
+      stationPatch.fname := edStname.Text;
+      stationPatch.fcode := edStcode.Text;
+      stationPatch.fupDepartDelay := StrtoInt(edupDepartDelay.Text);
+      stationPatch.fdnDepartDelay := StrtoInt(edupDepartDelay.Text);
+      stationPatch.fupApprTcode := edupApprTcode.Text;
+      stationPatch.fupArrvTcode := edupArrvTcode.Text;
+      stationPatch.fupLeavTcode := edupLeavTcode.Text;
+      stationPatch.fdnApprTcode := eddnApprTcode.Text;
+      stationPatch.fdnArrvTcode := eddnArrvTcode.Text;
+      stationPatch.fdnLeavTcode := eddnLeavTcode.Text;
+
+      stationPatch.fprevCode := IntToStr(StrToInt(stationPatch.fcode) - 1);
+      stationPatch.fnextCode := IntToStr(StrToInt(stationPatch.fcode) + 1);
 
       allSuccess := True;
 
@@ -370,7 +397,7 @@ begin
       end
       else  // 역사 정보 수정
       begin
-        if nil = gapi.UpdateStation(stationPos) then
+        if nil = gapi.UpdateStation(stationPatch) then
         begin
           ShowTVCSMessage('역사정보 수정이 실패하였습니다.');
           Exit;
@@ -459,7 +486,11 @@ begin
       end;
 
       if allSuccess then
-        ShowTVCSMessage('처리가 완료되었습니다.')
+        begin
+          ShowTVCSMessage('처리가 완료되었습니다.');
+          LoadStationInfoList;  // 그리드 새로고침
+        end
+
       else
         ShowTVCSMessage('일부 처리가 실패하였습니다.');
 
@@ -476,32 +507,172 @@ begin
 
 
   //ShowTVCSMessage(IntToStr(addCamCnt));
-  ModalResult := mrOk;
+  //ModalResult := mrOk;
+end;
+
+procedure TfrmStation.btnSearchClick(Sender: TObject);
+var
+  searchText: string;
+  searchMode: integer;
+  i: integer;
+  found: boolean;
+begin
+  searchText := edSearchText.Text;
+  if searchText = '' then Exit;
+
+  searchMode := cbSearch.ItemIndex;
+  found := false;
+
+  for i := 1 to grdStations.RowCount - 1 do
+  begin
+    case searchMode of
+      0: // 전체 검색
+        if grdStations.Cells[1,i] = searchText then  // 역번호에서 찾은 경우
+        begin
+          grdStations.SelectCells(1,i,1,i);
+          grdStationsClickCell(grdStations, i, 1);
+          found := true;
+          Break;
+        end
+        else if grdStations.Cells[2,i] = searchText then  // 역사명에서 찾은 경우
+        begin
+          grdStations.SelectCells(2,i,2,i);
+          grdStationsClickCell(grdStations, i, 2);
+          found := true;
+          Break;
+        end;
+      1: // 역번호 검색
+        if grdStations.Cells[1,i] = searchText then
+        begin
+          grdStations.SelectCells(1,i,1,i);
+          grdStationsClickCell(grdStations, i, 1);
+          found := true;
+          Break;
+        end;
+      2: // 역사명 검색
+        if grdStations.Cells[2,i] = searchText then
+        begin
+          grdStations.SelectCells(2,i,2,i);
+          grdStationsClickCell(grdStations, i, 2);
+          found := true;
+          Break;
+        end;
+    end;
+  end;
+
+  if not found then
+    ShowTVCSMessage('검색 결과가 없습니다.');
 end;
 
 procedure TfrmStation.btnStationDownloadClick(Sender: TObject);
 var
-  SaveDialog : TSaveDialog;
+  SaveDialog: TSaveDialog;
+  ExcelGrid: TAdvStringGrid;
+  i, j, currentRow: Integer;
+  station: tvcsProtocol.TvcsStation;
+  stationCameras: TArray<TVCSStationCamera>;
 begin
-//
   SaveDialog := TSaveDialog.Create(nil);
-  SaveDialog.Filter := 'Excel Files (*.xlsx)|*.xlsx|Excel 97-2003 (*.xls)|*.xls';
-  SaveDialog.DefaultExt := 'xls';
-  SaveDialog.FilterIndex := 2;
+  ExcelGrid := TAdvStringGrid.Create(nil);
+  try
+    SaveDialog.Filter := 'Excel Files (*.xlsx)|*.xlsx|Excel 97-2003 (*.xls)|*.xls';
+    SaveDialog.DefaultExt := 'xls';
+    SaveDialog.FilterIndex := 2;
 
-  if SaveDialog.Execute then
-  begin
-    AdvGridExcelIO1.XLSExport(SaveDialog.FileName);
+    if SaveDialog.Execute then
+    begin
+      // 엑셀 그리드 초기 설정
+      with ExcelGrid do
+      begin
+        ColCount := 20;  // 전체 컬럼 수
+        RowCount := 1;   // 헤더 row
+
+        // 헤더 설정
+        Cells[1,1] := '역번호';
+        Cells[2,1] := '역명';
+        Cells[3,1] := '상행영상';
+        Cells[4,1] := '하행영상';
+        Cells[5,1] := '상행접근';
+        Cells[6,1] := '상행도착';
+        Cells[7,1] := '상행출발';
+        Cells[8,1] := '하행접근';
+        Cells[9,1] := '하행도착';
+        Cells[10,1] := '하행출발';
+        Cells[11,1] := 'TVCS IP주소';
+        Cells[12,1] := '방향(상행/하행)';
+        Cells[13,1] := '카메라이름';
+        Cells[14,1] := '카메라IP주소';
+        Cells[15,1] := '포트번호';
+        Cells[16,1] := 'RTSP주소(main)';
+        Cells[17,1] := 'RTSP주소(sub)';
+        Cells[18,1] := '카메라ID';
+        Cells[19,1] := '카메라PW';
+      end;
+
+      currentRow := 2;
+
+      // 각 역사별로 처리
+      for i := 0 to Length(stations) - 1 do
+      begin
+        station := stations[i];
+        // 해당 역사의 카메라 정보 가져오기
+        stationCameras := gapi.GetStationCamera(station.fcode);
+
+        // 각 카메라별로 row 추가
+        for j := 0 to Length(stationCameras) - 1 do
+        begin
+          ExcelGrid.RowCount := currentRow + 1;
+
+          // 역사 정보
+          ExcelGrid.Cells[1,currentRow] := station.fcode;
+          ExcelGrid.Cells[2,currentRow] := station.fname;
+          ExcelGrid.Cells[3,currentRow] := IntToStr(station.fupDepartDelay);
+          ExcelGrid.Cells[4,currentRow] := IntToStr(station.fdnDepartDelay);
+          ExcelGrid.Cells[5,currentRow] := station.fupApprTcode;
+          ExcelGrid.Cells[6,currentRow] := station.fupArrvTcode;
+          ExcelGrid.Cells[7,currentRow] := station.fupLeavTcode;
+          ExcelGrid.Cells[8,currentRow] := station.fdnApprTcode;
+          ExcelGrid.Cells[9,currentRow] := station.fdnArrvTcode;
+          ExcelGrid.Cells[10,currentRow] := station.fdnLeavTcode;
+
+          // TVCS IP는 비워둠 (필요시 추가)
+          ExcelGrid.Cells[11,currentRow] := '';
+
+          // 카메라 정보
+          if stationCameras[j].fdivision = 1 then
+            ExcelGrid.Cells[12,currentRow] := '상행'
+          else
+            ExcelGrid.Cells[12,currentRow] := '하행';
+
+          ExcelGrid.Cells[13,currentRow] := stationCameras[j].fname;
+          ExcelGrid.Cells[14,currentRow] := stationCameras[j].fipaddr;
+          ExcelGrid.Cells[15,currentRow] := IntToStr(stationCameras[j].fport);
+          ExcelGrid.Cells[16,currentRow] := stationCameras[j].frtsp;
+          ExcelGrid.Cells[17,currentRow] := stationCameras[j].ftvcsRtsp;
+          ExcelGrid.Cells[18,currentRow] := stationCameras[j].fuserId;
+          ExcelGrid.Cells[19,currentRow] := stationCameras[j].fuserPwd;
+
+          Inc(currentRow);
+        end;
+      end;
+
+      // 엑셀로 저장
+      AdvGridExcelIO1.AdvStringGrid := ExcelGrid;
+      AdvGridExcelIO1.XLSExport(SaveDialog.FileName);
+      ShowTVCSMessage('엑셀 파일이 저장되었습니다.');
+    end;
+
+  finally
+    SaveDialog.Free;
+    ExcelGrid.Free;
   end;
 end;
 
 procedure TfrmStation.btnUploadStationsClick(Sender: TObject);
 var
   OpenDialog: TOpenDialog;
-
-
+  isValidFormat: Boolean;
 begin
-//
   if ShowTVCSCheck(2) then
   begin
     OpenDialog := TOpenDialog.Create(nil);
@@ -510,25 +681,45 @@ begin
       OpenDialog.FilterIndex := 2;
 
       if OpenDialog.Execute then
+      begin
+        GridBuf := TAdvStringGrid.Create(self);
+        AdvGridExcelIO1.AdvStringGrid := GridBuf;
+        AdvGridExcelIO1.XLSImport(OpenDialog.FileName, 0);
+
+        // 엑셀 양식 체크
+        isValidFormat := (GridBuf.Cells[1,1] = '역번호') and
+                        (GridBuf.Cells[2,1] = '역명') and
+                        (GridBuf.Cells[3,1] = '상행영상') and
+                        (GridBuf.Cells[4,1] = '하행영상') and
+                        (GridBuf.Cells[5,1] = '상행접근') and
+                        (GridBuf.Cells[6,1] = '상행도착') and
+                        (GridBuf.Cells[7,1] = '상행출발') and
+                        (GridBuf.Cells[8,1] = '하행접근') and
+                        (GridBuf.Cells[9,1] = '하행도착') and
+                        (GridBuf.Cells[10,1] = '하행출발');
+
+        if isValidFormat then
         begin
           CheckExcel := True;
-          GridBuf := TAdvStringGrid.Create(self);
-          AdvGridExcelIO1.AdvStringGrid := GridBuf;
-          AdvGridExcelIO1.XLSImport(OpenDialog.FileName, 0);
-
-          //ShowTVCSMessage(GridBuf.Cells[1,1]);
+          LoadStationInfoList;
+        end
+        else
+        begin
+          ShowTVCSMessage('엑셀양식이 올바르지 않습니다.');
+          FreeAndNil(GridBuf);  // 잘못된 엑셀 데이터 해제
         end;
+      end;
 
     finally
       OpenDialog.Free;
-      LoadStationInfoList;
-
     end;
-
   end;
+end;
 
-
-
+procedure TfrmStation.edSearchTextKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #13 then
+    btnSearchClick(Sender);
 end;
 
 procedure TfrmStation.FormCreate(Sender: TObject);
@@ -543,6 +734,7 @@ begin
   grdStationCams.OnClickCell := grdStationsCamsClickCell;
 
   TButtonStyler.ApplyGlobalStyle(Self);
+  lblTitle.Caption := '역사 정보 관리 ('+IntToStr(gapi.GetLoinInfo.fsystem.fline) +'호선)'
 
 end;
 
@@ -559,6 +751,7 @@ var
     uniqueCount : integer;
     lineInfo : integer;
     StationNames: array of string;
+    validCount: integer;  // 유효한 데이터 카운트를 위한 변수 추가
 begin
 
     lineInfo := gapi.GetLoinInfo.fsystem.fline;
@@ -587,11 +780,27 @@ begin
       try
         uniqueValues.Sorted := True;
         uniqueValues.Duplicates := dupIgnore;
+         validCount := 0;  // 유효한 데이터 카운트 초기화
+
         for i := 2 to GridBuf.RowCount do
         begin
-          if GridBuf.Cells[1, i].Trim <> '' then
-            uniqueValues.Add(GridBuf.Cells[1, i]);
+          // 해당 행의 모든 필수 데이터가 있는지 확인
+          if (GridBuf.Cells[1,i].Trim <> '') and     // 역번호
+             (GridBuf.Cells[2,i].Trim <> '') and     // 역명
+             (GridBuf.Cells[3,i].Trim <> '') and     // 상행영상
+             (GridBuf.Cells[4,i].Trim <> '') and     // 하행영상
+             (GridBuf.Cells[5,i].Trim <> '') and     // 상행접근
+             (GridBuf.Cells[6,i].Trim <> '') and     // 상행도착
+             (GridBuf.Cells[7,i].Trim <> '') and     // 상행출발
+             (GridBuf.Cells[8,i].Trim <> '') and     // 하행접근
+             (GridBuf.Cells[9,i].Trim <> '') and     // 하행도착
+             (GridBuf.Cells[10,i].Trim <> '') then   // 하행출발
+          begin
+            Inc(validCount);
+            uniqueValues.Add(GridBuf.Cells[1,i]);  // 유효한 역번호만 추가
+          end;
         end;
+
         uniqueCount := uniqueValues.Count;
         SetLength(stations, uniqueCount);
         for i := 0 to uniqueCount - 1 do
@@ -615,8 +824,6 @@ begin
               stations[i].fdnApprTcode := GridBuf.Cells[8, k];
               stations[i].fdnArrvTcode := GridBuf.Cells[9, k];
               stations[i].fdnLeavTcode := GridBuf.Cells[10, k];
-
-
 
               // 필요한 다른 필드들도 여기에 추가
               Break;
@@ -727,7 +934,7 @@ begin
 
         ColWidths[5] := 72;   // ID
         ColWidths[6] := 82;   // Password
-        ColWidths[7] := 45;   // 미리보기 버튼
+        ColWidths[7] := 60;   // 미리보기 버튼
         ColWidths[8] := 45;   // 삭제 버튼
 
         Cells[0,0]:='구분';
@@ -758,8 +965,9 @@ begin
       begin
         // 우선 모든 데이터를 BufstationCams에 저장
         SetLength(BufstationCams, GridBuf.rowcount - 2);
-        for i := 0 to Length(BufstationCams) - 1 do
+        for i := 0 to Length(BufstationCams) -1 do
         begin
+
           BufstationCams[i] := TVCSStationCamera.Create;
           BufstationCams[i].fstationCode := GridBuf.Cells[1,i+2];
           if GridBuf.Cells[12,i +2] = '상행' then

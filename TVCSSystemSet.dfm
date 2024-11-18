@@ -24,11 +24,12 @@ object frmSystem: TfrmSystem
     Align = alClient
     TabOrder = 0
     object lblTitle: TLabel
-      Left = 360
+      Left = 325
       Top = 16
-      Width = 91
+      Width = 149
       Height = 23
-      Caption = #49884#49828#53596' '#44288#47532
+      Alignment = taCenter
+      Caption = #49884#49828#53596' '#44288#47532'(4'#54840#49440')'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
@@ -37,7 +38,7 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbConViewSetTitle: TLabel
-      Left = 40
+      Left = 29
       Top = 72
       Width = 168
       Height = 16
@@ -50,11 +51,11 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbConViewSetMenu: TLabel
-      Left = 67
+      Left = 72
       Top = 94
-      Width = 119
+      Width = 114
       Height = 16
-      Caption = #50689#50669' '#44256#51221' ('#52395#48264#51704' '#49472') :'
+      Caption = #50689#50669' '#44256#51221' ('#52395#48264#51704' '#49472') '
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -63,7 +64,7 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbAutoSetTitle: TLabel
-      Left = 456
+      Left = 431
       Top = 67
       Width = 86
       Height = 16
@@ -76,7 +77,7 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbAutoSetMenu: TLabel
-      Left = 480
+      Left = 483
       Top = 89
       Width = 156
       Height = 16
@@ -102,8 +103,8 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbVideoFormTitle: TLabel
-      Left = 40
-      Top = 128
+      Left = 29
+      Top = 134
       Width = 86
       Height = 16
       Caption = #9679' '#50689#49345' '#54252#47607' '#49444#51221
@@ -115,8 +116,8 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbVideoFormResol: TLabel
-      Left = 67
-      Top = 160
+      Left = 105
+      Top = 156
       Width = 81
       Height = 16
       Caption = #49828#53944#47532#48141' '#54644#49345#46020
@@ -128,8 +129,8 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbVideoFormFrm: TLabel
-      Left = 67
-      Top = 192
+      Left = 153
+      Top = 187
       Width = 33
       Height = 16
       Caption = #54532#47112#51076
@@ -141,8 +142,8 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbFrm: TLabel
-      Left = 319
-      Top = 192
+      Left = 333
+      Top = 187
       Width = 17
       Height = 16
       Caption = 'fps'
@@ -154,8 +155,8 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbEventPopTitle: TLabel
-      Left = 40
-      Top = 232
+      Left = 29
+      Top = 216
       Width = 97
       Height = 16
       Caption = #9679' '#51060#48292#53944' '#54045#50629' '#49444#51221
@@ -167,8 +168,8 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbEventPopMenu: TLabel
-      Left = 67
-      Top = 264
+      Left = 75
+      Top = 240
       Width = 111
       Height = 16
       Caption = #51473#48373' '#51060#48292#53944' '#46041#51089' '#44036#44201
@@ -180,8 +181,8 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbLicenseTitle: TLabel
-      Left = 40
-      Top = 376
+      Left = 29
+      Top = 394
       Width = 82
       Height = 16
       Caption = #9679' '#46972#51060#49440#49828' '#44288#47532
@@ -193,8 +194,8 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbCamLicense: TLabel
-      Left = 67
-      Top = 408
+      Left = 30
+      Top = 426
       Width = 81
       Height = 16
       Caption = #52852#47700#46972' '#46972#51060#49440#49828
@@ -232,8 +233,8 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object lbCliPcLicense: TLabel
-      Left = 67
-      Top = 519
+      Left = 431
+      Top = 426
       Width = 154
       Height = 16
       Caption = #51109#52824' '#46972#51060#49440#49828'('#53364#46972#51060#50616#53944' PC)'
@@ -245,7 +246,7 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object Label1: TLabel
-      Left = 40
+      Left = 29
       Top = 302
       Width = 60
       Height = 16
@@ -257,12 +258,12 @@ object frmSystem: TfrmSystem
       Font.Style = [fsBold]
       ParentFont = False
     end
-    object Label2: TLabel
-      Left = 123
-      Top = 337
-      Width = 55
+    object lbttcsip: TLabel
+      Left = 435
+      Top = 324
+      Width = 73
       Height = 16
-      Caption = #50500#51060#54588#51452#49548
+      Caption = #50500#51060#54588#51452#49548'(S)'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -270,12 +271,51 @@ object frmSystem: TfrmSystem
       Font.Style = []
       ParentFont = False
     end
-    object Label3: TLabel
-      Left = 386
-      Top = 337
-      Width = 44
+    object lbttcpport: TLabel
+      Left = 125
+      Top = 364
+      Width = 61
       Height = 16
-      Caption = #54252#53944#48264#54840
+      Caption = #54252#53944#48264#54840'(P)'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object lbttcpip: TLabel
+      Left = 114
+      Top = 332
+      Width = 72
+      Height = 16
+      Caption = #50500#51060#54588#51452#49548'(P)'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object lbttcsprot: TLabel
+      Left = 435
+      Top = 362
+      Width = 62
+      Height = 16
+      Caption = #54252#53944#48264#54840'(S)'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label2: TLabel
+      Left = 138
+      Top = 268
+      Width = 48
+      Height = 16
+      Caption = #44036#44201' '#49884#44036
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -284,7 +324,7 @@ object frmSystem: TfrmSystem
       ParentFont = False
     end
     object chkConViewSet: TCheckBox
-      Left = 192
+      Left = 206
       Top = 94
       Width = 16
       Height = 17
@@ -301,8 +341,8 @@ object frmSystem: TfrmSystem
       Value = 0
     end
     object cboxVideoResol: TDBComboBox
-      Left = 192
-      Top = 159
+      Left = 206
+      Top = 155
       Width = 121
       Height = 21
       Items.Strings = (
@@ -311,8 +351,8 @@ object frmSystem: TfrmSystem
       TabOrder = 2
     end
     object cboxVideoFrm: TDBComboBox
-      Left = 192
-      Top = 191
+      Left = 206
+      Top = 186
       Width = 121
       Height = 21
       Items.Strings = (
@@ -323,8 +363,8 @@ object frmSystem: TfrmSystem
       TabOrder = 3
     end
     object speEventPop: TSpinEdit
-      Left = 378
-      Top = 263
+      Left = 206
+      Top = 267
       Width = 73
       Height = 22
       MaxValue = 0
@@ -333,14 +373,15 @@ object frmSystem: TfrmSystem
       Value = 30
     end
     object grdCamLicense: TAdvStringGrid
-      Left = 67
-      Top = 430
-      Width = 694
-      Height = 67
+      Left = 29
+      Top = 448
+      Width = 330
+      Height = 161
       ColCount = 3
       DrawingStyle = gdsClassic
       FixedColor = clWhite
       RowCount = 3
+      ScrollBars = ssNone
       TabOrder = 5
       GridLineColor = 13948116
       GridFixedLineColor = 11250603
@@ -465,9 +506,9 @@ object frmSystem: TfrmSystem
         18)
     end
     object groupEvent: TGroupBox
-      Left = 192
-      Top = 264
-      Width = 169
+      Left = 206
+      Top = 240
+      Width = 144
       Height = 24
       Color = clWhite
       ParentBackground = False
@@ -476,7 +517,7 @@ object frmSystem: TfrmSystem
       StyleElements = [seFont, seClient]
       object btnEvtRadio1: TRadioButton
         Left = 14
-        Top = 3
+        Top = 4
         Width = 64
         Height = 17
         Caption = #48120#51201#50857
@@ -487,7 +528,7 @@ object frmSystem: TfrmSystem
       object btnEvtRadio2: TRadioButton
         Left = 99
         Top = 3
-        Width = 64
+        Width = 46
         Height = 17
         Caption = #51201#50857
         TabOrder = 1
@@ -519,10 +560,10 @@ object frmSystem: TfrmSystem
       end
     end
     object grdCliLocense: TAdvStringGrid
-      Left = 67
-      Top = 541
-      Width = 694
-      Height = 69
+      Left = 431
+      Top = 448
+      Width = 330
+      Height = 161
       DrawingStyle = gdsClassic
       FixedColor = clWhite
       Font.Charset = DEFAULT_CHARSET
@@ -531,6 +572,7 @@ object frmSystem: TfrmSystem
       Font.Name = 'Times New Roman'
       Font.Style = []
       ParentFont = False
+      ScrollBars = ssNone
       TabOrder = 8
       GridLineColor = 13948116
       GridFixedLineColor = 11250603
@@ -651,8 +693,8 @@ object frmSystem: TfrmSystem
       Version = '9.1.3.0'
     end
     object cbxEventPop: TDBComboBox
-      Left = 457
-      Top = 263
+      Left = 285
+      Top = 267
       Width = 65
       Height = 21
       Items.Strings = (
@@ -661,16 +703,16 @@ object frmSystem: TfrmSystem
         #49884#44036)
       TabOrder = 9
     end
-    object edTCMSIP: TEdit
-      Left = 192
-      Top = 336
-      Width = 121
+    object edttcpip: TEdit
+      Left = 206
+      Top = 326
+      Width = 123
       Height = 21
       TabOrder = 10
     end
     object btnAddCamLicense: TAdvGlowButton
-      Left = 672
-      Top = 392
+      Left = 270
+      Top = 418
       Width = 89
       Height = 24
       Caption = '+ '#49888#44508' '#52628#44032
@@ -725,7 +767,7 @@ object frmSystem: TfrmSystem
     end
     object btnAddCliLicense: TAdvGlowButton
       Left = 672
-      Top = 503
+      Top = 418
       Width = 89
       Height = 24
       Caption = '+ '#49888#44508' '#52628#44032
@@ -778,12 +820,26 @@ object frmSystem: TfrmSystem
       Appearance.TextColorHot = 2303013
       Appearance.TextColorDisabled = 13948116
     end
-    object Edit1: TEdit
-      Left = 448
-      Top = 336
+    object edttcsport: TEdit
+      Left = 523
+      Top = 361
       Width = 74
       Height = 21
       TabOrder = 13
+    end
+    object edttcsip: TEdit
+      Left = 523
+      Top = 323
+      Width = 121
+      Height = 21
+      TabOrder = 14
+    end
+    object edttcpport: TEdit
+      Left = 206
+      Top = 361
+      Width = 74
+      Height = 21
+      TabOrder = 15
     end
   end
   object Panel2: TPanel
