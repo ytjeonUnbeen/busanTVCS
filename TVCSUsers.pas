@@ -14,8 +14,7 @@ type
     pnMainFrame: TPanel;
     pnBottom: TPanel;
     lblTitle: TLabel;
-    edtSerch: TEdit;
-    btnSerch: TButton;
+    edSearchText: TEdit;
     lblUsersCnt: TLabel;
     grdUsers: TAdvStringGrid;
     cbSearch: TComboBox;
@@ -25,12 +24,15 @@ type
     btnAddUser: TAdvGlowButton;
     ImageCollection1: TImageCollection;
     VirtualImageList1: TVirtualImageList;
+    btnSerch: TAdvGlowButton;
     procedure btnCancelClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure btnDlgCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure grdUsersButtonClick(Sender: TObject; ACol, ARow: Integer);
     procedure btnAddUserClick(Sender: TObject);
+    procedure btnSerchClick(Sender: TObject);
+    procedure edSearchTextKeyPress(Sender: TObject; var Key: Char);
 
 
   private
@@ -102,8 +104,77 @@ begin
         //gapi.UpdateUser(saveUsers[i]);
       end;
     end;
-    
+
   ModalResult:=mrOk;
+end;
+
+procedure TfrmUsers.btnSerchClick(Sender: TObject);
+var
+  searchText: string;
+  searchMode: integer;
+  i: integer;
+  found: boolean;
+begin
+  searchText := edSearchText.Text;
+  if searchText = '' then Exit;
+
+  searchMode := cbSearch.ItemIndex;
+  found := false;
+
+  for i := 1 to grdUsers.RowCount - 1 do
+  begin
+    case searchMode of
+      0: // 전체 검색
+        if  grdUsers.Cells[1,i] = searchText then  // id
+        begin
+          grdUsers.SelectCells(1,i,1,i);
+          found := true;
+          Break;
+        end
+        else if grdUsers.Cells[2,i] = searchText then  // 별명
+        begin
+          grdUsers.SelectCells(2,i,2,i);
+          found := true;
+          Break;
+        end
+        else if grdUsers.Cells[3,i] = searchText then //email
+        begin
+          grdUsers.SelectCells(3,i,3,i);
+          found := true;
+          Break;
+        end;
+      1: // 편성 검색
+        if  grdUsers.Cells[1,i] = searchText then  // 열차번호명에서 찾은 경우
+        begin
+          grdUsers.SelectCells(1,i,1,i);
+          found := true;
+          Break;
+        end;
+      2: // 역사명 검색
+         if grdUsers.Cells[2,i] = searchText then  // 장치구분에서 찾은 경우
+        begin
+          grdUsers.SelectCells(2,i,2,i);
+          found := true;
+          Break;
+        end;
+      3: // 역사명 검색
+         if grdUsers.Cells[3,i] = searchText then  // 장치구분에서 찾은 경우
+        begin
+          grdUsers.SelectCells(3,i,3,i);
+          found := true;
+          Break;
+        end;
+    end;
+  end;
+
+  if not found then
+    ShowTVCSMessage('검색 결과가 없습니다.');
+end;
+
+procedure TfrmUsers.edSearchTextKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #13 then
+    btnSerchClick(Sender);
 end;
 
 procedure TfrmUsers.FormCreate(Sender: TObject);

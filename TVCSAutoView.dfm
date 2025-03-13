@@ -1,7 +1,7 @@
 object frmAutoView: TfrmAutoView
   Left = 0
   Top = 0
-  Caption = 'frmAutoView'
+  Caption = #51088#46041#54364#52636#52285
   ClientHeight = 581
   ClientWidth = 911
   Color = clBtnFace
@@ -11,6 +11,7 @@ object frmAutoView: TfrmAutoView
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCanResize = FormCanResize
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13

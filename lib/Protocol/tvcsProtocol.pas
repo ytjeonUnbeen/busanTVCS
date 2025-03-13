@@ -91,6 +91,11 @@ type
     fprevName:String;
     fnextCode:String;
     fnextName:String;
+    fupRtsp:String;
+    fdnRtsp:String;
+    fupView:String;
+    fdnView:String;
+
   end;
 
 
@@ -107,6 +112,10 @@ type
     fdnLeavTcode:String;
     fprevCode:String;
     fnextCode:String;
+    fupRtsp:String;
+    fdnRtsp:String;
+    fupView:String;
+    fdnView:String;
     //fline:Integer;
   end;
 
@@ -123,6 +132,10 @@ type
     fdnLeavTcode:String;
     fprevCode:String;
     fnextCode:String;
+    fupRtsp:String;
+    fdnRtsp:String;
+    fupView:String;
+    fdnView:String;
     //fline:Integer;
   end;
 
@@ -187,10 +200,12 @@ type
     fipaddr:String;
     fport:Integer;
     frtsp:String;
+    frtsp2:String;
     ftvcsRtsp:String;
     fuserId:String;
     fuserPwd:String;
     fresource:Tobject;
+    fisAlive:boolean;
   end;
 
   TVCSStationCameraPost=class
@@ -200,8 +215,10 @@ type
     fipaddr:String;
     fport:Integer;
     frtsp:String;
+    frtsp2:String;
     fuserId:String;
     fuserPwd:String;
+    fisAlive:boolean;
   end;
 
   TVCSStationCameraPatch=class
@@ -212,8 +229,10 @@ type
     fipaddr:String;
     fport:Integer;
     frtsp:String;
+    frtsp2:String;
     fuserId:String;
     fuserPwd:String;
+    fisAlive:boolean;
   end;
 
 
@@ -231,6 +250,7 @@ type
     fuserId:string;
     fuserPwd:string;
     fresource:Tobject;
+    fisAlive:boolean;
   end;
 
   TVCSTrainCameraInPost=class
@@ -243,6 +263,7 @@ type
     frtsp2:string;
     fuserId:string;
     fuserPwd:string;
+    fisAlive:boolean;
   end;
 
   TVCSTrainCameraInPatch=class
@@ -256,6 +277,7 @@ type
     frtsp2:string;
     fuserId:string;
     fuserPwd:string;
+    fisAlive:boolean;
   end;
 
   fmergeCamInfo = class
@@ -321,8 +343,8 @@ type
   end;
 
   TVCSLicensePost=class
-    fcameraLicenseLey:string;
-    fclientLicenseLey:string;
+    fcameraLicenseKey:string;
+    fclientLicenseKey:string;
   end;
 
   TVCSLicense=class

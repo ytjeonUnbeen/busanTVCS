@@ -62,6 +62,7 @@ type
     procedure btnStationDownloadClick(Sender: TObject);
     procedure btnSearchClick(Sender: TObject);
     procedure edSearchTextKeyPress(Sender: TObject; var Key: Char);
+    procedure edOnlyInputNum(Sender: TObject; var Key: Char);
 
 
   private
@@ -90,7 +91,7 @@ begin
   with grdTrainCams do
   begin
     InsertChildRow(0);
-    Cells[0,1] := '';
+    Cells[0,1] := edTrainNo.Text;
     Cells[1,1] := '0';  // position의 기본값 설정
     Cells[2,1] := '';
     Cells[3,1] := '';
@@ -114,15 +115,24 @@ begin
     Cells[0,1] := '0';
     Cells[1,1] := 'NULL';
     Cells[2,1] := 'NULL';
-
+    AddImageIdx(3, 1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
+    SelectCells(0,1,0,1);
+    FocusCell(1,1);
+    TopRow := 0;
   end;
+
+  edscNo.Enabled := true;
+  edTrainCnt.Enabled := true;
+  edTrainNo.Enabled := true;
+  edNvrRTSP.Enabled := true;
+  btnAddCams.Enabled := true;
 
   edscNo.Text := '';
   edTrainNo.Text := '';
-  edTrainCnt.Text := '0';
+  edTrainCnt.Text := '';
   edNvrRTSP.text := '';
+  edscNo.SetFocus;
   LoadTrainCamList;
-
 end;
 
 procedure TfrmTrain.btnCancelClick(Sender: TObject);
@@ -151,6 +161,8 @@ var
 begin
   if ShowTVCSCheck(0) then
   begin
+
+
     if CheckExcel then
     begin
       allSuccess := True;
@@ -254,6 +266,35 @@ begin
     end
     else
     begin
+
+    if (edscNo.Text = '') and (edTrainNo.Text = '') and (edTrainCnt.Text = '') and (edTrainCnt.Text = '') then
+            begin
+              ShowTVCSMessage('수정할 정보가 없습니다.');
+              Exit;
+            end;
+
+    if (edscNo.Text = '') then
+    begin
+      ShowTVCSMessage('편성번호를 입력해주세요.');
+      Exit;
+    end;
+    if (edTrainNo.Text = '') then
+    begin
+      ShowTVCSMessage('열차번호를 입력해주세요.');
+      Exit;
+    end;
+    if (edTrainCnt.Text = '') then
+    begin
+      ShowTVCSMessage('차량객차 수를 입력해주세요.');
+      Exit;
+    end;
+    if (edNvrRTSP.Text = '') then
+    begin
+      ShowTVCSMessage('TVCS 주소를 입력해주세요.');
+      Exit;
+    end;
+
+
       size := grdTrainCams.RowCount - 1;
     trainPos := TVCSTrainInPost.Create;
     //ShowTVCSMessage(inttostr(size));
@@ -305,7 +346,7 @@ begin
           trainCamPos[i-1] := TVCSTrainCameraInPost.Create;
           with trainCamPos[i-1] do
           begin
-            ftrainNo := SelTrain.ftrainNo;
+            ftrainNo := edTrainNo.Text;
             fposition := StrToInt(grdTrainCams.Cells[1,i]);  // 위치 정보 추가
             fname := grdTrainCams.Cells[2,i];
             fipaddr := grdTrainCams.Cells[3,i];
@@ -370,7 +411,10 @@ begin
         end;
 
         if allSuccess then
-          ShowTVCSMessage('처리가 완료되었습니다.')
+          begin
+            ShowTVCSMessage('처리가 완료되었습니다.');
+            LoadTrainList;
+          end
         else
           ShowTVCSMessage('일부 처리가 실패하였습니다.');
 
@@ -385,7 +429,7 @@ begin
   end;
 
 
-  ModalResult:=mrOk;
+  //ModalResult:=mrOk;
 end;
 
 
@@ -640,8 +684,8 @@ begin
     RowCount :=1;
     ColCount:=4;
     ColWidths[0]:=60;
-    ColWidths[1]:=80;
-    ColWidths[2]:=120;
+    ColWidths[1]:=90;
+    ColWidths[2]:=90;
     ColWidths[3]:=60;
 
     Cells[0,0]:='No.';
@@ -713,7 +757,7 @@ begin
       end;
 
   end;
-
+  lblCamCnt.Caption := '총:0개';
 
   //ShowTVCSMessage(intTostr(trainId));
   if trainId <> -1 then
@@ -791,8 +835,34 @@ end;
 procedure TfrmTrain.grdTrainsClickCell(Sender: TObject; ARow, ACol: Integer);
 var
   ftrainNo : integer;
+  isNewRow: Boolean;
 begin
 //
+  if ARow = 0 then
+  begin
+    edscNo.Text := '';
+    edTrainCnt.Text := '';
+    edTrainNo.Text := '';
+    edNvrRTSP.Text := '';
+
+    edscNo.Enabled := False;
+    edTrainCnt.Enabled := False;
+    edTrainNo.Enabled := False;
+    edNvrRTSP.Enabled := False;
+    btnAddCams.Enabled := False;
+
+    LoadTrainCamList();
+    Exit;
+  end;
+
+  isNewRow := (ARow <= addTrCnt);
+
+  edscNo.Enabled := true;
+  edTrainCnt.Enabled := true;
+  edTrainNo.Enabled := true;
+  edNvrRTSP.Enabled := true;
+  btnAddCams.Enabled := true;
+
   if ARow > 0 then
   begin
       if Acol =3 then
@@ -801,11 +871,13 @@ begin
         if ShowTVCSCheck(1) then
           begin
           // 삭제
-            gapi.DeleteTrain(Trains[ARow-1 - addTrCnt].fid);
+            if ARow-1 -addTrCnt >= 0  then
+              gapi.DeleteTrain(trains[ARow-1 -addTrCnt].fid);
+
             grdTrains.RemoveRows(ARow, 1);
             edscNo.Text := '';
             edTrainNo.Text := '';
-            edTrainCnt.Text := '0';
+            edTrainCnt.Text := '';
             edNvrRTSP.Text := '';
             ShowTVCSMessage('삭제 되었습니다. ');
             LoadTrainList;
@@ -825,8 +897,6 @@ begin
           edTrainCnt.Text := IntToStr(SelTrain.fcarriageNum);
           edNvrRTSP.text := SelTrain.ftvcsIpaddr;
 
-
-
           if CheckExcel then
             LoadTrainCamList(StrToInt(SelTrain.ftrainNo))
           else
@@ -836,7 +906,7 @@ begin
         except
           edscNo.Text := '';
           edTrainNo.Text := '';
-          edTrainCnt.Text := '0';
+          edTrainCnt.Text := '';
           edNvrRTSP.text := '';
           LoadTrainCamList;
 
@@ -880,6 +950,16 @@ if ARow > 0 then
 
   end;
 
+end;
+
+procedure TfrmTrain.edOnlyInputNum(Sender: TObject; var Key: Char);
+begin
+  // 숫자나 백스페이스가 아닌 경우
+  if not (Key in ['0'..'9', #8]) then
+  begin
+    Key := #0;  // 입력 취소
+    ShowTVCSMessage('숫자만 입력가능합니다.');
+  end;
 end;
 
 end.

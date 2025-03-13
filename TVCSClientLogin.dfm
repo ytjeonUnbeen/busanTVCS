@@ -2,48 +2,71 @@ object frmLogin: TfrmLogin
   Left = 0
   Top = 0
   BorderStyle = bsDialog
-  ClientHeight = 247
-  ClientWidth = 400
+  ClientHeight = 261
+  ClientWidth = 455
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  PixelsPerInch = 96
   TextHeight = 13
   object Label3: TLabel
-    Left = 40
+    Left = 21
     Top = 88
-    Width = 79
+    Width = 93
     Height = 13
     Caption = #50689#49345#52376#47532#49436#48260' IP'
+    Color = clNone
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = #46027#50880
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+    Transparent = True
   end
   object Label1: TLabel
     Left = 64
     Top = 115
-    Width = 33
+    Width = 39
     Height = 13
     Caption = #50500#51060#46356
+    Color = clNone
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = #46027#50880
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
   end
   object Label2: TLabel
     Left = 64
     Top = 142
-    Width = 44
+    Width = 52
     Height = 13
     Caption = #48708#48128#48264#54840
+    Color = clNone
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = #46027#50880
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
   end
   object Label4: TLabel
-    Left = 112
+    Left = 146
     Top = 8
     Width = 151
     Height = 25
     Caption = #50689#49345#54364#52636' '#53364#46972#51060#50616#53944
-    Color = clHighlight
+    Color = clNone
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlue
     Font.Height = -21
@@ -51,14 +74,15 @@ object frmLogin: TfrmLogin
     Font.Style = []
     ParentColor = False
     ParentFont = False
+    Transparent = True
   end
   object Label5: TLabel
-    Left = 152
+    Left = 186
     Top = 39
     Width = 48
     Height = 25
     Caption = #47196#44536#51064
-    Color = clHighlight
+    Color = clNone
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlue
     Font.Height = -21
@@ -66,13 +90,22 @@ object frmLogin: TfrmLogin
     Font.Style = []
     ParentColor = False
     ParentFont = False
+    Transparent = True
   end
   object Label6: TLabel
-    Left = 56
-    Top = 226
-    Width = 314
+    Left = 28
+    Top = 225
+    Width = 374
     Height = 13
     Caption = #47928#51032' '#49324#54637#51008' '#44033' '#54840#49440' '#53685#49888#52376' '#45812#45817#51088#50640#44172' '#47928#51032' '#54644#51452#49884#44592' '#48148#46989#45768#45796'.'
+    Color = clNone
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = #46027#50880
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
   end
   object edServer: TEdit
     Left = 125
@@ -80,7 +113,7 @@ object frmLogin: TfrmLogin
     Width = 220
     Height = 21
     TabOrder = 0
-    Text = 'http://192.168.1.37:7003'
+    Text = 'http://192.168.1.49:7003'
   end
   object edUser: TEdit
     Left = 128
@@ -102,9 +135,17 @@ object frmLogin: TfrmLogin
   object chkSave: TCheckBox
     Left = 128
     Top = 176
-    Width = 153
+    Width = 169
     Height = 17
     Caption = 'IP/'#50500#51060#46356'/'#48708#48128#48264#54840' '#51200#51109
+    Color = clNone
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = #46027#50880
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
     TabOrder = 3
   end
   object chkAutoLogin: TCheckBox
@@ -113,6 +154,14 @@ object frmLogin: TfrmLogin
     Width = 153
     Height = 17
     Caption = #51088#46041#47196#44536#51064
+    Color = clNone
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = #46027#50880
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
     TabOrder = 4
   end
   object btnLogin: TAdvGlassButton

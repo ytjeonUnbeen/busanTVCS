@@ -62,6 +62,8 @@ type
     procedure btnDlgCloseClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
+    procedure btnAddCamLicenseClick(Sender: TObject);
+    procedure btnAddCliLicenseClick(Sender: TObject);
 
 
 
@@ -74,6 +76,8 @@ type
     ttcpport : string;
     ttcsip : string;
     ttcsport : string;
+    addCamLiCnt : integer;
+    addSysLiCnt : integer;
     procedure loadCamLicenseList();
     procedure LoadSettings;
 
@@ -90,6 +94,33 @@ implementation
 {$R *.dfm}
 
 
+procedure TfrmSystem.btnAddCamLicenseClick(Sender: TObject);
+begin
+//
+  addCamLiCnt := addCamLiCnt +1;
+  with grdCamLicense do
+  begin
+    InsertChildRow(0);
+    Cells[0,1] := '0';
+    Cells[1,1] := 'NULL';
+    Cells[2,1] := 'NULL';
+  end;
+
+end;
+
+procedure TfrmSystem.btnAddCliLicenseClick(Sender: TObject);
+begin
+  addSysLiCnt := addSysLiCnt +1;
+  with grdCliLocense do
+  begin
+    InsertChildRow(0);
+    Cells[0,1] := '0';
+    Cells[1,1] := 'NULL';
+    Cells[2,1] := 'NULL';
+  end;
+
+end;
+
 procedure TfrmSystem.btnCancelClick(Sender: TObject);
 begin
   ModalResult:=mrCancel;
@@ -103,6 +134,9 @@ end;
 procedure TfrmSystem.btnSaveClick(Sender: TObject);
 var
   Registry: TRegIniFile;
+  addLicense : TVCSLicensePost;
+  i : integer;
+  size: integer;
 begin
   // 올바른 생성 방식  ]
   if ShowTVCSCheck(0) then
@@ -117,6 +151,32 @@ begin
       Registry.Free;
     end;
     ModalResult := mrOk;
+  end;
+
+  if (addCamLiCnt > 0) or (addSysLiCnt > 0) then
+  begin
+    if addCamLiCnt > addSysLiCnt then
+      size := addCamLiCnt
+    else
+      size := addSysLiCnt;
+
+    for i := 0 to size-1 do
+    begin
+      addLicense := TVCSLicensePost.Create;
+      // 카메라 라이센스 설정
+      if i < addCamLiCnt then
+        addLicense.fcameraLicenseKey := grdCamLicense.Cells[1,i+1]
+      else
+        addLicense.fcameraLicenseKey := '';
+
+      // 클라이언트 라이센스 설정
+      if i < addSysLiCnt then
+        addLicense.fclientLicenseKey := grdCliLocense.Cells[1,i+1]
+      else
+        addLicense.fclientLicenseKey := '';
+
+      gapi.AddLicense(addLicense);
+    end;
   end;
 
 end;
@@ -197,7 +257,7 @@ begin
   with grdCamLicense do
   begin
     TotalWidth := ClientWidth;
-    RowCount := 3;
+    //RowCount := 3;
     ColCount := 3;
     ColWidths[0]:=Round(TotalWidth * 0.2);
     ColWidths[1]:=Round(TotalWidth * 0.6);
@@ -224,7 +284,7 @@ begin
   begin
 
     TotalWidth := ClientWidth;
-    RowCount := 2;
+    //RowCount := 2;
     ColCount := 3;
     ColWidths[0]:=Round(TotalWidth * 0.2);
     ColWidths[1]:=Round(TotalWidth * 0.6);

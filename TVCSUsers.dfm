@@ -49,20 +49,13 @@ object frmUsers: TfrmUsers
       Font.Style = []
       ParentFont = False
     end
-    object edtSerch: TEdit
+    object edSearchText: TEdit
       Left = 343
       Top = 80
       Width = 210
       Height = 21
       TabOrder = 0
-    end
-    object btnSerch: TButton
-      Left = 559
-      Top = 78
-      Width = 58
-      Height = 25
-      Caption = #44160#49353
-      TabOrder = 1
+      OnKeyPress = edSearchTextKeyPress
     end
     object grdUsers: TAdvStringGrid
       Left = 62
@@ -72,7 +65,7 @@ object frmUsers: TfrmUsers
       DrawingStyle = gdsClassic
       FixedColor = clWhite
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goFixedRowDefAlign]
-      TabOrder = 2
+      TabOrder = 1
       OnButtonClick = grdUsersButtonClick
       ActiveCellFont.Charset = DEFAULT_CHARSET
       ActiveCellFont.Color = 4474440
@@ -206,7 +199,7 @@ object frmUsers: TfrmUsers
       Height = 21
       Style = csDropDownList
       ItemIndex = 0
-      TabOrder = 3
+      TabOrder = 2
       Text = #51204#52404
       Items.Strings = (
         #51204#52404
@@ -232,8 +225,64 @@ object frmUsers: TfrmUsers
       NotesFont.Style = []
       ParentFont = False
       Rounded = True
-      TabOrder = 4
+      TabOrder = 3
       OnClick = btnAddUserClick
+      Appearance.BorderColor = 11382963
+      Appearance.BorderColorHot = 11565130
+      Appearance.BorderColorCheckedHot = 11565130
+      Appearance.BorderColorDown = 11565130
+      Appearance.BorderColorChecked = 13744549
+      Appearance.BorderColorDisabled = 13948116
+      Appearance.Color = clWhite
+      Appearance.ColorTo = clWhite
+      Appearance.ColorChecked = 13744549
+      Appearance.ColorCheckedTo = 13744549
+      Appearance.ColorDisabled = clWhite
+      Appearance.ColorDisabledTo = clNone
+      Appearance.ColorDown = 11565130
+      Appearance.ColorDownTo = 11565130
+      Appearance.ColorHot = 16444643
+      Appearance.ColorHotTo = 16444643
+      Appearance.ColorMirror = clWhite
+      Appearance.ColorMirrorTo = clWhite
+      Appearance.ColorMirrorHot = 16444643
+      Appearance.ColorMirrorHotTo = 16444643
+      Appearance.ColorMirrorDown = 11565130
+      Appearance.ColorMirrorDownTo = 11565130
+      Appearance.ColorMirrorChecked = 13744549
+      Appearance.ColorMirrorCheckedTo = 13744549
+      Appearance.ColorMirrorDisabled = clWhite
+      Appearance.ColorMirrorDisabledTo = clNone
+      Appearance.GradientHot = ggVertical
+      Appearance.GradientMirrorHot = ggVertical
+      Appearance.GradientDown = ggVertical
+      Appearance.GradientMirrorDown = ggVertical
+      Appearance.GradientChecked = ggVertical
+      Appearance.TextColorChecked = 3750459
+      Appearance.TextColorDown = 2303013
+      Appearance.TextColorHot = 2303013
+      Appearance.TextColorDisabled = 13948116
+    end
+    object btnSerch: TAdvGlowButton
+      Left = 559
+      Top = 77
+      Width = 58
+      Height = 24
+      Caption = #44160#49353
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      NotesFont.Charset = DEFAULT_CHARSET
+      NotesFont.Color = clWindowText
+      NotesFont.Height = -11
+      NotesFont.Name = 'Tahoma'
+      NotesFont.Style = []
+      ParentFont = False
+      Rounded = True
+      TabOrder = 4
+      OnClick = btnSerchClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130

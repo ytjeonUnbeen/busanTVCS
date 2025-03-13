@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, AdvGlassButton, Vcl.StdCtrls,Registry,tvcsAPI,tvcsProtocol,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, AdvGlassButton, Vcl.StdCtrls,Registry,tvcsAPI,tvcsProtocol,vcl.Themes,
   Vcl.ExtCtrls;
 
 type
@@ -51,6 +51,8 @@ implementation
 {$R *.dfm}
 
 procedure TfrmLogin.btnLoginClick(Sender: TObject);
+var
+ info:TVCSLogin;
 
 begin
   // Login API
@@ -77,9 +79,19 @@ begin
 end;
 
 procedure TfrmLogin.FormCreate(Sender: TObject);
+var
+  appPath : string;
+
 begin
 isLogged:=False;
 LoadSettings;
+
+    appPath := ExtractFilePath(ParamStr(0));
+    //ShowMessage(appPath);
+    TStyleManager.LoadFromFile(appPath+'\icon-img\Style.vsf');
+    TStyleManager.TrySetStyle('Onyx Blue2');
+    //TStyleManager.TrySetStyle('Onyx Blue');
+
  //api := TTVCSAPI.Create();
 
 end;

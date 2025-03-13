@@ -31,14 +31,19 @@ uses
   tvcsAPI in 'lib\Protocol\tvcsAPI.pas',
   tvcsProtocol in 'lib\Protocol\tvcsProtocol.pas',
   TVCSMainFrm in 'TVCSMainFrm.pas' {frmTVCSMain},
-  CustomPageControl in 'CustomPageControl.pas',
-  TVCSMulView in 'TVCSMulView.pas',
   TVCSCheckDelete in 'TVCSCheckDelete.pas' {frmCheckDelete},
+  TVCSCheckDialog in 'TVCSCheckDialog.pas',
   TVCSPreview in 'TVCSPreview.pas' {frmPreview},
   TVCSButtonStyle in 'TVCSButtonStyle.pas',
-  TVCSCheckDialog in 'TVCSCheckDialog.pas',
-  TVCSPasswordChange in 'TVCSPasswordChange.pas' {frmPasswordChange},
-  TVCSAddUser in 'TVCSAddUser.pas' {frmAddUser};
+  TVCSDrawCommon in 'TVCSDrawCommon.pas',
+  Common in 'lib\Common\Common.pas',
+  ConvertHex in 'lib\Common\ConvertHex.pas',
+  TCMSProtocol in 'lib\Protocol\TCMSProtocol.pas',
+  TTCProtocol in 'lib\Protocol\TTCProtocol.pas',
+  TVCSDebug in 'TVCSDebug.pas' {frmDebug},
+  TVCSCamView in 'TVCSCamView.pas',
+  TVCSFullScreen in 'TVCSFullScreen.pas' {frmFullViewer},
+  PasLibVlcUnit;
 
 {$R *.res}
 var
@@ -47,23 +52,21 @@ var
  frmLogin:TfrmLogin;
  const PrgKey='Software\TVCSClient\Settings';
 
+
 begin
   Application.Initialize;
+  libvlc_dynamic_dll_init_with_path(ExtractFilePath(ParamStr(0)) + 'lib\');
+
 
   Application.MainFormOnTaskbar := True;
   Registry := TRegIniFile.Create(KEY_READ);
   try
-            //Application.CreateForm(TfrmRBTLogin, frmRBTLogin);
-   //  Application.CreateForm(TfrmLogin, frmLogin);
 
-     //Application.CreateForm(TfrmPreview, frmPreview);
      frmLogin:=TfrmLogin.Create(Application);
      frmLogin.ShowModal;
      if (frmLogin.isLogged) then
              TStyleManager.TrySetStyle('Onyx Blue');
   Application.CreateForm(TfrmTVCSMain, frmTVCSMain);
-  Application.CreateForm(TfrmPasswordChange, frmPasswordChange);
-  Application.CreateForm(TfrmAddUser, frmAddUser);
   FreeAndNil(frmLogin);
 
 

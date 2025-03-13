@@ -15,7 +15,7 @@ type
     pnMainFrame: TPanel;
     pnBottom: TPanel;
     lblTitle: TLabel;
-    edtSerch: TEdit;
+    edSearchText: TEdit;
     lblDeviceCnt: TLabel;
     grdDeviceList: TAdvStringGrid;
     lblDeviceInfo: TLabel;
@@ -37,6 +37,8 @@ type
     procedure btnDeviceUploadClick(Sender: TObject);
     procedure btnDeviceDownloadClick(Sender: TObject);
     procedure btnAddDeviceClick(Sender: TObject);
+    procedure btnSearchClick(Sender: TObject);
+    procedure edSearchTextKeyPress(Sender: TObject; var Key: Char);
 
   private
     { Private declarations }
@@ -366,6 +368,75 @@ begin
   end;
   addDevCnt := 0;
   //ModalResult := mrOk;
+end;
+
+procedure TfrmDevices.btnSearchClick(Sender: TObject);
+var
+  searchText: string;
+  searchMode: integer;
+  i: integer;
+  found: boolean;
+begin
+  searchText := edSearchText.Text;
+  if searchText = '' then Exit;
+
+  searchMode := cbSearch.ItemIndex;
+  found := false;
+
+  for i := 1 to grdDeviceList.RowCount - 1 do
+  begin
+    case searchMode of
+      0: // 전체 검색
+        if  grdDeviceList.Cells[1,i] = searchText then  // 열차번호명에서 찾은 경우
+        begin
+          grdDeviceList.SelectCells(1,i,1,i);
+          found := true;
+          Break;
+        end
+        else if grdDeviceList.Cells[2,i] = searchText then  // 장치구분에서 찾은 경우
+        begin
+          grdDeviceList.SelectCells(2,i,2,i);
+          found := true;
+          Break;
+        end
+        else if grdDeviceList.Cells[3,i] = searchText then
+        begin
+          grdDeviceList.SelectCells(3,i,3,i);
+          found := true;
+          Break;
+        end;
+      1: // 편성 검색
+        if  grdDeviceList.Cells[1,i] = searchText then  // 열차번호명에서 찾은 경우
+        begin
+          grdDeviceList.SelectCells(1,i,1,i);
+          found := true;
+          Break;
+        end;
+      2: // 역사명 검색
+         if grdDeviceList.Cells[2,i] = searchText then  // 장치구분에서 찾은 경우
+        begin
+          grdDeviceList.SelectCells(2,i,2,i);
+          found := true;
+          Break;
+        end;
+      3: // 역사명 검색
+         if grdDeviceList.Cells[3,i] = searchText then  // 장치구분에서 찾은 경우
+        begin
+          grdDeviceList.SelectCells(3,i,3,i);
+          found := true;
+          Break;
+        end;
+    end;
+  end;
+
+  if not found then
+    ShowTVCSMessage('검색 결과가 없습니다.');
+end;
+
+procedure TfrmDevices.edSearchTextKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #13 then
+    btnSearchClick(Sender);
 end;
 
 procedure TfrmDevices.FormCreate(Sender: TObject);

@@ -731,6 +731,25 @@ begin
         else
           Station.fnextName := '';
 
+        if JsonObj.TryGetValue('upRtsp', JsonValue) and (not JsonValue.Null) then
+          Station.fupRtsp := JsonValue.AsType<string>
+        else
+          Station.fupRtsp := '';
+
+        if JsonObj.TryGetValue('dnRtsp', JsonValue) and (not JsonValue.Null) then
+          Station.fdnRtsp := JsonValue.AsType<string>
+        else
+          Station.fdnRtsp := '';
+        if JsonObj.TryGetValue('upView', JsonValue) and (not JsonValue.Null) then
+          Station.fupView := JsonValue.AsType<string>
+        else
+          Station.fupView := '';
+
+        if JsonObj.TryGetValue('dnView', JsonValue) and (not JsonValue.Null) then
+          Station.fdnView := JsonValue.AsType<string>
+        else
+          Station.fdnView := '';
+
         Stations[I] := Station;
       end;
       Result := Stations;
@@ -1219,6 +1238,8 @@ begin
        else
          Camera.fuserPwd := '';
 
+
+
        Camera.fresource := nil;  // 객체는 기본적으로 nil로 초기화
 
        TrainCameras[I] := Camera;
@@ -1414,7 +1435,7 @@ begin
             if ItemObj.TryGetValue('tvcsRtsp', JsonValue) and (not JsonValue.Null) then
               MergeInfo.ftvcsRtsp := JsonValue.AsType<string>;
 
-            if ItemObj.TryGetValue('userid', JsonValue) and (not JsonValue.Null) then
+            if ItemObj.TryGetValue('userId', JsonValue) and (not JsonValue.Null) then
               MergeInfo.fuserid := JsonValue.AsType<string>;
 
             if ItemObj.TryGetValue('userPwd', JsonValue) and (not JsonValue.Null) then
@@ -1713,30 +1734,136 @@ function TTVCSAPI.GetLicense():TArray<TVCSLicense>;
 var
   ResponseStr, ErrorMsg: string;
   ResponseJson: TJSONObject;
-  LicenseJson: TJSONValue;
+  LicenseJson, CameraJson, ClientJson: TJSONValue;
   Licenses: TArray<TVCSLicense>;
-  I: Integer;
+  License: TVCSLicense;
+  CameraLicense: TVCSCameraLicense;
+  ClientLicense: TVCSClientLicense;
+  I, J: Integer;
+  JsonObj, CamObj, ClientObj: TJSONObject;
+  JsonValue: TJSONValue;
 begin
-
+  Result := nil;
   ResponseStr := FAPIBase.GetAPI(API_LICENSE);
-
   FResponseText := FAPIBase.ResponseText;
   FResponseCode := FAPIBase.ResponseCode;
-  ResponseJson := TJSONObject.ParseJsonValue(ResponseStr) as TJSONObject;
 
-  if CheckError(ResponseJson, ErrorMsg) <> 0 then
-    Exit(nil);
+  try
+    ResponseStr := StringReplace(ResponseStr, '":,', '":null,', [rfReplaceAll]);
+    ResponseJson := TJSONObject.ParseJsonValue(ResponseStr) as TJSONObject;
+    if ResponseJson = nil then
+      Exit;
 
-  LicenseJson := ResponseJson.GetValue('reply');
-  if LicenseJson is TJSONArray then
-  begin
+    if CheckError(ResponseJson, ErrorMsg) <> 0 then
+      Exit;
+
+    LicenseJson := ResponseJson.GetValue('reply');
+    if not (LicenseJson is TJSONArray) then
+      Exit;
+
     SetLength(Licenses, TJSONArray(LicenseJson).Count);
+
     for I := 0 to TJSONArray(LicenseJson).Count - 1 do
-      Licenses[I] := TJSON.JsonToObject<TVCSLicense>(TJSONArray(LicenseJson).Items[I] as TJSONObject);
+    begin
+      JsonObj := TJSONArray(LicenseJson).Items[I] as TJSONObject;
+      License := TVCSLicense.Create;
+      try
+        // Camera License 파싱
+        if JsonObj.TryGetValue('cameraLicense', CameraJson) and (CameraJson is TJSONArray) then
+        begin
+          SetLength(License.fcameraLicense, TJSONArray(CameraJson).Count);
+          for J := 0 to TJSONArray(CameraJson).Count - 1 do
+          begin
+            CamObj := TJSONArray(CameraJson).Items[J] as TJSONObject;
+            CameraLicense := TVCSCameraLicense.Create;
+
+            if CamObj.TryGetValue('cameraNum', JsonValue) and (not JsonValue.Null) then
+              CameraLicense.fcameraNum := JsonValue.AsType<Integer>
+            else
+              CameraLicense.fcameraNum := 0;
+
+            if CamObj.TryGetValue('licenseKey', JsonValue) and (not JsonValue.Null) then
+              CameraLicense.flicenseKey := JsonValue.AsType<string>
+            else
+              CameraLicense.flicenseKey := '';
+
+            if CamObj.TryGetValue('isConfirm', JsonValue) and (not JsonValue.Null) then
+              CameraLicense.fisConfirm := JsonValue.AsType<Boolean>
+            else
+              CameraLicense.fisConfirm := False;
+
+            License.fcameraLicense[J] := CameraLicense;
+          end;
+        end;
+
+        // Client License 파싱
+        if JsonObj.TryGetValue('clientLicense', ClientJson) and (ClientJson is TJSONArray) then
+        begin
+          SetLength(License.fclientLicense, TJSONArray(ClientJson).Count);
+          for J := 0 to TJSONArray(ClientJson).Count - 1 do
+          begin
+            ClientObj := TJSONArray(ClientJson).Items[J] as TJSONObject;
+            ClientLicense := TVCSClientLicense.Create;
+
+            if ClientObj.TryGetValue('clientNum', JsonValue) and (not JsonValue.Null) then
+              ClientLicense.fclientNum := JsonValue.AsType<Integer>
+            else
+              ClientLicense.fclientNum := 0;
+
+            if ClientObj.TryGetValue('licenseKey', JsonValue) and (not JsonValue.Null) then
+              ClientLicense.flicenseKey := JsonValue.AsType<string>
+            else
+              ClientLicense.flicenseKey := '';
+
+            if ClientObj.TryGetValue('isConfirm', JsonValue) and (not JsonValue.Null) then
+              ClientLicense.fisConfirm := JsonValue.AsType<Boolean>
+            else
+              ClientLicense.fisConfirm := False;
+
+            License.fclientLicense[J] := ClientLicense;
+          end;
+        end;
+
+        Licenses[I] := License;
+      except
+        FreeAndNil(License);
+        raise;
+      end;
+    end;
+
     Result := Licenses;
-  end
-  else
+
+  except
+    // 메모리 해제
+    if Length(Licenses) > 0 then
+    begin
+      for I := 0 to Length(Licenses) - 1 do
+      begin
+        if Assigned(Licenses[I]) then
+        begin
+          // Camera License 메모리 해제
+          if Length(Licenses[I].fcameraLicense) > 0 then
+          begin
+            for J := 0 to Length(Licenses[I].fcameraLicense) - 1 do
+              FreeAndNil(Licenses[I].fcameraLicense[J]);
+            SetLength(Licenses[I].fcameraLicense, 0);
+          end;
+
+          // Client License 메모리 해제
+          if Length(Licenses[I].fclientLicense) > 0 then
+          begin
+            for J := 0 to Length(Licenses[I].fclientLicense) - 1 do
+              FreeAndNil(Licenses[I].fclientLicense[J]);
+            SetLength(Licenses[I].fclientLicense, 0);
+          end;
+
+          FreeAndNil(Licenses[I]);
+        end;
+      end;
+      SetLength(Licenses, 0);
+    end;
     Result := nil;
+  end;
 end;
 
 function TTVCSAPI.GetDevice(ftype:integer=-1):TArray<TVCSDevice>;

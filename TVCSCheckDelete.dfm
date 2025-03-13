@@ -11,10 +11,8 @@ object frmCheckDelete: TfrmCheckDelete
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 13
   object md: TAdvSmoothMessageDialog
     MaximumWidth = 500
@@ -42,20 +40,20 @@ object frmCheckDelete: TfrmCheckDelete
         PictureLocation = blNone
         Spacing = 10
         Caption = 'Ok'
-        Color = clGreen
+        Color = 16250613
         ColorDown = 16250613
         ColorDisabled = clYellow
-        ColorFocused = clNavy
-        HoverColor = clWindow
+        ColorFocused = 16316406
+        HoverColor = 16120314
       end
       item
         Spacing = 100
         Rounding = 10
         Caption = '222'
-        Color = clLime
-        ColorDown = clBlack
-        ColorFocused = clMaroon
-        HoverColor = clLime
+        Color = 16250613
+        ColorDown = 16250613
+        ColorFocused = 16316406
+        HoverColor = 16120314
       end>
     ButtonSpacing = 10
     ButtonMarginHor = 40
@@ -146,9 +144,5 @@ object frmCheckDelete: TfrmCheckDelete
     Left = 248
     Top = 96
     TMSStyle = 0
-  end
-  object TeeGDIPlus1: TTeeGDIPlus
-    Left = 336
-    Top = 80
   end
 end

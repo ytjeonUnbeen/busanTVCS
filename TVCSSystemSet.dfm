@@ -380,7 +380,9 @@ object frmSystem: TfrmSystem
       ColCount = 3
       DrawingStyle = gdsClassic
       FixedColor = clWhite
-      RowCount = 3
+      RowCount = 1
+      FixedRows = 0
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goFixedRowDefAlign]
       ScrollBars = ssNone
       TabOrder = 5
       GridLineColor = 13948116
@@ -566,11 +568,14 @@ object frmSystem: TfrmSystem
       Height = 161
       DrawingStyle = gdsClassic
       FixedColor = clWhite
+      RowCount = 1
+      FixedRows = 0
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goFixedRowDefAlign]
       ParentFont = False
       ScrollBars = ssNone
       TabOrder = 8
@@ -729,6 +734,7 @@ object frmSystem: TfrmSystem
       ParentFont = False
       Rounded = True
       TabOrder = 11
+      OnClick = btnAddCamLicenseClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130
@@ -784,6 +790,7 @@ object frmSystem: TfrmSystem
       ParentFont = False
       Rounded = True
       TabOrder = 12
+      OnClick = btnAddCliLicenseClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130

@@ -9,7 +9,8 @@ uses
   AdvPageControl, TVCSButtonStyle, tvcsProtocol, tvcsAPI, TVCSCheckDialog, TVCSPreview, System.ImageList,
   Vcl.ImgList, Vcl.VirtualImageList, Vcl.BaseImageCollection,
   Vcl.ImageCollection, Vcl.Buttons, AdvMetroButton, AdvTabSet, AdvEdit,
-  AdvGroupBox, AdvOfficeButtons, AdvLabel, AdvPanel, advimage, Vcl.WinXPanels, Math;
+  AdvGroupBox, AdvOfficeButtons, AdvLabel, AdvPanel, advimage, Vcl.WinXPanels, Math,
+  Vcl.Imaging.jpeg, Vcl.VirtualImage;
 
 
 type
@@ -40,7 +41,6 @@ type
     btnAddTab: TAdvGlowButton;
     btnDeleteTab: TAdvGlowButton;
     ImageCollection1: TImageCollection;
-    VirtualImageList1: TVirtualImageList;
     btnAddCam: TAdvMetroButton;
     btnRemoveCam: TAdvMetroButton;
     Panel1: TPanel;
@@ -56,6 +56,9 @@ type
     lbmergeName: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    VirtualImageList1: TVirtualImageList;
+    AdvPanel1: TAdvPanel;
+    AdvPanel2: TAdvPanel;
     procedure FormCreate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure btnDlgCloseClick(Sender: TObject);
@@ -231,7 +234,7 @@ begin
   // UI 업데이트
   partitionPanels[emptyPanelNo-1].Text := '<FONT color="#FFFFFF">' +
     CamIdToCamName(selTrainCam.fid)  + '</FONT>';
-  partitionPanels[emptyPanelNo-1].Background.LoadFromFile('../../icon-img/merCamOn.jpg');
+  partitionPanels[emptyPanelNo-1].Background := CamOnImg;
 
   partitionPanels[emptyPanelNo-1].OnMouseMove := pnPartitionMouseMove;
   partitionPanels[emptyPanelNo-1].OnMouseLeave := pnPartitionMouseLeave;
@@ -297,6 +300,18 @@ begin
   if ShowTVCSCheck(0) then
   begin
     try
+      if selTrain = nil then
+      begin
+        ShowTVCSMessage('저장할 영상정보가 없습니다.');
+        exit;
+      end;
+
+      if edCamMerName.Text = '' then
+      begin
+        ShowTVCSMessage('영상이름을 입력해주세요(영문 또는 숫자)');
+        exit;
+      end;
+
       // 현재 선택된 탭 저장
       currentTabIndex := tabMerge.TabIndex;
       
@@ -316,7 +331,7 @@ begin
         try
           trainCameraMergePost.ftrainId := selTrain.fid;
           trainCameraMergePost.fname := tabMerge.AdvTabs.Items[i].Caption;
-          trainCameraMergePost.fdivNum := selPartition;
+          trainCameraMergePost.fdivNum := tabMerge.AdvTabs.Items[i].tag;
 
           if rbtnCheckPartition.ItemIndex = 0 then
           begin
@@ -601,10 +616,8 @@ begin
   LoadTrainList;
   LoadTrainCamList;
   InitTabSet;
-  CamOnImg := TAdvImage.Create;
-  CamOnImg.LoadFromFile('../../icon-img/merCamOn.jpg');
-  CamOffImg := TAdvImage.Create;
-  CamOffImg.LoadFromFile('../../icon-img/merCamOff.jpg');
+  CamOnImg := AdvPanel1.Background;
+  CamOffImg := AdvPanel2.Background;
 
   grdTrains.OnClickCell := grdTrainsClickCell;
   lblTitle.Caption := '다중 영상 관리 ('+IntToStr(gapi.GetLoinInfo.fsystem.fline) +'호선)'
@@ -702,6 +715,8 @@ begin
     selPartition := 4;
     rbtnCheckPartition.ItemIndex := 1;
     CreatePartitionPanels(4, False);
+    tabMerge.AdvTabs.Items[tabMerge.TabIndex].tag := 4;
+
 
     // 저장했던 데이터로 앞에서부터 순서대로 4개 패널 업데이트
     for i := 0 to Min(cameraCnt-1, 3) do  // 최대 4개까지만
@@ -712,8 +727,9 @@ begin
 
       partitionPanels[i].Tag := CreatePanelTag(panelNo, 4, col, row, saveData[i].cameraId);
       partitionPanels[i].Text := 
-        '<FONT color="#FFFFFF">' + CamIdToCamName(saveData[i].cameraId) + '</FONT>';
-      partitionPanels[i].Background.LoadFromFile('../../icon-img/merCamOn.jpg');
+        '<FONT color="#FFFFFF">' + CamIdToCamName(saveData[i].cameraId) +' ' +IntToStr(partitionPanels[i].Tag)+ '</FONT>';
+      //partitionPanels[i].Background.LoadFromFile('../../icon-img/merCamOn.jpg');
+      partitionPanels[i].Background := CamOnImg;
       partitionPanels[i].OnMouseMove := pnPartitionMouseMove;
       partitionPanels[i].OnMouseLeave := pnPartitionMouseLeave;
     end;
@@ -745,6 +761,7 @@ begin
     selPartition := 9;
     rbtnCheckPartition.ItemIndex := 0;
     CreatePartitionPanels(9, False); // False로 selMerge 사용하지 않음
+    tabMerge.AdvTabs.Items[tabMerge.TabIndex].tag := 9;
 
     // 저장했던 데이터로 패널 업데이트
     for i := 0 to cameraCnt - 1 do
@@ -756,7 +773,8 @@ begin
 
       partitionPanels[saveData[i].panelNo-1].Text := 
         '<FONT color="#FFFFFF">' + CamIdToCamName(saveData[i].cameraId)  + '</FONT>';
-      partitionPanels[saveData[i].panelNo-1].Background.LoadFromFile('../../icon-img/merCamOn.jpg');
+      //partitionPanels[saveData[i].panelNo-1].Background.LoadFromFile('../../icon-img/merCamOn.jpg');
+      partitionPanels[saveData[i].panelNo-1].Background := CamOnImg;
       partitionPanels[saveData[i].panelNo-1].OnMouseMove := pnPartitionMouseMove;
       partitionPanels[saveData[i].panelNo-1].OnMouseLeave := pnPartitionMouseLeave;
     end;
@@ -775,9 +793,9 @@ begin
     RowCount := 1;
     ColCount := 3;
     ColWidths[0]:=30;
-    ColWidths[1]:=100;
-    ColWidths[2]:=60;
-    Cells[0,0]:='No.';
+    ColWidths[1]:=75;
+    ColWidths[2]:=70;
+    Cells[0,0]:='위치';
     Cells[1,0]:='카메라명';
     Cells[2,0]:='미리보기';
   end;
@@ -889,6 +907,7 @@ begin
         begin
           AdvTabs.Add;
           AdvTabs[i].Caption := LoadMerge[i].fname;
+          AdvTabs[i].tag := LoadMerge[i].fdivNum;
         end;
       end;
 
@@ -931,6 +950,7 @@ begin
   selMerge.fdivNum := 9;
   selPartition := 9;
 
+
   size := length(LoadMerge);
   setLength(LoadMerge,size+1);
   LoadMerge[length(LoadMerge)-1] := selMerge;
@@ -950,7 +970,8 @@ begin
     with tabMerge do
     begin
       AdvTabs.Add;
-      AdvTabs[AdvTabs.Count-1].Caption := '새 다중영상 ' + IntToStr(AdvTabs.Count);
+      AdvTabs[AdvTabs.Count-1].tag :=9;
+      AdvTabs[AdvTabs.Count-1].Caption := '새 다중영상 ' + IntToStr(AdvTabs.Count) ;
       TabIndex := AdvTabs.Count-1;
     end;
   end;
@@ -1138,6 +1159,7 @@ begin
    newPanel.Caption.CloseButtonColor := clWhite;
    newPanel.Caption.CloseColor := clbtnface;
    newPanel.Caption.Color := $1C1512;
+
    //newPanel.CanMove := true;
    newPanel.OnMouseDown := pnVideoMouseDown;
    newPanel.OnDragOver := pnVideoDragOver;
@@ -1268,11 +1290,45 @@ begin
 end;
 
 procedure TfrmLayouts.grdTrainsClickCell(Sender: TObject; ARow, ACol: Integer);
+var
+  i : integer;
 begin
-  if ARow <= 0 then Exit;
+  if ARow = 0 then
+  begin
+    selTrain := nil;
+    selMerge := nil;
+    tabMerge.AdvTabs.Clear;
+    edCamMerName.Text := '';
+    EdRtspIP.Text := '';
+    LoadTrainCamList();
+    btnAddTab.Enabled := False;
+    btnDeleteTab.Enabled := False;
+    edCamMerName.Enabled := False;
+    rbtnCheckPartition.Enabled := False;
+    ComboBox1.Enabled := False;
+
+
+    for i := 0 to Length(partitionPanels) - 1 do
+     begin
+       if Assigned(partitionPanels[i]) then
+       begin
+         partitionPanels[i].Free;
+         partitionPanels[i] := nil;
+       end;
+     end;
+
+    exit
+  end;
+
 
   selTrain := trains[ARow -1];
-  
+  btnAddTab.Enabled := True;
+  btnDeleteTab.Enabled := True;
+  edCamMerName.Enabled := True;
+  rbtnCheckPartition.Enabled := True;
+  ComboBox1.Enabled := True;
+  AdvMetroButton1.Enabled := True;
+
   // 먼저 trainCams와 LoadMerge를 한번에 로드
   trainCams := gapi.GetTrainCamera(selTrain.fid);
   LoadMerge := gapi.GetTrainCameraMerge(selTrain.fid);
@@ -1293,12 +1349,13 @@ begin
 
     SetLength(panelData, selMerge.fdivNum);
 
-    for var i := 0 to Length(LoadMerge) - 1 do
+    for i := 0 to Length(LoadMerge) - 1 do
     begin
       with tabMerge do
       begin
         AdvTabs.Add;
         AdvTabs[i].Caption := LoadMerge[i].fname;
+        AdvTabs[i].tag := LoadMerge[i].fdivNum;
       end;
     end;
 
@@ -1364,35 +1421,36 @@ begin
     sourcePanel.Tag := CreatePanelTag(sourcePanelNo, sourceDivType, sourceX, sourceY, targetCamId);
     targetPanel.Tag := CreatePanelTag(targetPanelNo, targetDivType, targetX, targetY, sourceCamId);
 
+
     // UI 업데이트
     if sourceHasCamera then
     begin
       {targetPanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(sourceCamId) +
         ' tag: ' + IntToStr(targetPanel.Tag) + '</FONT>';}
-      targetPanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(sourceCamId)+ '</FONT>';
-      targetPanel.Background.LoadFromFile('../../icon-img/merCamOn.jpg');
+      targetPanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(sourceCamId)+ IntToStr(targetPanel.Tag) + '</FONT>';
+      targetPanel.Background := CamOnImg;
       targetPanel.OnMouseMove := pnPartitionMouseMove;
       targetPanel.OnMouseLeave := pnPartitionMouseLeave;
     end
     else
     begin
-      targetPanel.Text := '<FONT color="#FFFFFF">' + '카메라 없음</FONT>';
-      targetPanel.Background.LoadFromFile('../../icon-img/merCamOff.jpg');
+      targetPanel.Text := '<FONT color="#FFFFFF">' + IntToStr(targetPanel.Tag)+ '카메라 없음</FONT>';
+      targetPanel.Background := CamOffImg;
       targetPanel.OnMouseMove := nil;
       targetPanel.OnMouseLeave := nil;
     end;
 
     if targetHasCamera then
     begin
-      sourcePanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(targetCamId) + '</FONT>';
-      sourcePanel.Background.LoadFromFile('../../icon-img/merCamOn.jpg');
+      sourcePanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(targetCamId) + IntToStr(sourcePanel.Tag)+ '</FONT>';
+      sourcePanel.Background := CamOnImg;
       sourcePanel.OnMouseMove := pnPartitionMouseMove;
       sourcePanel.OnMouseLeave := pnPartitionMouseLeave;
     end
     else
     begin
-      sourcePanel.Text := '<FONT color="#FFFFFF">카메라 없음' +'</FONT>';
-      sourcePanel.Background.LoadFromFile('../../icon-img/merCamOff.jpg');
+      sourcePanel.Text := '<FONT color="#FFFFFF">카메라 없음' + IntToStr(sourcePanel.Tag)+'</FONT>';
+      sourcePanel.Background := CamOffImg;
       sourcePanel.OnMouseMove := nil;
       sourcePanel.OnMouseLeave := nil;
     end;
@@ -1428,7 +1486,7 @@ begin
     // 패널 UI 업데이트
     targetPanel.Text := '<FONT color="#FFFFFF">' + CamIdToCamName(selTrainCam.fid) + '</FONT>';
 
-    targetPanel.Background.LoadFromFile('../../icon-img/merCamOn.jpg');
+    targetPanel.Background := CamOnImg;
     targetPanel.OnMouseMove := pnPartitionMouseMove;
     targetPanel.OnMouseLeave := pnPartitionMouseLeave;
 
@@ -1544,7 +1602,7 @@ begin
 
   // UI 업데이트
   panel.Text := '<FONT color="#FFFFFF">카메라 없음' + '</FONT>';
-  panel.Background.LoadFromFile('../../icon-img/merCamOff.jpg');
+  panel.Background := CamOffImg;
   panel.OnMouseMove := nil;
   panel.OnMouseLeave := nil;
   panel.Caption.CloseButton := false;

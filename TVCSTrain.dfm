@@ -138,7 +138,7 @@ object frmTrain: TfrmTrain
       Appearance.TextColorDisabled = 13948116
     end
     object btnSave: TAdvGlowButton
-      Left = 1143
+      Left = 1142
       Top = 15
       Width = 65
       Height = 24
@@ -237,8 +237,8 @@ object frmTrain: TfrmTrain
       Caption = #52509': 0'#44060
     end
     object btnAddTrain: TAdvGlowButton
-      Left = 304
-      Top = 70
+      Left = 308
+      Top = 75
       Width = 85
       Height = 24
       Caption = #50676#52264' '#52628#44032
@@ -300,6 +300,7 @@ object frmTrain: TfrmTrain
       DrawingStyle = gdsClassic
       FixedColor = clSkyBlue
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSizing, goColSizing, goFixedRowDefAlign]
+      ScrollBars = ssVertical
       TabOrder = 1
       ActiveCellFont.Charset = DEFAULT_CHARSET
       ActiveCellFont.Color = 4474440
@@ -396,6 +397,7 @@ object frmTrain: TfrmTrain
       PrintSettings.FooterFont.Name = 'Tahoma'
       PrintSettings.FooterFont.Style = []
       PrintSettings.PageNumSep = '/'
+      ScrollBarAlways = saVert
       SearchFooter.ColorTo = clNone
       SearchFooter.FindNextCaption = 'Find &next'
       SearchFooter.FindPrevCaption = 'Find &previous'
@@ -593,22 +595,27 @@ object frmTrain: TfrmTrain
         Top = 11
         Width = 59
         Height = 26
+        Enabled = False
         TabOrder = 0
+        OnKeyPress = edOnlyInputNum
       end
       object edTrainNo: TEdit
         Left = 190
         Top = 11
         Width = 121
         Height = 26
+        Enabled = False
         TabOrder = 1
+        OnKeyPress = edOnlyInputNum
       end
       object edTrainCnt: TEdit
         Left = 399
         Top = 11
         Width = 64
         Height = 26
+        Enabled = False
         TabOrder = 2
-        Text = '0'
+        OnKeyPress = edOnlyInputNum
       end
     end
     object pnNvrRTSP: TPanel
@@ -638,6 +645,7 @@ object frmTrain: TfrmTrain
         Top = 10
         Width = 189
         Height = 26
+        Enabled = False
         TabOrder = 0
       end
     end
@@ -725,6 +733,7 @@ object frmTrain: TfrmTrain
         Appearance.TextColorDown = 2303013
         Appearance.TextColorHot = 2303013
         Appearance.TextColorDisabled = 13948116
+        Enabled = False
       end
       object grdTrainCams: TAdvStringGrid
         Left = 18

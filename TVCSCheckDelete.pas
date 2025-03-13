@@ -4,13 +4,11 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, AdvSmoothMessageDialog,
-  VCLTee.TeeGDIPlus;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, AdvSmoothMessageDialog;
 
 type
   TfrmCheckDelete = class(TForm)
     md: TAdvSmoothMessageDialog;
-    TeeGDIPlus1: TTeeGDIPlus;
     procedure FormCreate(Sender: TObject);
     //function ShowDeleteDialog: Integer;
   private

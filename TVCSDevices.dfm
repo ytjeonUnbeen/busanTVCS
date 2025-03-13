@@ -60,12 +60,13 @@ object frmDevices: TfrmDevices
       Height = 13
       Caption = #50676#52264#48324' '#51109#52824' '#51221#48372
     end
-    object edtSerch: TEdit
+    object edSearchText: TEdit
       Left = 343
-      Top = 51
+      Top = 49
       Width = 210
       Height = 21
       TabOrder = 0
+      OnKeyPress = edSearchTextKeyPress
     end
     object grdDeviceList: TAdvStringGrid
       Left = 56
@@ -398,7 +399,7 @@ object frmDevices: TfrmDevices
       ParentFont = False
       Rounded = True
       TabOrder = 5
-      OnClick = btnSaveClick
+      OnClick = btnSearchClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
       Appearance.BorderColorCheckedHot = 11565130
@@ -453,6 +454,7 @@ object frmDevices: TfrmDevices
       Items.Strings = (
         #51204#52404
         #50676#52264' '#48264#54840
+        #51109#52824' '#44396#48516
         'IP'#51452#49548)
     end
   end
