@@ -10,6 +10,7 @@ object frmLogin: TfrmLogin
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  FormStyle = fsStayOnTop
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy

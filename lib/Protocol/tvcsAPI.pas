@@ -128,6 +128,7 @@ type
          Flogin:Boolean;
          FDebugMemo:TMemo;
          FLoginInfo:TVCSLogin;
+         Furl: string;
 
          WSocket: TWSocket;
          FStopReceiving: Boolean;
@@ -146,7 +147,7 @@ type
          procedure SetUrl(url:String);
          property GetLoinInfo:TVCSLogin read FLoginInfo;
 
-         function Login(userid,password:String):Boolean;
+         function Login(userid,password:String):integer;
          Procedure LogOut;
          function CheckError(body:TJsonObject;var errmsg:String):Integer; //return errorcode
 
@@ -194,7 +195,7 @@ type
          function AddLicense(licenseInfo:TVCSLicensePost):TVCSLicense;
 
          //system
-         function UpdateSystem(SystemInfo:TvcsSystem):TVCSSystem;
+         function UpdateSystem(SystemInfo:TvcsSystemPatch):TVCSSystem;
 
          //apilist
          function GetApiList():TArray<TVCSApilist>;
@@ -236,6 +237,8 @@ type
          property ErrorMsg:String read FErrorMsg write FErrorMsg;
          property DebugMemo:TMemo read FDebugMemo write FDebugMemo;
          property isLogin:Boolean read FLogin;
+         property url:string read FUrl write FUrl;
+
 
 
 
@@ -287,6 +290,7 @@ end;
 procedure TTVCSAPI.SetUrl(url:String);
 begin
  FAPIBase.SetHostUrl(url);
+ Furl:= url;
 end;
 
 procedure TTVCSAPI.DisplayDebug(str: string);
@@ -307,17 +311,16 @@ begin
 end;
 
 
-function TTVCSAPI.Login(userid,password:String):Boolean;
+function TTVCSAPI.Login(userid,password:String):integer;
 var
  response:String;
  resObject,resAPI,reply:TJSONObject;
  resApiList:TJSONArray;
 begin
      if (FAPIBase.UrlHost='') then  begin
-         Result:=false;
+         Result:=FResponseCode;
          Exit;
      end;
-
      FAPIBase.SetUser(userid,password);
      DisplayDebug('userid= '+userid+','+'password='+password);
      FAPIBase.SetAuthMethod(tvcsBasic);
@@ -325,18 +328,33 @@ begin
      FResponseText:=FAPIBase.ResponseText;
      FResponseCode:=FAPIBase.ResponseCode;
 
-
-      if (FResponseCode=200) then
-      begin
+     // 서버 응답 코드에 따른 처리
+     if (FResponseCode=0) then
+     begin
+         // GetAPI에서 이미 에러 메시지를 표시했으므로 여기서는 처리 안함
+         //ShowMessage('서버가 응답하지 않습니다. 서버주소를 확인해주세요.');
+         Result:=0;
+     end
+     else if (FResponseCode=200) then
+     begin
         resObject:=TJSONObject.ParseJsonValue(response) as TJSONObject;
         reply:=resObject.GetValue<TJSONObject>('reply'); //reply 공통
         FLoginInfo:=TJSON.JsonToObject<TVCSLogin>(reply);
         FLogin:=True;
-        Result:=true;
-      end
-      else Result:=false;
+        Result:=200;
+     end
+     else if (FResponseCode=401) then
+     begin
+        //ShowMessage('     사용자 아이디 또는 비밀번호가 정확하지 않습니다.     ' + #13 +
+        //            '                      다시 확인하시기 바랍니다.              ');
+        Result:=401;
+     end
+     else
+     begin
+        // 다른 HTTP 오류 코드(401 등)
+        Result:=FResponseCode;
+     end;
 end;
-
 
 
 procedure TTVCSAPI.LoadAPIList(AAPIList: TJSONArray);
@@ -440,9 +458,14 @@ function TTVCSAPI.CheckError(body:TJsonObject;var errmsg:String):Integer;
 var
  errcode:String;
 begin
+
    errcode:=body.GetValue<String>('error');
+
    errMsg:=body.GetValue<String>('errorString');
-   Result:=StrToInt(errcode);
+
+   if errcode <> '' then
+    Result:=StrToInt(errcode);
+
 
    FErrorCode:=Result;
    FErrorMsg:=errMsg;
@@ -2166,7 +2189,7 @@ end;
 
 
 //system
-function TTVCSAPI.UpdateSystem(SystemInfo:TvcsSystem):TVCSSystem;
+function TTVCSAPI.UpdateSystem(SystemInfo:TvcsSystemPatch):TVCSSystem;
 var
  RequestJson, ResponseJson: TJSONObject;
  SystemJson: TJSONValue;
@@ -2181,9 +2204,14 @@ begin
     try
     if CheckError(ResponseJson, ErrorMsg)<> 0 then
     begin
-      ShowMessage(FErrorMsg);
-      Exit(nil);
+      if FErrorMsg <> '' then
+      begin
+        ShowMessage(FErrorMsg);
+        Exit(nil);
+      end;
+
     end;
+
 
     SystemJson := ResponseJson.GetValue('reply');
     ResulttSystem := TJSON.JsonToObject<TVCSSystem>(SystemJson.ToString);
@@ -2663,6 +2691,13 @@ begin
          resStream:=TStringStream.Create('',TEncoding.UTF8);
          DisplayLog(AUrl);
          idHttp.Request.CharSet:='utf-8';
+
+         if APathURL = api_login then
+         begin
+            idHttp.ConnectTimeout:=5000;
+            idHttp.ReadTimeout:=5000;
+         end;
+
          idHttp.Get(AUrl,resStream);
        finally
 
@@ -2672,7 +2707,14 @@ begin
          FreeAndNil(resStream);
        end;
     except
-      Result:='{}';
+      on E: Exception do
+      begin
+
+        FResponseCode:=0; // 서버 응답 없음을 나타내는 코드
+        //FResponseText:='서버가 응답하지 않습니다. 서버주소를 확인해주세요. 오류: ' + E.Message;
+        //ShowMessage(FResponseText);
+        Result:='{}';
+      end;
     end;
 end;
 

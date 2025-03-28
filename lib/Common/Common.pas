@@ -14,9 +14,25 @@ uses
   function RunOnStartupCheck(const sCmdLine:string):boolean;
   function StartProcess(procpath:String;procname:String;params:String):LongInt;
   function GetServiceExecutablePath(strMachine: string; strServiceName: string): String;
- 
-  
+
+
+ type
+  IIF = class
+    class function Cast<T>(AExpression: Boolean; const ATrue, AFalse: T): T; static;
+  end;
+
+
 implementation
+
+
+{ IIF }
+class function IIF.Cast<T>(AExpression: Boolean; const ATrue, AFalse: T): T;
+begin
+  if AExpression then
+    Result := ATrue
+  else
+    Result := AFalse;
+end;
 
 
 function GetServiceExecutablePath(strMachine: string; strServiceName: string): String;

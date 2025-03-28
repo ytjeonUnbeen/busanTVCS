@@ -21,7 +21,7 @@ const
     '주례','감전','사상','덕포','모덕','모라','구남','구명','덕천','수정','화명','율리','동원','금곡','호포',
     '증산','부산대양산캠퍼스','남양산','양산'
   );
-
+  defTrainCarridgeCount=6;
 
 type
 
@@ -62,7 +62,7 @@ type
      fdisplayInterval:Integer;
      fresolution:String;
      fframe:Integer;
-     fisEventInterval:boolean;
+     fIsEventInterval:boolean;
      feventIntervalSec:Integer;
      fline:Integer;
   end;
@@ -71,7 +71,7 @@ type
       fdisplayInterval:Integer;
       fresolution:String;
       fframe:Integer;
-      fisEventInterval:boolean;
+      fIsEventInterval:boolean;
       feventIntervalSec:Integer;
   end;
 

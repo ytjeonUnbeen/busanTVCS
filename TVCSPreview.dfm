@@ -11,11 +11,9 @@ object frmPreview: TfrmPreview
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  PixelsPerInch = 96
   TextHeight = 13
   object pnlPreview: TPanel
     Left = 0
@@ -24,9 +22,5 @@ object frmPreview: TfrmPreview
     Height = 451
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = 8
-    ExplicitTop = 8
-    ExplicitWidth = 698
-    ExplicitHeight = 435
   end
 end

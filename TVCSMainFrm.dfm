@@ -11,6 +11,7 @@ object frmTVCSMain: TfrmTVCSMain
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  FormStyle = fsStayOnTop
   StyleElements = [seFont, seClient]
   OnActivate = FormActivate
   OnClose = FormClose
@@ -21,12 +22,11 @@ object frmTVCSMain: TfrmTVCSMain
   OnShow = FormShow
   TextHeight = 13
   object Splitter1: TSplitter
-    Left = 257
+    Left = 285
     Top = 41
+    Width = 0
     Height = 663
-    ExplicitLeft = 191
-    ExplicitTop = 35
-    ExplicitHeight = 817
+    ExplicitLeft = 270
   end
   object Image1: TImage
     Left = 648
@@ -37,7 +37,7 @@ object frmTVCSMain: TfrmTVCSMain
   object pnLeftTrain: TPanel
     Left = 0
     Top = 41
-    Width = 257
+    Width = 285
     Height = 663
     Align = alLeft
     BevelOuter = bvNone
@@ -45,13 +45,14 @@ object frmTVCSMain: TfrmTVCSMain
     object lstTrainSched: TAdvStringGrid
       Left = 0
       Top = 0
-      Width = 257
+      Width = 285
       Height = 663
       Align = alClient
       DrawingStyle = gdsClassic
       FixedColor = clWhite
       FixedCols = 0
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRowSizing, goColSizing, goRowMoving, goColMoving, goRowSelect, goFixedRowDefAlign]
+      ScrollBars = ssHorizontal
       TabOrder = 0
       ActiveRowShow = True
       ActiveRowColor = clBlack
@@ -176,6 +177,8 @@ object frmTVCSMain: TfrmTVCSMain
       SortSettings.HeaderMirrorColor = clWhite
       SortSettings.HeaderMirrorColorTo = clWhite
       Version = '9.1.3.0'
+      ExplicitLeft = 4
+      ExplicitTop = 5
       ColWidths = (
         12
         12
@@ -195,18 +198,6 @@ object frmTVCSMain: TfrmTVCSMain
         22)
     end
   end
-  object pnCamView: TPanel
-    Left = 260
-    Top = 41
-    Width = 1471
-    Height = 663
-    Align = alClient
-    BevelOuter = bvNone
-    Color = clBlack
-    ParentBackground = False
-    TabOrder = 1
-    OnCanResize = pnCamViewCanResize
-  end
   object pnTopmenu: TPanel
     Left = 0
     Top = 0
@@ -216,14 +207,14 @@ object frmTVCSMain: TfrmTVCSMain
     Color = 2251774
     ParentBackground = False
     ShowCaption = False
-    TabOrder = 2
+    TabOrder = 1
     OnDblClick = pnTopmenuDblClick
     OnMouseDown = pnTopmenuMouseDown
     DesignSize = (
       1731
       41)
     object btnAutoView: TAdvMetroToolButton
-      Left = 1520
+      Left = 1543
       Top = 2
       Width = 33
       Height = 33
@@ -336,6 +327,40 @@ object frmTVCSMain: TfrmTVCSMain
         49454E44AE426082}
       Version = '1.2.0.0'
       OnClick = btnAutoViewClick
+    end
+    object btnMyPage: TAdvMetroToolButton
+      Left = 1496
+      Top = 2
+      Width = 41
+      Height = 33
+      Anchors = [akTop, akRight]
+      Appearance.PictureColor = clWhite
+      Caption = ''
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -27
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      Picture.Data = {
+        89504E470D0A1A0A0000000D4948445200000020000000200806000000737A7A
+        F4000000097048597300000B1200000B1201D2DD7EFC000001AF494441545885
+        D596CD71C23010461F99DCA103D241DC41DC41480538973DBB835002B9EE25D0
+        01740015043A301D24159083452239FE91254F987C2706C9D2D36A57FB8DCEE7
+        33D7D46D9FC9AA9A023320B1FE2E808D886C4200463E1150D50458020F2DD34E
+        40DE17A413405533B3F9D873CD6711590D02604EFEEEBB5808C44DC778D0BD02
+        4B559D4401A8EA0C9806028C813C0A8032DB6394C502242D633EF28A5E1BC07D
+        248097DA004ED7062822D7FE8C05082DC18B764300789DA241CB280011297C17
+        A9D15644765100066201AC7B6E7EC4F30DE804301019F0EAB9DE1E4845E4C317
+        C0AB1DC3B717C881C79AE12DB00AF104DE00159804980054EFDAF490053F0FD9
+        91D22738F38200CCC6971E311191BC329E016F0D9F3FD545A8D39299B69A5326
+        96FDBEEF6BE6B555CD0A13355BAD49684E7C005EE86E2E09AE6B5AE356D0D8E4
+        91A3C6080458315B47533D97433436B6DA1CF0B4627B11492DD814989BB11365
+        C8C1BDBA35B0B3EDDAAF0898BBEC5B4E19AE639E525E5B5573E0CE82ABCD819C
+        702BD65B4D007F2607C03C222149370C00F13EF0FF0154ABA0A0F2C2B5E8D0F0
+        BBCF7761CD68487D01EA51942B3C742F2B0000000049454E44AE426082}
+      ParentFont = False
+      Version = '1.2.0.0'
+      OnClick = btnMyPageClick
     end
     object btnMainMenu: TAdvMetroButton
       Left = 1
@@ -559,6 +584,15 @@ object frmTVCSMain: TfrmTVCSMain
       OnChange = cmbStyleChange
       OnKeyPress = cmbStyleKeyPress
     end
+    object Button1: TButton
+      Left = 848
+      Top = 10
+      Width = 75
+      Height = 25
+      Caption = 'Button1'
+      TabOrder = 5
+      OnClick = Button1Click
+    end
   end
   object pnTrainInfo: TPanel
     Left = 0
@@ -568,27 +602,90 @@ object frmTVCSMain: TfrmTVCSMain
     Align = alBottom
     Caption = 'pnTrainInfo'
     ShowCaption = False
-    TabOrder = 3
-    object tabRoute: TAdvTabSet
+    TabOrder = 2
+    object pnRoute: TAdvPanel
       Left = 1
-      Top = 1
+      Top = 34
       Width = 1729
-      Height = 24
+      Height = 239
+      Align = alClient
+      TabOrder = 0
+      UseDockManager = True
+      Version = '2.7.0.0'
+      OnPaint = pnRoutePaint
+      BorderColor = clBlack
+      Caption.Color = clHighlight
+      Caption.ColorTo = clNone
+      Caption.Font.Charset = DEFAULT_CHARSET
+      Caption.Font.Color = clHighlightText
+      Caption.Font.Height = -11
+      Caption.Font.Name = 'Tahoma'
+      Caption.Font.Style = []
+      Caption.Indent = 0
+      DoubleBuffered = False
+      StatusBar.Font.Charset = DEFAULT_CHARSET
+      StatusBar.Font.Color = clWindowText
+      StatusBar.Font.Height = -11
+      StatusBar.Font.Name = 'Tahoma'
+      StatusBar.Font.Style = []
+      Text = ''
+      FullHeight = 248
+      object AdvResponsiveManager1: TAdvResponsiveManager
+        Left = 448
+        Top = 0
+        Width = 26
+        Height = 26
+        Visible = True
+        ActiveState = 0
+        Mode = mrmWidthFirst
+        States = <>
+        Control = Owner
+      end
+    end
+    object tabRoute: TAdvTabSet
+      AlignWithMargins = True
+      Left = 4
+      Top = 4
+      Width = 1723
+      Height = 30
+      Margins.Bottom = 0
       Version = '1.7.5.0'
       Align = alTop
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
       ActiveFont.Name = 'Tahoma'
-      ActiveFont.Style = []
+      ActiveFont.Style = [fsBold]
       ClosePosition = cpRight
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
-      AdvTabs = <>
+      StartMargin = 0
+      SoftTop = True
+      AdvTabs = <
+        item
+          Caption = #49352' '#45796#51473#50689#49345
+          Visible = False
+          ShowClose = False
+          TextColor = clCream
+          TabColor = clBackground
+        end
+        item
+          Caption = 'TabSheet1'
+          ShowClose = False
+          TextColor = clWhite
+          TabColor = clBtnFace
+        end
+        item
+          Caption = 'TabSheet2'
+          ShowClose = False
+          TextColor = clWhite
+          TabColor = clBtnFace
+        end>
       TextColor = clWhite
+      TabBorderColor = clNone
       TabBackGround.Data = {
         E6160000424DE61600000000000036000000280000003A000000210000000100
         180000000000B0160000C20E0000C20E00000000000000000000FF00FFFF00FF
@@ -960,44 +1057,29 @@ object frmTVCSMain: TfrmTVCSMain
         FF277FFF277FFF277FFF277FFF277FFF277FFF277FFFFF00FFFF00FFFF00FFFF
         00FFFF00FFFF00FF0000}
       GradientDirection = gdVertical
-      TabMargin.LeftMargin = 6
+      TabMargin.LeftMargin = 10
       TabMargin.TopMargin = 5
-      TabMargin.RightMargin = 30
+      TabMargin.RightMargin = 10
       TabOverlap = 0
-      Images = tabImgList
-      TabHeight = 30
+      ShowScroller = ssAuto
+      TabHeight = 25
+      TabIndex = 0
       OnTabClose = tabRouteTabClose
       OnClick = tabRouteClick
       OnChange = tabRouteChange
     end
-    object pnRoute: TAdvPanel
-      Left = 1
-      Top = 25
-      Width = 1729
-      Height = 248
-      Align = alClient
-      TabOrder = 1
-      UseDockManager = True
-      Version = '2.7.0.0'
-      OnPaint = pnRoutePaint
-      BorderColor = clBlack
-      Caption.Color = clHighlight
-      Caption.ColorTo = clNone
-      Caption.Font.Charset = DEFAULT_CHARSET
-      Caption.Font.Color = clHighlightText
-      Caption.Font.Height = -11
-      Caption.Font.Name = 'Tahoma'
-      Caption.Font.Style = []
-      Caption.Indent = 0
-      DoubleBuffered = False
-      StatusBar.Font.Charset = DEFAULT_CHARSET
-      StatusBar.Font.Color = clWindowText
-      StatusBar.Font.Height = -11
-      StatusBar.Font.Name = 'Tahoma'
-      StatusBar.Font.Style = []
-      Text = ''
-      FullHeight = 248
-    end
+  end
+  object pnCamView: TPanel
+    Left = 285
+    Top = 41
+    Width = 1446
+    Height = 663
+    Align = alClient
+    BevelOuter = bvNone
+    Color = clBlack
+    ParentBackground = False
+    TabOrder = 4
+    OnCanResize = pnCamViewCanResize
   end
   object ImageCollection1: TImageCollection
     Images = <
@@ -1672,12 +1754,15 @@ object frmTVCSMain: TfrmTVCSMain
     Top = 250
     object mnuStations: TMenuItem
       Action = actStations
+      Caption = #49849#44053#51109' '#52852#47700#46972' '#44288#47532
     end
     object mnuTrain: TMenuItem
       Action = actTrain
+      Caption = #54200#49457' '#52852#47700#46972' '#44288#47532
     end
     object mnuLayout: TMenuItem
       Action = actLayouts
+      Caption = #54200#49457#48324' '#50689#49345' '#44288#47532
     end
     object mnuDevice: TMenuItem
       Action = actDevice

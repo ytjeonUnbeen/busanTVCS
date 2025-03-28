@@ -10,9 +10,7 @@ object frmAutoView: TfrmAutoView
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   OnCanResize = FormCanResize
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 13
 end

@@ -11,10 +11,8 @@ object frmTrain: TfrmTrain
   Font.Height = -15
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 18
   object pnBottom: TPanel
     Left = 0
@@ -237,7 +235,7 @@ object frmTrain: TfrmTrain
       Caption = #52509': 0'#44060
     end
     object btnAddTrain: TAdvGlowButton
-      Left = 308
+      Left = 317
       Top = 75
       Width = 85
       Height = 24
@@ -293,15 +291,21 @@ object frmTrain: TfrmTrain
       Appearance.TextColorDisabled = 13948116
     end
     object grdTrains: TAdvStringGrid
-      Left = 65
+      Left = 74
       Top = 105
       Width = 328
       Height = 480
       DrawingStyle = gdsClassic
       FixedColor = clSkyBlue
+      FixedRows = 0
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSizing, goColSizing, goFixedRowDefAlign]
       ScrollBars = ssVertical
       TabOrder = 1
+      OnSelectCell = grdTrainsSelectCell
+      OnClickCell = grdTrainsClickCell
+      OnCanEditCell = grdTrainsCanEditCell
+      OnEditCellDone = grdTrainsEditCellDone
+      OnEditChange = grdTrainsEditChange
       ActiveCellFont.Charset = DEFAULT_CHARSET
       ActiveCellFont.Color = 4474440
       ActiveCellFont.Height = -11
@@ -420,9 +424,26 @@ object frmTrain: TfrmTrain
       SortSettings.HeaderMirrorColor = clWhite
       SortSettings.HeaderMirrorColorTo = clWhite
       Version = '9.1.3.0'
+      ColWidths = (
+        64
+        64
+        64
+        64
+        64)
+      RowHeights = (
+        22
+        22
+        22
+        22
+        22
+        22
+        22
+        22
+        22
+        22)
     end
   end
-  object btnStationDownload: TAdvGlowButton
+  object btnDownloadTrainCameras: TAdvGlowButton
     Left = 1031
     Top = 599
     Width = 175
@@ -441,7 +462,7 @@ object frmTrain: TfrmTrain
     ParentFont = False
     Rounded = True
     TabOrder = 2
-    OnClick = btnStationDownloadClick
+    OnClick = btnDownloadTrainCamerasClick
     Appearance.BorderColor = 11382963
     Appearance.BorderColorHot = 11565130
     Appearance.BorderColorCheckedHot = 11565130
@@ -478,9 +499,9 @@ object frmTrain: TfrmTrain
     Appearance.TextColorHot = 2303013
     Appearance.TextColorDisabled = 13948116
   end
-  object btnUploadStations: TAdvGlowButton
+  object btnUploadTrainCameras: TAdvGlowButton
     Left = 850
-    Top = 599
+    Top = 598
     Width = 175
     Height = 24
     Caption = #50676#52264' '#52852#47700#46972' '#51068#44292' '#46321#47197
@@ -497,7 +518,7 @@ object frmTrain: TfrmTrain
     ParentFont = False
     Rounded = True
     TabOrder = 3
-    OnClick = btnUploadStationsClick
+    OnClick = btnUploadTrainCamerasClick
     Appearance.BorderColor = 11382963
     Appearance.BorderColorHot = 11565130
     Appearance.BorderColorCheckedHot = 11565130
@@ -534,7 +555,7 @@ object frmTrain: TfrmTrain
     Appearance.TextColorHot = 2303013
     Appearance.TextColorDisabled = 13948116
   end
-  object pnCamStationInfo: TPanel
+  object pnTrainCameraInfo: TPanel
     Left = 408
     Top = 104
     Width = 800
@@ -542,7 +563,7 @@ object frmTrain: TfrmTrain
     Caption = 'edit'
     ShowCaption = False
     TabOrder = 4
-    object pnDefStation: TPanel
+    object pnDefTrains: TPanel
       Left = 1
       Top = 1
       Width = 798
@@ -591,31 +612,50 @@ object frmTrain: TfrmTrain
         ParentFont = False
       end
       object edscNo: TEdit
-        Left = 62
-        Top = 11
+        Left = 64
+        Top = 17
         Width = 59
         Height = 26
-        Enabled = False
+        NumbersOnly = True
         TabOrder = 0
-        OnKeyPress = edOnlyInputNum
+        OnEnter = edscNoEnter
+        OnExit = edscNoExit
       end
       object edTrainNo: TEdit
         Left = 190
-        Top = 11
+        Top = 16
         Width = 121
         Height = 26
-        Enabled = False
+        NumbersOnly = True
         TabOrder = 1
-        OnKeyPress = edOnlyInputNum
+        OnEnter = edTrainNoEnter
+        OnExit = edTrainNoExit
       end
-      object edTrainCnt: TEdit
-        Left = 399
-        Top = 11
-        Width = 64
+      object cmbTrainCnt: TAdvComboBox
+        Left = 401
+        Top = 16
+        Width = 41
         Height = 26
-        Enabled = False
+        Color = clWindow
+        Version = '2.0.0.8'
+        Visible = True
+        ButtonWidth = 17
+        EmptyTextStyle = []
+        DropWidth = 0
+        Enabled = True
+        ItemIndex = 0
+        Items.Strings = (
+          '2'
+          '4'
+          '6'
+          '8')
+        LabelFont.Charset = DEFAULT_CHARSET
+        LabelFont.Color = clWindowText
+        LabelFont.Height = -15
+        LabelFont.Name = 'Tahoma'
+        LabelFont.Style = []
         TabOrder = 2
-        OnKeyPress = edOnlyInputNum
+        Text = '2'
       end
     end
     object pnNvrRTSP: TPanel
@@ -640,13 +680,42 @@ object frmTrain: TfrmTrain
         Font.Style = [fsBold]
         ParentFont = False
       end
-      object edNvrRTSP: TEdit
-        Left = 122
-        Top = 10
-        Width = 189
+      object edNvrRTSP: TAdvIPEdit
+        Left = 100
+        Top = 11
+        Width = 140
         Height = 26
-        Enabled = False
+        Alignment = taCenter
+        Color = clWhite
+        Enabled = True
+        MaxLength = 3
+        ReadOnly = False
         TabOrder = 0
+        Visible = True
+        AutoFocus = False
+        Flat = False
+        FlatLineColor = 11250603
+        FlatParentColor = True
+        ShowModified = False
+        FocusColor = clWhite
+        FocusBorder = False
+        FocusFontColor = 3881787
+        LabelAlwaysEnabled = False
+        LabelPosition = lpLeftTop
+        LabelTransparent = False
+        LabelFont.Charset = DEFAULT_CHARSET
+        LabelFont.Color = clWindowText
+        LabelFont.Height = -15
+        LabelFont.Name = 'Tahoma'
+        LabelFont.Style = []
+        ModifiedColor = clRed
+        SelectFirstChar = False
+        Version = '1.5.2.1'
+        EditMask = ''
+        IPAddress = '0.0.0.0'
+        IPAddressType = ipv4
+        OnEnter = edNvrRTSPEnter
+        OnExit = edNvrRTSPExit
       end
     end
     object pnCamInfos: TPanel
@@ -745,6 +814,8 @@ object frmTrain: TfrmTrain
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goFixedRowDefAlign]
         TabOrder = 1
         OnClickCell = grdTrainCamsClickCell
+        OnIsPasswordCell = grdTrainCamsIsPasswordCell
+        OnGetEditorType = grdTrainCamsGetEditorType
         ActiveCellFont.Charset = DEFAULT_CHARSET
         ActiveCellFont.Color = 4474440
         ActiveCellFont.Height = -11
@@ -752,6 +823,7 @@ object frmTrain: TfrmTrain
         ActiveCellFont.Style = [fsBold]
         ActiveCellColor = 11565130
         ActiveCellColorTo = 11565130
+        Balloon.Enable = True
         BorderColor = 11250603
         ControlLook.FixedGradientFrom = clWhite
         ControlLook.FixedGradientTo = clWhite
@@ -862,6 +934,12 @@ object frmTrain: TfrmTrain
         SortSettings.HeaderMirrorColor = clWhite
         SortSettings.HeaderMirrorColorTo = clWhite
         Version = '9.1.3.0'
+        ColWidths = (
+          64
+          64
+          64
+          64
+          64)
         RowHeights = (
           22
           22
@@ -877,8 +955,8 @@ object frmTrain: TfrmTrain
     end
   end
   object cbSearch: TComboBox
-    Left = 474
-    Top = 43
+    Left = 476
+    Top = 40
     Width = 95
     Height = 26
     Style = csDropDownList
@@ -887,8 +965,9 @@ object frmTrain: TfrmTrain
     Text = #51204#52404
     Items.Strings = (
       #51204#52404
-      #50669#48264#54840
-      #50669#49324#47749)
+      #54200#49457' '#48264#54840
+      #50676#52264' '#48264#54840
+      'IPadrr')
   end
   object edSearchText: TEdit
     Left = 577
@@ -955,24 +1034,20 @@ object frmTrain: TfrmTrain
     Appearance.TextColorDisabled = 13948116
   end
   object VirtualImageList1: TVirtualImageList
-    DisabledGrayscale = False
-    DisabledSuffix = '_Disabled'
     Images = <
       item
         CollectionIndex = 0
         CollectionName = 'icon-'#48120#47532#48372#44592
-        Disabled = False
         Name = 'preview'
       end
       item
         CollectionIndex = 1
         CollectionName = 'icon-'#49325#51228
-        Disabled = False
         Name = 'delete'
       end>
     ImageCollection = ImageCollection1
-    Left = 1032
-    Top = 32
+    Left = 1000
+    Top = 40
   end
   object ImageCollection1: TImageCollection
     Images = <
@@ -1028,5 +1103,15 @@ object frmTrain: TfrmTrain
     Version = '3.14'
     Left = 1169
     Top = 33
+  end
+  object ValidTooltip: TAdvToolTip
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -15
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    Position = ttTopCenter
+    Left = 408
+    Top = 600
   end
 end

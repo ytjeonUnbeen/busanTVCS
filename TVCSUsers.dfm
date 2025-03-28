@@ -11,10 +11,8 @@ object frmUsers: TfrmUsers
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 13
   object pnMainFrame: TPanel
     Left = 0
@@ -191,6 +189,23 @@ object frmUsers: TfrmUsers
       SortSettings.HeaderMirrorColor = clWhite
       SortSettings.HeaderMirrorColorTo = clWhite
       Version = '9.1.3.0'
+      ColWidths = (
+        64
+        64
+        64
+        64
+        64)
+      RowHeights = (
+        22
+        22
+        22
+        22
+        22
+        22
+        22
+        22
+        22
+        22)
     end
     object cbSearch: TComboBox
       Left = 231
@@ -543,19 +558,15 @@ object frmUsers: TfrmUsers
     Top = 600
   end
   object VirtualImageList1: TVirtualImageList
-    DisabledGrayscale = False
-    DisabledSuffix = '_Disabled'
     Images = <
       item
         CollectionIndex = 0
         CollectionName = 'icon-'#48120#47532#48372#44592
-        Disabled = False
         Name = 'preview'
       end
       item
         CollectionIndex = 1
         CollectionName = 'icon-'#49325#51228
-        Disabled = False
         Name = 'delete'
       end>
     ImageCollection = ImageCollection1

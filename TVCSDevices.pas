@@ -169,7 +169,7 @@ var
   OpenDialog: TOpenDialog;
   isValidFormat: Boolean;
 begin
-  if ShowTVCSCheck(2) then
+  if ShowTVCSCheck(mcExcelUpload) then
   begin
     OpenDialog := TOpenDialog.Create(nil);
     try
@@ -225,7 +225,7 @@ var
   trainNo: Integer;
 
 begin
-  if ShowTVCSCheck(0) then
+  if ShowTVCSCheck(mcModify) then
   begin
     // 엑셀 업로드 처리
     if CheckExcel then
@@ -582,7 +582,7 @@ procedure TfrmDevices.grdDeviceClickCell(Sender: TObject; ARow, ACol: Integer);
 begin
   if (ARow > 0) and (ACol = 7) then  // 삭제 버튼 클릭
   begin
-    if ShowTVCSCheck(1) then
+    if ShowTVCSCheck(mcDelete) then
     begin
       if ARow <= addDevCnt then  // 새로 추가된 행
         begin

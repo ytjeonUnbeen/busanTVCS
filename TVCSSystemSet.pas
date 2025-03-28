@@ -6,7 +6,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
   Vcl.Samples.Spin, Vcl.DBCtrls, Vcl.Grids, AdvUtil, AdvObj, BaseGrid, AdvGrid,
-  TVCSPopupView, TVCSButtonStyle, tvcsAPI, tvcsProtocol, AdvGlowButton, Registry, TVCSCheckDialog;
+  TVCSPopupView, TVCSButtonStyle, tvcsAPI, tvcsProtocol, AdvGlowButton, Registry, TVCSCheckDialog,
+  AdvCombo;
 
 type
   TfrmSystem = class(TForm)
@@ -23,8 +24,6 @@ type
     lbVideoFormTitle: TLabel;
     lbVideoFormResol: TLabel;
     lbVideoFormFrm: TLabel;
-    cboxVideoResol: TDBComboBox;
-    cboxVideoFrm: TDBComboBox;
     lbFrm: TLabel;
     lbEventPopTitle: TLabel;
     lbEventPopMenu: TLabel;
@@ -58,6 +57,8 @@ type
     lbttcsprot: TLabel;
     edttcpport: TEdit;
     Label2: TLabel;
+    cboxVideoResol: TAdvComboBox;
+    cboxVideoFrm: TAdvComboBox;
     procedure FormCreate(Sender: TObject);
     procedure btnDlgCloseClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
@@ -137,9 +138,20 @@ var
   addLicense : TVCSLicensePost;
   i : integer;
   size: integer;
+  AutoLoginState: Boolean;
+  PatchSystem: TvcsSystemPatch;
+  ResulttSystem: TVCSSystem;
+
 begin
   // 올바른 생성 방식  ]
-  if ShowTVCSCheck(0) then
+
+  if btnLoginRadio1.Checked then
+    AutoLoginState := true
+  else
+    AutoLoginState := false;
+
+
+  if ShowTVCSCheck(mcModify) then
   begin
     Registry := TRegIniFile.Create(PrgKey);
     try
@@ -147,6 +159,10 @@ begin
       Registry.WriteString('user', 'ttcsip', edttcsip.Text);
       Registry.WriteString('user', 'ttcpport', edttcpport.Text);
       Registry.WriteString('user', 'ttcsport', edttcsport.Text);
+
+      Registry.WriteBool('user','autologin',AutoLoginState);
+
+
     finally
       Registry.Free;
     end;
@@ -179,6 +195,23 @@ begin
     end;
   end;
 
+  PatchSystem := TvcsSystemPatch.Create;
+  PatchSystem.fdisplayInterval := StrToInt(speAutoSetCnt.Text);
+  PatchSystem.fresolution := cboxVideoResol.Text;
+  PatchSystem.fframe := StrToInt(cboxVideoFrm.Text);
+
+  if btnEvtRadio1.Checked then
+    PatchSystem.fIsEventInterval := True
+  else
+    PatchSystem.fIsEventInterval := False;
+
+  PatchSystem.feventIntervalSec := StrToInt(speEventPop.Text);
+
+    ResulttSystem := gapi.UpdateSystem(PatchSystem);
+    if ResulttSystem <> nil then
+      ShowMessage('수정완료');
+
+
 end;
 
 procedure TfrmSystem.FormCreate(Sender: TObject);
@@ -202,6 +235,8 @@ end;
 procedure TfrmSystem.LoadSettings;
 var
   Registry: TRegIniFile;
+  AutoLoginState: Boolean;
+
 begin
   Registry := TRegIniFile.Create(PrgKey);
   try
@@ -214,6 +249,19 @@ begin
     edttcsip.Text := ttcsip;
     ttcsport := Registry.ReadString('user', 'ttcsport', edttcsport.Text);
     edttcsport.Text := ttcsport;
+
+    AutoLoginState := Registry.ReadBool('user','autologin',false);
+
+    if AutoLoginState then
+    begin
+      btnLoginRadio1.Checked := true;
+      btnLoginRadio2.Checked := false;
+    end else
+    begin
+      btnLoginRadio1.Checked := false;
+      btnLoginRadio2.Checked := true;
+    end;
+
 
 
 
@@ -233,7 +281,20 @@ begin
   with gapi.GetLoinInfo.fsystem do
   begin
     speAutoSetCnt.Text := IntToStr(fdisplayInterval);
-    cboxVideoResol.Text := fresolution;
+
+    if fresolution = '1920 * 1080' then
+      cboxVideoResol.ItemIndex := 0
+    else
+      cboxVideoResol.ItemIndex := 1;
+
+    if fframe = StrToInt('15') then
+      cboxVideoFrm.ItemIndex := 0
+    else if fframe = StrToInt('30') then
+      cboxVideoFrm.ItemIndex := 1
+    else if fframe = StrToInt('60') then
+      cboxVideoFrm.ItemIndex := 2;
+
+
     cboxVideoFrm.Text := IntToStr(fframe);
     if fisEventInterval then
       btnEvtRadio2.Checked

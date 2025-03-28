@@ -9,10 +9,7 @@ uses
 
 type
   TfrmPopupView = class(TForm)
-    Panel1: TPanel;
     SinglePlayer: TPasLibVlcPlayer;
-    Label1: TLabel;
-    Label2: TLabel;
     procedure FormShow(Sender: TObject);
   private
     FRTSPUrl:String;
@@ -46,7 +43,7 @@ begin
    FmediaOptions[1]:='rtsp-pwd='+FRTSPPass;
    SinglePlayer.VideoOutput:=voDirectX;
    SinglePlayer.SetAudioMute(true);
-   Panel1.Caption:=RTSPUrl;
+   //Panel1.Caption:=RTSPUrl;
    //label1.Caption:= FRTSPUser;
    //label2.Caption:=FRTSPPass;
    SinglePlayer.Play(RTSPUrl,FMediaOptions);

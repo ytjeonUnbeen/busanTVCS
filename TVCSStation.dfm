@@ -2,7 +2,7 @@ object frmStation: TfrmStation
   Left = 0
   Top = 0
   BorderStyle = bsDialog
-  Caption = #50669#49324' '#51221#48372' '#44288#47532
+  Caption = #49849#44053#51109' '#52852#47700#46972' '#44288#47532
   ClientHeight = 691
   ClientWidth = 1274
   Color = clBtnFace
@@ -11,11 +11,9 @@ object frmStation: TfrmStation
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  PixelsPerInch = 96
   TextHeight = 13
   object pnBottom: TPanel
     Left = 0
@@ -233,7 +231,7 @@ object frmStation: TfrmStation
     end
     object lblTotal: TLabel
       Left = 65
-      Top = 80
+      Top = 109
       Width = 44
       Height = 18
       Caption = #52509': 0'#44060
@@ -301,7 +299,7 @@ object frmStation: TfrmStation
         end
         object edStcode: TEdit
           Left = 40
-          Top = 7
+          Top = 6
           Width = 86
           Height = 21
           Enabled = False
@@ -433,7 +431,7 @@ object frmStation: TfrmStation
               TabAppearance.BackGround.Direction = gdHorizontal
             end>
           Align = alTop
-          ActiveTabIndex = 0
+          ActiveTabIndex = 1
           ButtonSettings.CloseButtonPicture.Data = {
             424DA20400000000000036040000280000000900000009000000010008000000
             00006C000000C30E0000C30E00000001000000010000427B8400DEEFEF00FFFF
@@ -732,7 +730,6 @@ object frmStation: TfrmStation
           Caption = #49345#54665
           ShowCaption = False
           TabOrder = 1
-          ExplicitTop = -17
           object lblT1UpDep: TLabel
             Left = 19
             Top = 19
@@ -907,8 +904,6 @@ object frmStation: TfrmStation
           Caption = #54616#54665
           ShowCaption = False
           TabOrder = 2
-          ExplicitLeft = 2
-          ExplicitTop = 30
           object Label3: TLabel
             Left = 19
             Top = 19
@@ -993,10 +988,10 @@ object frmStation: TfrmStation
             Width = 77
             Height = 21
             Enabled = False
+            ReadOnly = True
             TabOrder = 0
             Text = '0'
             OnChange = edStcodeChange
-            OnKeyPress = edStcodeKeyPress
           end
           object eddnDepartDelay: TEdit
             Left = 210
@@ -1014,6 +1009,7 @@ object frmStation: TfrmStation
             Width = 75
             Height = 21
             Enabled = False
+            ReadOnly = True
             TabOrder = 2
             Text = '0'
             OnKeyPress = edStcodeKeyPress
@@ -1024,6 +1020,7 @@ object frmStation: TfrmStation
             Width = 77
             Height = 21
             Enabled = False
+            ReadOnly = True
             TabOrder = 3
             Text = '0'
             OnKeyPress = edStcodeKeyPress
@@ -1036,7 +1033,6 @@ object frmStation: TfrmStation
             Enabled = False
             TabOrder = 4
             Text = '0'
-            OnKeyPress = edStcodeKeyPress
           end
           object AdvOfficeRadioGroup2: TAdvOfficeRadioGroup
             Left = 110
@@ -1047,7 +1043,7 @@ object frmStation: TfrmStation
             Margins.Top = 0
             Margins.Right = 0
             Margins.Bottom = 0
-            BorderColor = clNone
+            BorderColor = 12895944
             BorderStyle = bsNone
             CaptionFont.Charset = DEFAULT_CHARSET
             CaptionFont.Color = clWindowText
@@ -1056,8 +1052,14 @@ object frmStation: TfrmStation
             CaptionFont.Style = []
             Version = '1.8.4.1'
             Enabled = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = 3881787
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
             ParentBackground = False
             ParentCtl3D = True
+            ParentFont = False
             TabOrder = 5
             UIStyle = tsOffice2019White
             Columns = 2
@@ -1078,7 +1080,6 @@ object frmStation: TfrmStation
         Caption = 'pnCamInfos'
         ShowCaption = False
         TabOrder = 2
-        ExplicitTop = 197
         object lbStCamCnt: TLabel
           Left = 20
           Top = 17
@@ -1289,7 +1290,7 @@ object frmStation: TfrmStation
     end
     object btnAddStation: TAdvGlowButton
       Left = 301
-      Top = 70
+      Top = 107
       Width = 85
       Height = 24
       Caption = #50669#49324' '#52628#44032
@@ -1536,13 +1537,14 @@ object frmStation: TfrmStation
     end
     object grdStations: TAdvStringGrid
       Left = 65
-      Top = 100
+      Top = 137
       Width = 321
-      Height = 480
+      Height = 443
       DrawingStyle = gdsClassic
       FixedColor = clSkyBlue
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSizing, goColSizing, goFixedRowDefAlign]
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRowSizing, goColSizing, goEditing, goFixedRowDefAlign]
       TabOrder = 7
+      OnEditChange = grdStationsEditChange
       ActiveCellFont.Charset = DEFAULT_CHARSET
       ActiveCellFont.Color = 4474440
       ActiveCellFont.Height = -11
@@ -1660,6 +1662,23 @@ object frmStation: TfrmStation
       SortSettings.HeaderMirrorColor = clWhite
       SortSettings.HeaderMirrorColorTo = clWhite
       Version = '9.1.3.0'
+      ColWidths = (
+        64
+        64
+        64
+        64
+        64)
+      RowHeights = (
+        22
+        22
+        22
+        22
+        22
+        22
+        22
+        22
+        22
+        22)
     end
   end
   object ImageList1: TImageList
@@ -2241,19 +2260,15 @@ object frmStation: TfrmStation
       00000000000000000000}
   end
   object VirtualImageList1: TVirtualImageList
-    DisabledGrayscale = False
-    DisabledSuffix = '_Disabled'
     Images = <
       item
         CollectionIndex = 0
         CollectionName = 'icon-'#48120#47532#48372#44592
-        Disabled = False
         Name = 'preview'
       end
       item
         CollectionIndex = 1
         CollectionName = 'icon-'#49325#51228
-        Disabled = False
         Name = 'delete'
       end>
     ImageCollection = ImageCollection1

@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, TVCSCamView;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, TVCSCamView,Math;
 
 type
   TfrmAutoView = class(TForm)
@@ -17,9 +17,12 @@ type
     procedure SplitView(count:Integer);
     procedure ClearSplitView;
     function  findEmptyView:Integer;
+    function  findTrainView(aUpDown:Integer;aStation:String):Boolean;
     procedure AssignCamView(var dstcam:TCamView;aPos,aCol,ARow,aCamWidth,aCamHeight:Integer);
   public
-    { Public declarations }
+
+    function AddAutoView(aHost,aTrainNo,aStation:String;aUpDown:Integer;stname:String):Integer;
+    procedure RemoveAutoView(aUpDown:Integer;aStation:String);
   end;
 
 var
@@ -48,6 +51,74 @@ begin
          FreeAndNil(MultiCams[i]);
   end;
 
+end;
+
+
+function  TfrmAutoView.findTrainView(aUpDown:Integer;aStation:String):Boolean;
+var
+ iPos:Integer;
+begin
+for ipos := 0 to 15 do begin
+ if (Multicams[ipos].UpDown=aUpDown) and  (Multicams[ipos].Station=aStation)  and (Multicams[ipos].Allocated) then
+ begin
+    Result:=true;
+    Exit;
+ end;
+end;
+ Result:=false;
+
+end;
+
+procedure TfrmAutoView.RemoveAutoView(aUpDown:Integer;aStation:String);
+var
+ ipos:Integer;
+begin
+  for ipos := 0 to 15 do begin
+
+   if (Multicams[ipos].UpDown=aUpDown) and  (Multicams[ipos].Station=aStation) then
+   begin
+       Multicams[ipos].StopView;
+       Multicams[ipos].Allocated:=false;
+       Multicams[ipos].Player.Visible:=false;
+   end;
+
+  end;
+
+
+end;
+
+
+function TfrmAutoView.AddAutoView(aHost,aTrainNo,aStation:String;aUpDown:Integer;stname:String):Integer;
+var
+ iView:Integer;
+
+ sUpDown:String;
+begin
+  Result:=-1;
+  if (findTrainView(aUpDown,aStation)) then Exit;
+
+
+
+  iView:=findEmptyView;
+  if (iview=-1) then begin
+    ShowMessage('더이상 표시할 수 없습니다.');
+    Exit;
+  end;
+  Multicams[iview].FTrainID:=StrToInt(aTrainNo);
+  if (aupDown=1) then
+     sUpDown:='up'
+  else
+     sUpDown:='down';
+
+  Multicams[iview].RtspUrl:='rtsp://'+aHost+':8554/station/'+sUpDown+'/'+aStation;
+  Multicams[iview].Station:=aStation;
+  MultiCams[iview].UpDown:=aUpdown;
+  MultiCams[iview].FStationName:=stName;
+  Multicams[iview].Allocated:=true;
+  Multicams[iview].Player.Visible:=true;
+  Multicams[iview].DebugOsd:=true;    // debug
+  Multicams[iview].PlayView;
+  Result:=iView;
 end;
 
 
@@ -100,9 +171,13 @@ begin
 
 end;
 
+
 procedure TfrmAutoView.FormCreate(Sender: TObject);
 begin
+//ArrangeView;
 SplitView(16);
+
+
 end;
 
 procedure TfrmAutoView.SplitView(count: Integer);

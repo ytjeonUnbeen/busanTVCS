@@ -97,7 +97,7 @@ end;
 
 procedure TfrmUsers.btnSaveClick(Sender: TObject);
 begin
-  if ShowTVCSCheck(0) then
+  if ShowTVCSCheck(mcModify) then
     begin
       for var I := 0 to Length(saveUsers)-1 do
       begin
@@ -324,7 +324,7 @@ begin
   begin
     if ACol = 7 then  // 삭제 컬럼
     begin
-      if ShowTVCSCheck(1) then  // 확인 메시지 표시
+      if ShowTVCSCheck(mcDelete) then  // 확인 메시지 표시
       begin
         // 사용자 삭제 API 호출
         gapi.DeleteUser(users[ARow-1].fuserId);  // API 함수명은 실제 있는 함수로 수정 필요

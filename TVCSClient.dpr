@@ -43,17 +43,35 @@ uses
   TVCSDebug in 'TVCSDebug.pas' {frmDebug},
   TVCSCamView in 'TVCSCamView.pas',
   TVCSFullScreen in 'TVCSFullScreen.pas' {frmFullViewer},
-  PasLibVlcUnit;
+  PasLibVlcUnit,
+  TVCSMyPage in 'TVCSMyPage.pas' {frmMyPage},
+  TVCSIpcMsg in 'lib\Protocol\TVCSIpcMsg.pas';
 
 {$R *.res}
 var
  Registry:TRegIniFile;
  iSelect:Integer;
  frmLogin:TfrmLogin;
+ pMutex:THandle;
+ pWinHandle:THandle;
  const PrgKey='Software\TVCSClient\Settings';
 
 
 begin
+ pMutex:=CreateMutex(nil,True,'TVCSClient');
+
+   if (GetLastError()=ERROR_ALREADY_EXISTS) then begin
+       pWinHandle:=FindWindow('TfrmTVCSMain',nil);
+       if (pWinHandle<>0) then begin
+         SetForegroundWindow(pWinHandle);
+         ShowWindow(pWinHandle,SW_RESTORE);
+       end;
+
+      System.Halt(1);
+   end;
+
+
+
   Application.Initialize;
   libvlc_dynamic_dll_init_with_path(ExtractFilePath(ParamStr(0)) + 'lib\');
 
@@ -64,20 +82,30 @@ begin
 
      frmLogin:=TfrmLogin.Create(Application);
      frmLogin.ShowModal;
+
      if (frmLogin.isLogged) then
-             TStyleManager.TrySetStyle('Onyx Blue');
-  Application.CreateForm(TfrmTVCSMain, frmTVCSMain);
-  FreeAndNil(frmLogin);
+     begin
+
+        Application.CreateForm(TfrmTVCSMain, frmTVCSMain);
+  //Application.CreateForm(TfrmMyPage, frmMyPage);
+        frmTVCSMain.WindowState:=TWindowState.wsMaximized;
+      end;
+
+    FreeAndNil(frmLogin);
 
 
   Application.Run;
-//  FreeAndNil(frmTVCSMain);
+
+  FreeAndNil(frmTVCSMain);
 
 
-    Registry.CloseKey;
+ Registry.CloseKey;
   finally
     Registry.Free;
   end;
+
+  if (pMutex>0) then CloseHandle(pMutex);
+
 
 
 

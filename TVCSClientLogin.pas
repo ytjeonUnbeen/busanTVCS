@@ -28,6 +28,7 @@ type
     procedure FormDestroy(Sender: TObject);
   private
      userName,userPass:String;
+     userServer: String;
      bSaved:Boolean;
      Fapi:TTVCSAPI;
      Procedure LoadSettings;
@@ -35,6 +36,7 @@ type
 
   public
      isLogged:Boolean;
+     LoginRes:integer;
 
   published
     property api:ttvcsAPI read Fapi write Fapi;
@@ -60,19 +62,29 @@ begin
   Gapi.SetUrl(edServer.Text);
 
   //Globalapi.SetUrl(edServer.Text);
-  isLogged:=Gapi.login(edUser.text,edPass.Text);
-//  isLogged:=true;
-  if isLogged then
+  LoginRes:=Gapi.login(edUser.text,edPass.Text);
+//
+  if LoginRes = 200 then
   begin
-    SaveSettings;
 
+    SaveSettings;
+    isLogged:=true;
     ModalResult := mrOK;
-    Exit;
+
+    Exit
   end
-  else  begin
-    ShowMessage('잘못된 아이디나 패스워드 입니다.');
-    ModalResult:=mrClose;
-  end;
+  else if LoginRes = 401 then
+    //ShowMessage('잘못된 아이디나 패스워드 입니다.');
+  begin
+    ShowMessage('     사용자 아이디 또는 비밀번호가 정확하지 않습니다.     ' + #13 +             '                      다시 확인하시기 바랍니다.              ');
+    //ModalResult:=mrClose;
+  end
+  else if LoginRes=0 then
+  begin
+    // GetAPI에서 이미 에러 메시지를 표시했으므로 여기서는 처리 안함
+    ShowMessage('영상처리 서버 IP를 다시 확인하시기 바랍니다.');
+
+  end
 
 
 
@@ -81,19 +93,21 @@ end;
 procedure TfrmLogin.FormCreate(Sender: TObject);
 var
   appPath : string;
-
 begin
-isLogged:=False;
-LoadSettings;
+  isLogged := False;
+  edServer.Text := '';
+  edUser.Text := '';
+  edPass.Text := '';
 
-    appPath := ExtractFilePath(ParamStr(0));
-    //ShowMessage(appPath);
-    TStyleManager.LoadFromFile(appPath+'\icon-img\Style.vsf');
-    TStyleManager.TrySetStyle('Onyx Blue2');
-    //TStyleManager.TrySetStyle('Onyx Blue');
+  LoadSettings;
 
- //api := TTVCSAPI.Create();
+  appPath := ExtractFilePath(ParamStr(0));
+  TStyleManager.LoadFromFile(appPath+'\icon-img\Style.vsf');
+  TStyleManager.TrySetStyle('Onyx Blue2');
 
+  // 자동 로그인을 타이머로 약간 지연시켜 실행 (폼이 완전히 로드된 후)
+  if chkAutoLogin.Checked then
+    tmStarter.Enabled := True;
 end;
 
 procedure TfrmLogin.FormDestroy(Sender: TObject);
@@ -111,17 +125,26 @@ begin
   Registry := TRegIniFile.Create(KEY_READ);
   try
     Registry.RootKey := HKEY_CURRENT_USER;
-
     Registry.OpenKey(PrgKey, True);
-    userName:=Registry.ReadString('user','username',edUser.Text);
-    userPass:=Registry.ReadString('user','userpass',edPass.Text);
-    bSaved:=Registry.ReadBool('user','saveuser',chkSave.Checked);
-    chkAutoLogin.checked:=Registry.ReadBool('user','autologin',false);
-    chkSave.Checked:=bSaved;
+
+    // 서버 주소 로드 추가
+
+    userName := Registry.ReadString('user', 'username', edUser.Text);
+    userPass := Registry.ReadString('user', 'userpass', edPass.Text);
+    bSaved := Registry.ReadBool('user', 'saveuser', chkSave.Checked);
+    chkAutoLogin.checked := Registry.ReadBool('user', 'autologin', False);
+    chkSave.Checked := bSaved;
+
     if (bSaved) then begin
-      edUser.Text:=userName;
-      edPass.Text:=userPass;
+      edUser.Text := userName;
+      edPass.Text := userPass;
+      edServer.Text := Registry.ReadString('user', 'server', '');
+
     end;
+
+    // 자동 로그인은 FormCreate와 tmStarterTimer에서 처리하므로 여기서 제거
+    // if chkAutoLogin.checked then
+    //  btnLoginClick(self);
 
     Registry.CloseKey;
   finally
@@ -136,27 +159,28 @@ begin
   Registry := TRegIniFile.Create(KEY_WRITE);
   try
     Registry.RootKey := HKEY_CURRENT_USER;
-
     Registry.OpenKey(PrgKey, True);
-    Registry.WriteString('user','username',edUser.Text);
-    Registry.WriteString('user','userpass',edPass.Text);
-    Registry.WriteBool('user','saveuser',chkSave.Checked);
-    Registry.WriteBool('user','autologin',chkAutoLogin.Checked);
 
+    // 서버 주소 저장 추가
+    Registry.WriteString('user', 'server', edServer.Text);
 
+    Registry.WriteString('user', 'username', edUser.Text);
+    Registry.WriteString('user', 'userpass', edPass.Text);
+    Registry.WriteBool('user', 'saveuser', chkSave.Checked);
+    Registry.WriteBool('user', 'autologin', chkAutoLogin.Checked);
     Registry.CloseKey;
   finally
     Registry.Free;
   end;
 end;
 
-
 procedure TfrmLogin.tmStarterTimer(Sender: TObject);
 begin
-tmStarter.Enabled:=false;
-// 자동로그인 임시로 막음. 테스트 위해서
-//if (chkAutoLogin.Checked) then btnLoginClick(Sender);
+  tmStarter.Enabled := False;
 
+  // 자동 로그인 처리
+  if chkAutoLogin.Checked then
+    btnLoginClick(Sender);
 end;
 
 end.

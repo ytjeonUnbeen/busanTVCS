@@ -8,10 +8,11 @@ uses
   Vcl.VirtualImageList, Vcl.BaseImageCollection, Vcl.ImageCollection,
   Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.ToolWin, Vcl.TitleBarCtrls, AdvMetroButton, AdvPageControl,GDIPicture,
   AdvUtil, Vcl.Grids, AdvObj, BaseGrid, AdvGrid, Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan,Direct2D, PasLibVlcPlayerUnit,PasLibVlcClassUnit,
-  System.Actions, Vcl.ActnList, Vcl.Menus, AdvMenus, AdvTabSet, AdvPanel,
-  AdvSplitter, Vcl.StdCtrls, AdvMenuStylers, AdvGlowButton,tvcsAPI,tvcsProtocol,StrUtils,
-  OverbyteIcsTypes, OverbyteIcsWndControl, OverbyteIcsWSocket,TVCSDebug,TTCProtocol,TCMSProtocol,TVCSCamView,TVCSAutoView,
-  Vcl.Buttons, AdvSmoothButton, AeroButtons, Registry, PasLibVlcUnit;
+  System.Actions, Vcl.ActnList, Vcl.Menus, AdvMenus, AdvTabSet, AdvPanel,TVCSIPcMsg,
+  AdvSplitter, Vcl.StdCtrls, AdvMenuStylers, AdvGlowButton,tvcsAPI,tvcsProtocol,StrUtils,IDUri,
+  OverbyteIcsTypes, OverbyteIcsWndControl, OverbyteIcsWSocket,OverbyteIcsWSockets,TVCSDebug,TTCProtocol,TCMSProtocol,TVCSCamView,TVCSAutoView, TVCSMyPage,
+  Vcl.Buttons, AdvSmoothButton, AeroButtons, Registry, PasLibVlcUnit, AdvLabel,
+  AdvCustomComponent, AdvStateManager, AdvResponsiveManager;
 
 
 //{$DEFINE TESTMODE}
@@ -74,7 +75,6 @@ type
     ImageCollection1: TImageCollection;
     VirtualImageList1: TVirtualImageList;
     pnLeftTrain: TPanel;
-    pnCamView: TPanel;
     pnTopmenu: TPanel;
     btnMainMenu: TAdvMetroButton;
     pnTitle: TPanel;
@@ -105,7 +105,6 @@ type
     actSystem: TAction;
     actUsers: TAction;
     actExit: TAction;
-    tabRoute: TAdvTabSet;
     pnRoute: TAdvPanel;
     tabImgList: TVirtualImageList;
     cmbStyle: TComboBox;
@@ -118,6 +117,11 @@ type
     mnuCamDelete: TMenuItem;
     Image1: TImage;
     ImageListBitmap: TImageList;
+    pnCamView: TPanel;
+    tabRoute: TAdvTabSet;
+    btnMyPage: TAdvMetroToolButton;
+    AdvResponsiveManager1: TAdvResponsiveManager;
+    Button1: TButton;
     procedure ToolbtnCloseClick(Sender: TObject);
     procedure toolBtnMaxClick(Sender: TObject);
     procedure toolBtnMinimizeClick(Sender: TObject);
@@ -161,8 +165,10 @@ type
       NewHeight: Integer; var Resize: Boolean);
     procedure FormShow(Sender: TObject);
     procedure btnAutoViewClick(Sender: TObject);
+    procedure btnMyPageClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure mnuCamDeleteClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
 
   private
     curTabCount:Integer;
@@ -181,12 +187,18 @@ type
     StationRange:Array of TStationRange;
 
     fmAutoCamView:TfrmAutoView;
+    FAutoViewUrl:String;
+    FMsgSock:TWSocket;
 
     procedure OnCamBtnDoubleClick(Sender:TObject);
- 
+
     procedure LoadSampleRTSP;
     procedure LoadSchedPanel;
     procedure LoadTrain;
+
+
+
+    procedure RefreshTrain;
     procedure OnMultiClick(Sender:TObject);
     procedure OnSingleClick(Sender:TObject);
     procedure MakeRouteTab;
@@ -209,7 +221,7 @@ type
     procedure DispSchedTrain(packet:TTTCProtocol);
 
     procedure ReDrawRoute;
-    procedure CheckMonitor;
+
     procedure MultiCamClose(Sender:TObject);
     procedure camVideoDragDrop(Sender, Source: TObject; X, Y: Integer);
 
@@ -226,14 +238,18 @@ type
     function findMultiCam(x,y:Integer):Integer;
     procedure reloadMergeCams;
     function IndexOf(const Arr: array of string; const Value: string): Integer;
+    procedure AddAutoCamView(aTrainNo,aStation:String;aUpDown:Integer);
+    procedure RemoveAutoCamview(aUpDown:Integer;aStation:String);
 
-
+    procedure WSocketDataAvailable(Sender: TObject; Error: Word);
+    procedure WSocketSessionConnected(Sender: TObject; Error: Word);
   protected
      procedure WMNCHitTest(var message: TWMNCHitTest); message WM_NCHITTEST;
      procedure CreateParams(var Params: TCreateParams); override;
   public
      procedure LoadSettings;
      procedure SaveSettings;
+     procedure LoadTTCAddr;
   end;
 
 var
@@ -255,6 +271,9 @@ var
   icon_system_restore: string;
   icon_trainbox_down: string;
   icon_trainbox_up: string;
+
+  EventServAddr: string;
+  EventservPort: integer;
 
 
    const max_stations_per_tab=10;
@@ -280,9 +299,9 @@ var
            );
           PrgKey = 'Software\TVCSClient\Settings';
 
-          // 서버용
-          EventServAddr='192.168.1.49';
-          EventservPort=7004;
+          // TTC 서버용
+          //EventServAddr='192.168.1.49';
+          //EventservPort=7004;
 
           // 로컬 테스트
           //EventServAddr='127.0.0.1';
@@ -293,6 +312,7 @@ implementation
 {$R *.dfm}
  uses TVCSStation,TVCSSystemSet,TVCSTrain,TVCSUsers,TVCSViewControl,TVCSDevices, TVCSLayouts,TVCSDrawCommon,vcl.Themes,
  GDIPAPI, GDIPOBJ, GDIPUTIL,ConvertHex,TVCSFullScreen;
+
 
 
 
@@ -339,10 +359,58 @@ begin
  end;
 
 end;
+
+
+
+
+procedure TfrmTVCSMain.LoadTTCAddr;
+var
+  Registry: TRegIniFile;
+  i: Integer;
+  DefaultIP: string;
+  DefaultPort: Integer;
+  UrlParts: TArray<string>;
+begin
+  Registry := TRegIniFile.Create(KEY_READ);
+  try
+    DefaultIP := '';
+    DefaultPort := 7004;
+
+    if gapi.url <> '' then
+    begin
+      UrlParts := gapi.url.Replace('http://', '').Split([':']);
+
+      if Length(UrlParts) >= 1 then
+        DefaultIP := UrlParts[0];
+
+    end;
+
+    // 레지스트리에서 값 읽기
+    Registry.RootKey := HKEY_CURRENT_USER;
+    Registry.OpenKey(PrgKey, True);
+
+    // IP 주소 읽기 - 비어있으면 TVCS 와 같은 서버 사용
+    EventServAddr := Registry.ReadString('user', 'ttcpip', '');
+    if EventServAddr = '' then
+      EventServAddr := DefaultIP;
+
+    // 포트 읽기 - 0이면 7004 사용
+    EventservPort := Registry.ReadInteger('user', 'ttcpport', 0);
+    if EventservPort = 0 then
+      EventservPort := DefaultPort;
+
+    Registry.CloseKey;
+  finally
+    Registry.Free;
+  end;
+end;
+
 procedure TfrmTVCSMain.LoadSettings;
 var
   Registry: TRegIniFile;
   i:Integer;
+  serverUrl:String;
+  URI:TIdURI;
 begin
   Registry := TRegIniFile.Create(KEY_READ);
   try
@@ -351,6 +419,24 @@ begin
     Registry.OpenKey(PrgKey, True);
 
     curSplit:=Registry.ReadInteger('main','splitSeting',1);
+
+    serverurl:=Registry.ReadString('user','server','');
+    FAutoViewUrl:='';
+    if (serverUrl<>'') then
+    begin
+
+      try
+        try
+         URI:=TIDUri.Create(serverUrl);
+         FAutoViewUrl:=URI.Host;
+        except
+
+        end;
+      finally
+        URI.Free;
+      end;
+    end;
+
 
     // 첫 시작시 값이 없으면 기본값 16으로
     if curSplit = 0 then
@@ -376,7 +462,6 @@ begin
         end;
     end;
 
-
     Registry.CloseKey;
   finally
     Registry.Free;
@@ -394,6 +479,9 @@ begin
 
     Registry.OpenKey(PrgKey, True);
     Registry.WriteInteger('main','splitSeting',curSplit);
+    Registry.WriteString('user', 'ttcpip', EventServAddr);
+    Registry.WriteInteger('user', 'ttcpport', EventservPort);
+
     for I := Low(MultiCams) to High(MultiCams) do begin
       if (Multicams[i]<>nil) then begin
          Registry.WriteString('cam'+IntToStr(i),'rtspUrl',MultiCams[i].RtspUrl);
@@ -442,6 +530,9 @@ var
  btnCam:TCamGlowButton;
  pos:Integer;
 begin
+     {
+     더블클릭 비활성화
+
      btnCam:=(Sender As TCamGlowButton);
      pos:=findEmptyView;
      if (pos<0) then Exit;
@@ -464,33 +555,16 @@ begin
 
 
      MultiCams[pos].Allocated:=true;
+     MultiCams[pos].Player.Visible:=true;
      MultiCams[pos].EndDrag(true);
      MultiCams[pos].PlayView;
-
+     }
 
 
 end;
 
 
 
-procedure TfrmTVCSMain.CheckMonitor;
-begin
-   FMonitorCount:=Screen.MonitorCount;
- {  if (fmAutoCamView=nil) then
-     fmAutoCamView:=TfrmAutoView.Create(self);
-
-   if (FMonitorCount=1) then begin
-      fmAutoCamView.Left:=Self.Left+10;
-      fmAutoCamView.Top:=Self.top+10;
-      fmAutoCamView.Width:=Self.Width-100;
-      fmAutoCamView.height:=Self.Height-100;
-      fmAutoCamView.Position:=poMainFormCenter;
-   end
-   else begin
-       fmAutoCamView.Left:=Screen.Monitors[[1].
-   end;
-   }
-end;
 
 
 procedure TfrmTVCSMain.camVideoDragDrop(Sender, Source: TObject; X, Y: Integer);
@@ -528,7 +602,10 @@ begin
      end;
 
      cam.Allocated:=true;
+     cam.Player.Visible:=true;
      cam.PlayView;
+
+
 
     end;
 end;
@@ -614,6 +691,7 @@ end;
 
 procedure TfrmTVCSMain.InitEventSocket;
 begin
+ //ShowMessage(EventServAddr);
  EventSock.Addr:=EventServAddr;
  EventSock.Port:=IntToStr(EventservPort);
  EventSock.Proto:='tcp';
@@ -679,7 +757,7 @@ begin
     if (FDebugWin <> nil) then
       FDEbugWin.DisplayAnal(Format('Cells row %d opcode 0x%x stname:%s', [idx, packet.Opcode, Cells[3, idx]]));
 
-    ReDrawRoute;
+
     rettab := GetStationIdx(packet.ArrStationNo, stcode);
     if (rettab = tabRoute.TabIndex) then begin
       ReDrawRoute;
@@ -699,6 +777,43 @@ begin
       Result := i;
       Break;
     end;
+end;
+
+procedure TfrmTVCSMain.RefreshTrain;
+var
+ i:Integer;
+begin
+
+    LoadTrain;
+    lstTrainSched.BeginUpdate;
+    lstTrainSched.RowCount:=Length(FTrains)+1;
+    with lstTrainSched do begin
+
+       for i :=0 to Length(FTrains)-1 do begin
+
+          Cells[0,i+1]:=InttoStr(FTrains[i].fformatNo);
+          Cells[1,i+1]:=FTrains[i].ftrainNo;
+          Cells[2,i+1]:='-';
+          Cells[3,i+1]:='-';
+          Cells[4,i+1]:='0'; //ArrStationNo
+          Cells[5,i+1]:='0'; //Direction
+          Cells[6,i+1]:=IntToStr(FTrains[i].fcarriageNum);
+          Cells[7,i+1]:=InttoStr(FTrains[i].fcameraNum);
+          Cells[8,i+1]:=IntToStr(FTrains[i].fformatNo);
+          Cells[9,i+1]:=FTrains[i].ftvcsIpaddr;
+
+        {  if odd(i+1) then begin
+             lstTrainSched.RowColor[i+1]:=clLtGray;
+          end
+          else begin
+
+            lstTrainSched.RowColor[i+1]:=clWhite;
+          end;}
+        end;
+
+
+  end;
+    lstTrainSched.EndUpdate;
 end;
 
 procedure TfrmTVCSMain.LoadSchedPanel;
@@ -742,7 +857,7 @@ with lstTrainSched do begin
 
        for i :=0 to Length(FTrains)-1 do begin
 
-          Cells[0,i+1]:=InttoStr(FTrains[i].fid);
+          Cells[0,i+1]:=InttoStr(FTrains[i].fformatNo);
           Cells[1,i+1]:=FTrains[i].ftrainNo;
           Cells[2,i+1]:='-';
           Cells[3,i+1]:='-';
@@ -819,9 +934,10 @@ if (not camView.Allocated) then Exit;
   frm:=TfrmFullViewer.Create(self);
   frm.SetBounds(Monitor.Left, Monitor.Top, Monitor.Width, Monitor.Height);
   //ShowMessage('camview.RtspUrl:'+camview.RtspUrl);
+
   frm.RTSPUrl:=camview.RtspUrl;
-  frm.RTSPUser:=camView.RtspUser;
-  frm.RTSPPass:=camView.RtspPass;
+  //frm.RTSPUser:=camView.RtspUser;
+  //frm.RTSPPass:=camView.RtspPass;
   frm.isMerged:=camview.isMerged;
 
 
@@ -846,6 +962,7 @@ if (not camView.Allocated) then Exit;
  // if (oldA <> alNone) then cam.Align := oldA;
 
 end;
+
 procedure TTrainCameraItem.ReloadButtons(OnDblClickMethod: TNotifyEvent);
 var
   multiCamCount,camCount,idx:Integer;
@@ -890,9 +1007,12 @@ begin
            BtnSingleCam[idx].Height:=BtnSingleCam[idx].Picture.Height;
            BtnSingleCam[idx].DragMode:=TDragMode.dmManual;
 
-           BtnSingleCam[idx].camUrl.Url:=FTrainCams[idx].frtsp;
-           BtnSingleCam[idx].camUrl.id:=FTrainCams[idx].fuserId;
-           BtnSingleCam[idx].camUrl.password:=FTrainCams[idx].fuserPwd;
+           //BtnSingleCam[idx].camUrl.Url:=FTrainCams[idx].frtsp;            기존방식에서 tvcs 에서 댕기도록 변경
+
+           BtnSingleCam[idx].camUrl.Url:=FTrainCams[idx].ftvcsRtsp;
+
+           //BtnSingleCam[idx].camUrl.id:=FTrainCams[idx].fuserId;
+           //BtnSingleCam[idx].camUrl.password:=FTrainCams[idx].fuserPwd;
            BtnSingleCam[idx].camName := FTrainCams[idx].fname;
 
            BtnSingleCam[idx].OnDblClick:=OnDblClickMethod;
@@ -918,6 +1038,7 @@ begin
                for iTrain := Low(MergeCams) to High(MergeCams) do begin
                        if (MergeCams[iTrain].fname=Multicams[idx].MergeName) then begin
                                    Multicams[idx].MergeCams:=MergeCams[iTrain];
+                                   Multicams[idx].camName := MergeCams[iTrain].fname;
                                    break;
                        end;
 
@@ -1023,9 +1144,13 @@ begin
                  BtnSingleCam[idx].Width:=BtnSingleCam[idx].Picture.Width;
                  BtnSingleCam[idx].Height:=BtnSingleCam[idx].Picture.Height;
                  BtnSingleCam[idx].Appearance.PictureAlignment:=taCenter;
-                 BtnSingleCam[idx].camUrl.Url:=FTrainCams[idx].frtsp;
-                 BtnSingleCam[idx].camUrl.id:=FTrainCams[idx].fuserId;
-                 BtnSingleCam[idx].camUrl.password:=FTrainCams[idx].fuserPwd;
+
+                 BtnSingleCam[idx].camUrl.Url:=FTrainCams[idx].ftvcsRtsp;
+
+
+
+                 //BtnSingleCam[idx].camUrl.id:=FTrainCams[idx].fuserId;
+                 //BtnSingleCam[idx].camUrl.password:=FTrainCams[idx].fuserPwd;
                  BtnSingleCam[idx].OnDblClick:=OnCamBtnDoubleClick;
                  BtnSingleCam[idx].onMouseDown:=camVideoMouseDown;
                  BtnSingleCam[idx].DragMode:=TDragMode.dmManual;
@@ -1043,14 +1168,41 @@ begin
 end;
 
 procedure TfrmTVCSMain.btnAutoViewClick(Sender: TObject);
-
+var
+ iMainMonitor,iSubMonitor:Integer;
 begin
  if (frmAutoView=nil) then
    frmAutoView:=TfrmAutoView.Create(self);
+   if (Screen.MonitorCount >1) then begin
+      iMainMonitor:=self.Monitor.MonitorNum;
+      if (iMainMonitor=1) then iSubMonitor:=0
+      else iSubMonitor:=1;
+      frmAutoView.Left:=Screen.Monitors[iSubMonitor].Left;
+      frmAutoView.top:=Screen.Monitors[iSubMonitor].top;
+      frmAutoView.WindowState:=TWindowState.wsMaximized;
+      frmAutoView.DefaultMonitor:=dmDesktop;
+   end
+   else begin
+      frmAutoView.DefaultMonitor:=dmMainForm;
+
+   end;
    frmAutoView.Show;
 
 
+
 end;
+
+procedure TfrmTVCSMain.btnMyPageClick(Sender: TObject);
+
+begin
+ if (frmMypage=nil) then
+   frmMypage:=TfrmMypage.Create(self);
+   frmMypage.Show;
+
+
+end;
+
+
 
 procedure TfrmTVCSMain.btnMainMenuClick(Sender: TObject);
 begin
@@ -1062,24 +1214,29 @@ end;
 
 procedure TfrmTVCSMain.btnSplit16Click(Sender: TObject);
 begin
-SplitView(16);
+  SplitView(16);
 end;
 
 procedure TfrmTVCSMain.btnSplit1Click(Sender: TObject);
 begin
-SplitView(1);
+  SplitView(1);
 end;
 
 procedure TfrmTVCSMain.btnSplit4Click(Sender: TObject);
 begin
-SplitView(4);
+  SplitView(4);
 end;
 
 procedure TfrmTVCSMain.btnSplit9Click(Sender: TObject);
 begin
-SplitView(9);
+  SplitView(9);
 end;
 
+
+procedure TfrmTVCSMain.Button1Click(Sender: TObject);
+begin
+Showmessage(IntToStr(self.CurrentPPI)+' '+IntToStr(PixelsPerInch)+' '+IntToStr(Screen.PixelsPerInch));
+end;
 
 procedure TFrmTVCSMain.MakeRouteTab;
 var
@@ -1140,6 +1297,8 @@ begin
 
 
 end;
+
+// 삭제 확인
 procedure TfrmTVCSMain.mnuCamDeleteClick(Sender: TObject);
 
 begin
@@ -1147,6 +1306,10 @@ begin
     Multicams[camPopup.tag].StopView;
     Multicams[camPopup.tag].Allocated:=false;
     Multicams[camPopup.tag].Player.Visible:=false;
+
+    
+    //ShowMessage(IntToStr(camPopup.tag));
+
   end;
 
 
@@ -1336,6 +1499,8 @@ begin
 
  pnTopmenu.Color := $1b1511;
  pnCamView.Color := $170e08;
+
+
  info:=GApi.GetLoinInfo;
  FLineNo:=info.fsystem.fline;
  LoadSchedPanel;
@@ -1356,13 +1521,27 @@ begin
 
  self.KeyPreview:=true;
 
-
+ LoadTTCAddr;
  InitEventSocket;
- CheckMonitor;
+
  CreateSplitPanel;
+
  LoadSettings;
  reloadMergeCams;
  SplitView(curSplit);
+
+
+ FMsgSock:=TWSocket.Create(self);
+ FMsgSock.SocketFamily      := sfIPv4;
+ FMsgSock.Addr              := ICS_ANY_HOST_V4;
+ FMsgSock.MultiCast         := FALSE;
+ FMsgSock.MultiCastAddrStr  := '';
+
+ FMsgSock.Proto             := 'udp';
+ FMsgSock.Port              :=UdpListenPort;
+ FMsgSock.Listen;
+ FMsgSock.OnDataAvailable:=WSocketDataAvailable;
+
 
 
 end;
@@ -1376,7 +1555,49 @@ begin
       FreeAndNil(Multicams[i]);
   end;
 
+
+  if (Assigned(FMsgSock)) then  begin
+    FMsgSock.Close;
+    FreeAndNil(FMsgSock);
+  end;
+
 end;
+
+
+procedure TfrmTVCSMain.WSocketDataAvailable(Sender: TObject; Error: Word);
+var
+    Buffer : array [0..1023] of AnsiChar;
+    Len    : Integer;
+    Src    : TSockAddrIn6;
+    SrcLen : Integer;
+begin
+
+        SrcLen := SizeOf(TSockAddrIn);
+        Len    := FMsgSock.ReceiveFrom(@Buffer, SizeOf(Buffer), PSockAddr(@Src)^, SrcLen);
+
+        if Len >= 0 then begin
+                Buffer[Len] := #0;
+                OutputDebugString(PWideChar(String(Buffer)));
+                if (String(Buffer)='LOADTRAIN') then begin
+                            RefreshTrain;
+
+
+                end;
+        end;
+
+end;
+
+
+{* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
+procedure TfrmTVCSMain.WSocketSessionConnected(Sender: TObject;
+  Error: Word);
+begin
+   OutputDebugString('IPC Server Connected'+#13+#10);
+end;
+
+
+
+
 
 procedure TfrmTVCSMain.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
@@ -1435,12 +1656,40 @@ begin
    dstcam.RtspPass:= srccam.Rtsppass;
    dstCam.Allocated:=srccam.Allocated;
    dstCam.isMerged:=srcCam.isMerged;
+   dstCam.camName:=srcCam.camName;
    if (dstCam.isMerged) then begin
      dstcam.mergeName:=srcCam.mergeName;
      dstcam.mergeidx:=srcCam.mergeidx;
      dstcam.MergeCams:=srccam.MergeCams;
      dstcam.mergeTrainId:=srccam.mergeTrainId;
+     dstCam.camName:=srcCam.mergeName;
    end;
+end;
+
+procedure TfrmTVCSMain.AddAutoCamView(aTrainNo,aStation:String;aUpDown:Integer);
+begin
+
+  if (Assigned(frmAutoView)) then begin
+
+     //if (frmAutoView.Visible) then begin
+        //debug process Station
+        frmAutoView.AddAutoView(FAutoViewUrl,aTrainNo,aStation,aUpDown,ProcessStationName(StrToInt(aStation)-FLineNo*100, FLineNo));
+    // end;
+
+  end;
+end;
+
+procedure TfrmTVCSMain.RemoveAutoCamview(aUpDown:Integer;aStation:String);
+begin
+   if (Assigned(frmAutoView)) then begin
+
+    // if (frmAutoView.Visible) then begin
+        frmAutoView.RemoveAutoView(aUpDown,aStation);
+    // end;
+
+  end;
+
+
 end;
 
 procedure  TfrmTVCSMain.AssignCamView(var dstcam:TCamView;aPos,aCol,aRow,aCamWidth,aCamHeight:Integer);
@@ -1800,20 +2049,31 @@ begin
                      if TrainDirection = 1 then begin
                          // 상행 열차 (오른쪽에서 왼쪽으로)
                          if lstTrainSched.Cells[2, idx].contains('출발') then
-                            TrainOffsetX := -70  // 역 왼쪽으로 출발
+                            TrainOffsetX := -60  // 역 왼쪽으로 출발
                          else if lstTrainSched.Cells[2, idx].Contains('도착') then
                             TrainOffsetX := -20   // 역 왼쪽에 도착 (약간 거리)
                          else if lstTrainSched.Cells[2, idx].Contains('접근') then
-                            TrainOffsetX := 50;  // 역 오른쪽에서 접근
+                            TrainOffsetX := 40;  // 역 오른쪽에서 접근
                      end else begin
                          // 하행 열차 (왼쪽에서 오른쪽으로) - 기존 로직 유지
                          if lstTrainSched.Cells[2, idx].contains('출발') then
-                            TrainOffsetX := 50   // 역 오른쪽으로 출발
+                            TrainOffsetX := 40   // 역 오른쪽으로 출발
                          else if lstTrainSched.Cells[2, idx].Contains('도착') then
                             TrainOffsetX := -20   // 역 왼쪽에 도착 (약간 거리)
                          else if lstTrainSched.Cells[2, idx].Contains('접근') then
-                            TrainOffsetX := -70; // 역 왼쪽에서 접근
+                            TrainOffsetX := -60; // 역 왼쪽에서 접근
                      end;
+                     if (lstTrainSched.Cells[2, idx].Contains('접근')) or (lstTrainSched.Cells[2, idx].Contains('도착')) then begin
+
+                          AddAutoCamView(lstTrainSched.Cells[0,idx],FStations[i].fcode,TrainDirection);
+
+                     end;
+                     if lstTrainSched.Cells[2, idx].Contains('출발') then begin
+
+                          RemoveAutoCamview(TrainDirection,FStations[i].fcode);
+
+                     end;
+
 
                      // 계산된 오프셋으로 열차 그리기
                      DrawTrain(ACanvas,
@@ -2109,6 +2369,8 @@ end;
   Result:=-1;
 
  end;
+
+
 procedure TfrmTVCSMain.ReDrawRoute;   //Current panel만  update
 begin
 
@@ -2118,7 +2380,8 @@ begin
    finally
         // Make sure updates are re-enabled
         SendMessage(pnroute.Handle, WM_SETREDRAW, WPARAM(True), 0);
-        Invalidate;  // Might be required to reflect the changes
+        RedrawWindow(pnroute.Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_ALLCHILDREN);
+        //Invalidate;  // Might be required to reflect the changes
    end;
 
 end;
@@ -2131,22 +2394,55 @@ var
   FHdc:Thandle;
   FPicture:TGDIPPicture;
   StationStartX, StationSpacing,CenterLineY: Integer;
+  LineColor1, LineColor2, LineColor3: string;
+
 begin
+
 
    SplitHeight:=ARect.Height div 3;
    CenterLineY:=ARect.Height div 2;
    D2DCanvas := TDirect2DCanvas.Create(ACanvas, ARect);
 
+   if FLineNo = 2 then
+   begin
+    LineColor1 := '#83E763';
+    LineColor2 := '#F5F5F5';
+    LineColor3 := '#15B209';
+   end
+   else if FLineNo = 3 then
+   begin
+    LineColor1 := '#F0C97C';
+    LineColor2 := '#F5F5F5';
+    LineColor3 := '#CD8929';
+
+   end
+   else if FLineNo = 4 then
+   begin
+    LineColor1 := '#7BB3E6';
+    LineColor2 := '#F5F5F5';
+    LineColor3 := '#2762AE';
+
+   end
+   else
+   begin
+    LineColor1 := '#7BB3E6';
+    LineColor2 := '#F5F5F5';
+    LineColor3 := '#2762AE';
+   end;
+
+
    // 호선에 따라서 색 변경필요
-   DrawTrainFill(D2DCanvas, Bounds(0, 0, ARect.Width, ARect.Height),'#6C9DDF');      //전체 색칠
-   DrawTrainFill(D2DCanvas,Bounds(0,SplitHeight-30,ARect.Width,SplitHeight+50),'#F5F5F5');
-   DrawTrainLine(D2DCanvas,0,SplitHeight+SplitHeight div 2, ARect.Width,3,'#154396');
+
+   DrawTrainFill(D2DCanvas, Bounds(0, 0, ARect.Width, ARect.Height),LineColor1);      //전체 색칠
+   DrawTrainFill(D2DCanvas,Bounds(0,SplitHeight-30,ARect.Width,SplitHeight+50),LineColor2);
+   DrawTrainLine(D2DCanvas,0,SplitHeight+SplitHeight div 2, ARect.Width,3,LineColor3);
 
    FPicture:=TGDIPPicture.Create;
 
    D2DCanvas.Font.Size := 13;
    D2DCanvas.Font.Color := clWhite;
    D2DCanvas.Brush.Style := bsClear;
+
 
    FPicture.LoadFromFile(ExtractFilePath(Application.ExeName)+icon_image_path+icon_upbox);
    DrawImage(ACanvas,20,CenterLineY-FPicture.Height-5,ExtractFilePath(Application.ExeName)+icon_image_path+icon_upbox);
@@ -2155,6 +2451,7 @@ begin
    DrawImage(ACanvas,20,CenterLineY+5,ExtractFilePath(Application.ExeName)+icon_image_path+icon_downbox);
    DrawLabel(D2DCanvas,20,CenterLineY+15,'하행');
    DrawStations(ACanvas,Arect,tabRoute.TabIndex);
+
    FPicture.Free;
 
    D2DCanvas.Free;

@@ -29,6 +29,7 @@ begin
   md := TAdvSmoothMessageDialog.Create(Self);
   //md.Caption := '정말 삭제하시겠습니까?';
 
+  md.Position:=poOwnerFormCenter;
   with md.Buttons.Add do
   begin
     Caption := '삭제';

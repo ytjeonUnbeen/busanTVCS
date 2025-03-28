@@ -96,7 +96,9 @@ type
     procedure edStnameChange(Sender: TObject);
     procedure lblT1UpDepClick(Sender: TObject);
     procedure AdvOfficeTabSet1Change(Sender: TObject);
-
+    procedure grdStationsEditChange(Sender: TObject; ACol, ARow: Integer;
+      Value: string);
+    
 
   private
     //fapi:TTVCSAPI;
@@ -113,6 +115,7 @@ type
 
     stationCam : TVCSStationCamera;
     stationCams : TArray<TVCSStationCamera>;
+    staionAdd: TvcsStationInPost;
     Procedure LoadStationInfoList;
     Procedure LoadCamInfoList(stationCode: string = '');
     Procedure grdStationsClickCell(Sender: TObject; ARow, ACol: Integer);
@@ -150,6 +153,8 @@ begin
 
 
 end;
+
+
 
 procedure TfrmStation.btnAddCamsClick(Sender: TObject);
 begin
@@ -207,23 +212,33 @@ end;
 procedure TfrmStation.btnAddStationClick(Sender: TObject);
 begin
 //ShowMessage('test');
+  if addStCnt > 0 then
+  begin
+    ShowMessage('한번에 하나의 역사만 추가가능합니다.');
+    exit;
+  end;
+  
 
+  staionAdd := TvcsStationInPost.Create;
   addStCnt := addStCnt + 1;
   with grdStations do
   begin
     InsertChildRow(0);
     Cells[0,1] := '0';
-    Cells[1,1] := 'NULL';
-    Cells[2,1] := 'NULL';
+    Cells[1,1] := '';
+    Cells[2,1] := '';
+
 
     AddImageIdx(3, 1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
     SelectCells(0,1,0,1);
     FocusCell(1,1);
-    TopRow := 0;  
+    EditCell(1,1);
+
+    TopRow := 0;
 
   end;
-  edStcode.Enabled := true;
-  edStName.Enabled := true;
+  //edStcode.Enabled := true;
+  //edStName.Enabled := true;
   eddnApprTcode.Enabled := true;
   eddnArrvTcode.Enabled := true;
   eddnDepartDelay.Enabled := true;
@@ -244,15 +259,19 @@ begin
   edStname.Text := 'NULL';
   edupDepartDelay.Text := '0';
   eddnDepartDelay.Text := '0';
-  eddnApprTcode.Text := '0';
-  edupArrvTcode.Text := '0';
-  edupLeavTcode.Text := '0';
+  eddnApprTcode.Text := '';
+  edupArrvTcode.Text := '';
+  edupLeavTcode.Text := '';
 
-  eddnApprTcode.Text := '0';
-  eddnArrvTcode.Text := '0';
-  eddnLeavTcode.Text := '0';
+  eddnApprTcode.Text := '';
+  eddnArrvTcode.Text := '';
+  eddnLeavTcode.Text := '';
 
-  edStcode.SetFocus;
+  eddnRtsp.text := '';
+  edupRtsp.Text := '';
+
+  //edStcode.SetFocus;
+
 
   LoadCamInfoList;
 end;
@@ -285,8 +304,8 @@ var
   StationNames: array of string;
   lineInfo: integer;
 begin
-  if not ShowTVCSCheck(0) then Exit;
-  
+  if not ShowTVCSCheck(mcModify) then Exit;
+
   allSuccess := True;
   // 라인정보 설정
   lineInfo := gapi.GetLoinInfo.fsystem.fline;
@@ -327,7 +346,7 @@ begin
               Exit;
             end;
 
-          // 역사 정보 삭제  
+          // 역사 정보 삭제
           if gapi.DeleteStation(existingStations[i].fcode) = '' then
           begin
             allSuccess := False;
@@ -410,15 +429,9 @@ begin
     else
     begin
       // 일반 저장 처리
-      if (edStcode.Text = '') and (edStname.Text = '') then
+      if (edStcode.Text = '') and (edStname.Text = '') and (addStCnt = 0) then
             begin
               ShowTVCSMessage('수정할 역사 정보가 없습니다.');
-              Exit;
-            end;
-
-      if (edStname.Text = '') then
-            begin
-              ShowTVCSMessage('역사명을 입력해주세요.');
               Exit;
             end;
 
@@ -427,6 +440,14 @@ begin
               ShowTVCSMessage('역 번호를 입력해주세요.');
               Exit;
             end;
+            
+      if (edStname.Text = '') then
+            begin
+              ShowTVCSMessage('역사명을 입력해주세요.');
+              Exit;
+            end;
+
+      
 
       try
         // 1. 역사 정보 추가 또는 수정
@@ -674,14 +695,14 @@ procedure TfrmStation.btnStationDownloadClick(Sender: TObject);
 var
   SaveDialog: TSaveDialog;
   ExcelGrid: TAdvStringGrid;
-  i, j, currentRow: Integer;
+  i, j, k, currentRow: Integer;  // k 변수 추가
   station: tvcsProtocol.TvcsStation;
   stationCameras: TArray<TVCSStationCamera>;
 begin
   SaveDialog := TSaveDialog.Create(nil);
   ExcelGrid := TAdvStringGrid.Create(nil);
   try
-    SaveDialog.Filter := 'Excel Files (*.xlsx)|*.xlsx|Excel 97-2003 (*.xls)|*.xls';
+    SaveDialog.Filter := 'Excel Files (*.xlsx)|*.xlsx|Excel(*.xls)|*.xls';
     SaveDialog.DefaultExt := 'xls';
     SaveDialog.FilterIndex := 2;
 
@@ -717,48 +738,151 @@ begin
 
       currentRow := 2;
 
-      // 각 역사별로 처리
-      for i := 0 to Length(stations) - 1 do
+      // 먼저 업로드된 엑셀 파일이 있는지 확인
+      if Assigned(GridBuf) and (GridBuf.RowCount > 1) and CheckExcel then
       begin
-        station := stations[i];
-        // 해당 역사의 카메라 정보 가져오기
-        stationCameras := gapi.GetStationCamera(station.fcode);
-
-        // 각 카메라별로 row 추가
-        for j := 0 to Length(stationCameras) - 1 do
+        // 업로드된 엑셀 파일의 모든 행을 처리
+        for i := 2 to GridBuf.RowCount do
         begin
+          // 빈 행인지 확인 (역번호가 비어있으면 건너뜀)
+          if GridBuf.Cells[1, i].Trim = '' then
+            Continue;
+
           ExcelGrid.RowCount := currentRow + 1;
-
-          // 역사 정보
-          ExcelGrid.Cells[1,currentRow] := station.fcode;
-          ExcelGrid.Cells[2,currentRow] := station.fname;
-          ExcelGrid.Cells[3,currentRow] := IntToStr(station.fupDepartDelay);
-          ExcelGrid.Cells[4,currentRow] := IntToStr(station.fdnDepartDelay);
-          ExcelGrid.Cells[5,currentRow] := station.fupApprTcode;
-          ExcelGrid.Cells[6,currentRow] := station.fupArrvTcode;
-          ExcelGrid.Cells[7,currentRow] := station.fupLeavTcode;
-          ExcelGrid.Cells[8,currentRow] := station.fdnApprTcode;
-          ExcelGrid.Cells[9,currentRow] := station.fdnArrvTcode;
-          ExcelGrid.Cells[10,currentRow] := station.fdnLeavTcode;
-
-          // TVCS IP는 비워둠 (필요시 추가)
-          ExcelGrid.Cells[11,currentRow] := '';
-
-          // 카메라 정보
-          if stationCameras[j].fdivision = 1 then
-            ExcelGrid.Cells[12,currentRow] := '상행'
-          else
-            ExcelGrid.Cells[12,currentRow] := '하행';
-
-          ExcelGrid.Cells[13,currentRow] := stationCameras[j].fname;
-          ExcelGrid.Cells[14,currentRow] := stationCameras[j].fipaddr;
-          ExcelGrid.Cells[15,currentRow] := IntToStr(stationCameras[j].fport);
-          ExcelGrid.Cells[16,currentRow] := stationCameras[j].frtsp;
-          ExcelGrid.Cells[17,currentRow] := stationCameras[j].frtsp2;
-          ExcelGrid.Cells[18,currentRow] := stationCameras[j].fuserId;
-          ExcelGrid.Cells[19,currentRow] := stationCameras[j].fuserPwd;
-
+          
+          // 기본 역 정보 복사 (1-10열)
+          for j := 1 to 10 do
+          begin
+            ExcelGrid.Cells[j, currentRow] := GridBuf.Cells[j, i];
+          end;
+          
+          // TVCS IP 비워둠
+          ExcelGrid.Cells[11, currentRow] := '';
+          
+          // 역번호가 있으면 카메라 정보 가져오기 시도
+          if GridBuf.Cells[1, i].Trim <> '' then
+          begin
+            // 카메라 정보 가져오기 시도
+            try
+              stationCameras := gapi.GetStationCamera(GridBuf.Cells[1, i]);
+              
+              // 카메라가 있으면 첫 번째 카메라 정보 추가
+              if Length(stationCameras) > 0 then
+              begin
+                // 첫 번째 카메라 정보 추가
+                if stationCameras[0].fdivision = 1 then
+                  ExcelGrid.Cells[12, currentRow] := '상행'
+                else
+                  ExcelGrid.Cells[12, currentRow] := '하행';
+                  
+                ExcelGrid.Cells[13, currentRow] := stationCameras[0].fname;
+                ExcelGrid.Cells[14, currentRow] := stationCameras[0].fipaddr;
+                ExcelGrid.Cells[15, currentRow] := IntToStr(stationCameras[0].fport);
+                ExcelGrid.Cells[16, currentRow] := stationCameras[0].frtsp;
+                ExcelGrid.Cells[17, currentRow] := stationCameras[0].frtsp2;
+                ExcelGrid.Cells[18, currentRow] := stationCameras[0].fuserId;
+                ExcelGrid.Cells[19, currentRow] := stationCameras[0].fuserPwd;
+                
+                // 추가 카메라가 있으면 새 행에 추가
+                for k := 1 to Length(stationCameras) - 1 do  // j 대신 k 사용
+                begin
+                  Inc(currentRow);
+                  ExcelGrid.RowCount := currentRow + 1;
+                  
+                  // 기본 역 정보 복사
+                  for j := 1 to 10 do
+                  begin
+                    ExcelGrid.Cells[j, currentRow] := GridBuf.Cells[j, i];
+                  end;
+                  
+                  // TVCS IP 비워둠
+                  ExcelGrid.Cells[11, currentRow] := '';
+                  
+                  // 카메라 정보 추가
+                  if stationCameras[k].fdivision = 1 then  // j 대신 k 사용
+                    ExcelGrid.Cells[12, currentRow] := '상행'
+                  else
+                    ExcelGrid.Cells[12, currentRow] := '하행';
+                    
+                  ExcelGrid.Cells[13, currentRow] := stationCameras[k].fname;  // j 대신 k 사용
+                  ExcelGrid.Cells[14, currentRow] := stationCameras[k].fipaddr;  // j 대신 k 사용
+                  ExcelGrid.Cells[15, currentRow] := IntToStr(stationCameras[k].fport);  // j 대신 k 사용
+                  ExcelGrid.Cells[16, currentRow] := stationCameras[k].frtsp;  // j 대신 k 사용
+                  ExcelGrid.Cells[17, currentRow] := stationCameras[k].frtsp2;  // j 대신 k 사용
+                  ExcelGrid.Cells[18, currentRow] := stationCameras[k].fuserId;  // j 대신 k 사용
+                  ExcelGrid.Cells[19, currentRow] := stationCameras[k].fuserPwd;  // j 대신 k 사용
+                end;
+              end;
+            except
+              // 카메라 정보 가져오기 실패 시 무시하고 계속 진행
+            end;
+          end;
+          
           Inc(currentRow);
+        end;
+      end
+      else
+      begin
+        // 기존 stations 배열 사용하는 방식 (여기는 변경 없음)
+        for i := 0 to Length(stations) - 1 do
+        begin
+          station := stations[i];
+          // 해당 역사의 카메라 정보 가져오기
+          stationCameras := gapi.GetStationCamera(station.fcode);
+      
+          // 카메라가 0개인 경우에도 역 정보는 한 번 추가
+          if Length(stationCameras) = 0 then
+          begin
+            ExcelGrid.RowCount := currentRow + 1;
+            // 역사 정보만 입력
+            ExcelGrid.Cells[1, currentRow] := station.fcode;
+            ExcelGrid.Cells[2, currentRow] := station.fname;
+            ExcelGrid.Cells[3, currentRow] := IntToStr(station.fupDepartDelay);
+            ExcelGrid.Cells[4, currentRow] := IntToStr(station.fdnDepartDelay);
+            ExcelGrid.Cells[5, currentRow] := station.fupApprTcode;
+            ExcelGrid.Cells[6, currentRow] := station.fupArrvTcode;
+            ExcelGrid.Cells[7, currentRow] := station.fupLeavTcode;
+            ExcelGrid.Cells[8, currentRow] := station.fdnApprTcode;
+            ExcelGrid.Cells[9, currentRow] := station.fdnArrvTcode;
+            ExcelGrid.Cells[10, currentRow] := station.fdnLeavTcode;
+            // TVCS IP 및 카메라 정보는 비워둠
+            ExcelGrid.Cells[11, currentRow] := '';
+            Inc(currentRow);
+          end
+          else
+          begin
+            // 카메라가 있는 경우 각 카메라별로 row 추가
+            for j := 0 to Length(stationCameras) - 1 do
+            begin
+              ExcelGrid.RowCount := currentRow + 1;
+              // 역사 정보
+              ExcelGrid.Cells[1, currentRow] := station.fcode;
+              ExcelGrid.Cells[2, currentRow] := station.fname;
+              ExcelGrid.Cells[3, currentRow] := IntToStr(station.fupDepartDelay);
+              ExcelGrid.Cells[4, currentRow] := IntToStr(station.fdnDepartDelay);
+              ExcelGrid.Cells[5, currentRow] := station.fupApprTcode;
+              ExcelGrid.Cells[6, currentRow] := station.fupArrvTcode;
+              ExcelGrid.Cells[7, currentRow] := station.fupLeavTcode;
+              ExcelGrid.Cells[8, currentRow] := station.fdnApprTcode;
+              ExcelGrid.Cells[9, currentRow] := station.fdnArrvTcode;
+              ExcelGrid.Cells[10, currentRow] := station.fdnLeavTcode;
+              // TVCS IP는 비워둠 (필요시 추가)
+              ExcelGrid.Cells[11, currentRow] := '';
+              // 카메라 정보
+              if stationCameras[j].fdivision = 1 then
+                ExcelGrid.Cells[12, currentRow] := '상행'
+              else
+                ExcelGrid.Cells[12, currentRow] := '하행';
+              ExcelGrid.Cells[13, currentRow] := stationCameras[j].fname;
+              ExcelGrid.Cells[14, currentRow] := stationCameras[j].fipaddr;
+              ExcelGrid.Cells[15, currentRow] := IntToStr(stationCameras[j].fport);
+              ExcelGrid.Cells[16, currentRow] := stationCameras[j].frtsp;
+              ExcelGrid.Cells[17, currentRow] := stationCameras[j].frtsp2;
+              ExcelGrid.Cells[18, currentRow] := stationCameras[j].fuserId;
+              ExcelGrid.Cells[19, currentRow] := stationCameras[j].fuserPwd;
+              Inc(currentRow);
+            end;
+          end;
         end;
       end;
 
@@ -767,19 +891,17 @@ begin
       AdvGridExcelIO1.XLSExport(SaveDialog.FileName);
       ShowTVCSMessage('엑셀 파일이 저장되었습니다.');
     end;
-
   finally
     SaveDialog.Free;
     ExcelGrid.Free;
   end;
 end;
-
 procedure TfrmStation.btnUploadStationsClick(Sender: TObject);
 var
   OpenDialog: TOpenDialog;
   isValidFormat: Boolean;
 begin
-  if ShowTVCSCheck(2) then
+  if ShowTVCSCheck(mcExcelUpload) then
   begin
     OpenDialog := TOpenDialog.Create(nil);
     try
@@ -862,7 +984,7 @@ begin
   grdStationCams.OnClickCell := grdStationsCamsClickCell;
 
   TButtonStyler.ApplyGlobalStyle(Self);
-  lblTitle.Caption := '역사 정보 관리 ('+IntToStr(gapi.GetLoinInfo.fsystem.fline) +'호선)';
+  lblTitle.Caption := '승강장 카메라 관리 ('+IntToStr(gapi.GetLoinInfo.fsystem.fline) +'호선)';
 
 end;
 
@@ -1090,7 +1212,7 @@ begin
 
     lbStCamCnt.Caption := '총: 0 개';
 
-    
+
 
      if stationCode <> '' then
     begin
@@ -1168,7 +1290,7 @@ begin
 
         end;
     end;
-    
+
 end;
 
 // 역사정보 확인 or 삭제
@@ -1178,7 +1300,12 @@ var
   i, size: integer;
   stationcode : string;
   isNewRow: Boolean;
-begin
+  
+  
+begin                                                      
+
+  
+  //staionAdd := TvcsStationInPost.Create; 
   // 헤더 행(0번째 행) 클릭 시
   if ARow = 0 then
   begin
@@ -1186,12 +1313,16 @@ begin
     edStname.Text := '';
     edupDepartDelay.Text := '0';
     eddnDepartDelay.Text := '0';
-    eddnApprTcode.Text := '0';
-    edupArrvTcode.Text := '0';
-    edupLeavTcode.Text := '0';
-    eddnApprTcode.Text := '0';
-    eddnArrvTcode.Text := '0';
-    eddnLeavTcode.Text := '0';
+    eddnApprTcode.Text := '';
+    edupArrvTcode.Text := '';
+    edupLeavTcode.Text := '';
+    eddnApprTcode.Text := '';
+    eddnArrvTcode.Text := '';
+    eddnLeavTcode.Text := '';
+    eddnRtsp.Text := '';
+    edupRtsp.Text := '';
+
+
     edStcode.Enabled := False;
     edStName.Enabled := False;
     eddnApprTcode.Enabled := False;
@@ -1207,18 +1338,84 @@ begin
     eddnRtsp.Enabled := False;
     AdvOfficeRadioGroup1.Enabled := False;
     AdvOfficeRadioGroup2.Enabled := False;
+    grdStations.Options := grdStations.Options - [goEditing];
+
     LoadCamInfoList();
     Exit;
   end;
-  
+
+
   // 새로 추가된 행인지 확인
   isNewRow := (ARow <= addStCnt);
+
+  // 새로 추가 하는 행이 아닌경우
+  if (addStCnt > 0) and (ARow <> 1) then
+    begin 
+      ShowTVCSMessage('아직 저장되지 않은 역사정보가 있습니다. 저장 또는 삭제를 진행해주세요');
+          
+        
+          isNewRow  := true;
+          grdStations.EditCell(1,1);
+          staionAdd.fdnRtsp := eddnRtsp.text;
+          staionAdd.fupRtsp := edupRtsp.Text;
+        
+          staionAdd.fupDepartDelay := StrtoInt(edupDepartDelay.text);
+          staionAdd.fdnDepartDelay := StrtoInt(eddnDepartDelay.text);  
+          
+          staionAdd.fupLeavTcode := edupLeavTcode.text;  
+          staionAdd.fdnLeavTcode := eddnLeavTcode.text;  
+          
+          staionAdd.fupArrvTcode := edupArrvTcode.text;  
+          staionAdd.fdnArrvTcode := eddnArrvTcode.text; 
+
+          staionAdd.fupApprTcode := edupArrvTcode.Text;
+          staionAdd.fdnApprTcode := eddnApprTcode.Text;      
+
+
+          if AdvOfficeRadioGroup1.ItemIndex = 0 then
+            begin
+              staionAdd.fupView := 'single';
+              staionAdd.fdnView := 'single';
+            end
+            
+          else
+            begin
+               staionAdd.fupView := 'merge'; 
+               staionAdd.fdnView := 'merge'; 
+            end;
+           
+
+
+          
+          if advofficetabset1.ActiveTabIndex  = 0 then
+          begin
+            pnUp.Visible := true;
+            pnDn.Visible := false;
+          end
+          else
+          begin
+            pnUp.Visible := false;
+            pnDn.Visible := true;
+          end;
+          
+
+
+          
+          ARow := 1;
+          ACol := 1;
+        
+       
+        
+
+      
+    end;
+  
   
   // 데이터 행 클릭 시 (헤더 제외)
-  edStcode.Enabled := true;
-  edStName.Enabled := true;
+  //edStcode.Enabled := true;
+  //edStName.Enabled := true;
   eddnApprTcode.Enabled := true;
-  eddnArrvTcode.Enabled := true; 
+  eddnArrvTcode.Enabled := true;
   eddnDepartDelay.Enabled := true;
   eddnLeavTcode.Enabled := true;
   edupApprTcode.Enabled := true;
@@ -1232,17 +1429,19 @@ begin
   AdvOfficeRadioGroup1.Enabled := true;
   AdvOfficeRadioGroup2.Enabled := true;
 
+  grdStations.Options := grdStations.Options + [goEditing];
+
 
   if Acol = 3 then  // 삭제 버튼 클릭
   begin
     try
-      if ShowTVCSCheck(1) then
+      if ShowTVCSCheck(mcDelete) then
       begin
         try
           // 새로 추가된 행이 아닌 경우만 API 호출
           if not isNewRow and (ARow-1 - addStCnt >= 0) then
             gapi.DeleteStation(stations[ARow-1 - addStCnt].fcode);
-          
+
         finally
           LoadStationInfoList;
           // 에디트 박스 초기화
@@ -1260,12 +1459,13 @@ begin
           eddnRtsp.Text := '';
           AdvOfficeRadioGroup1.ItemIndex := 0;
           AdvOfficeRadioGroup2.ItemIndex := 0;
+          addStCnt := 0 ;
           ShowTVCSMessage('삭제 되었습니다. ');
         end;
       end;
     finally
     end;
-  end 
+  end
   else  // 일반 셀 클릭
   begin
     try
@@ -1310,6 +1510,24 @@ begin
         // 현재 그리드의 데이터 표시
         edStcode.Text := grdStations.Cells[1, ARow];
         edStname.Text := grdStations.Cells[2, ARow];
+
+        edupDepartDelay.Text := IntToStr(staionAdd.fupDepartDelay);          
+        eddnDepartDelay.Text := IntToStr(staionAdd.fdnDepartDelay);
+        eddnApprTcode.Text := staionAdd.fdnApprTcode;
+        edupArrvTcode.Text := staionAdd.fupArrvTcode;
+        edupLeavTcode.Text := staionAdd.fupLeavTcode;
+        eddnApprTcode.Text := staionAdd.fdnApprTcode;
+        eddnArrvTcode.Text := staionAdd.fdnArrvTcode;
+        eddnLeavTcode.Text := staionAdd.fdnLeavTcode;
+
+        edupRtsp.Text := staionAdd.fupRtsp;
+        eddnRtsp.Text := staionAdd.fdnRtsp;
+
+        if staionAdd.fupView = 'single' then
+          AdvOfficeRadioGroup1.ItemIndex := 0
+        else
+          AdvOfficeRadioGroup2.ItemIndex := 1;
+        
         // 나머지 필드는 기본값 유지
         LoadCamInfoList;  // 빈 카메라 리스트 로드
       end;
@@ -1318,12 +1536,12 @@ begin
       edStname.Text := '';
       edupDepartDelay.Text := '0';
       eddnDepartDelay.Text := '0';
-      eddnApprTcode.Text := '0';
-      edupArrvTcode.Text := '0';
-      edupLeavTcode.Text := '0';
-      eddnApprTcode.Text := '0';
-      eddnArrvTcode.Text := '0';
-      eddnLeavTcode.Text := '0';
+      eddnApprTcode.Text := '';
+      edupArrvTcode.Text := '';
+      edupLeavTcode.Text := '';
+      eddnApprTcode.Text := '';
+      eddnArrvTcode.Text := '';
+      eddnLeavTcode.Text := '';
 
       edupRtsp.Text := '';
       eddnRtsp.Text := '';
@@ -1335,6 +1553,18 @@ begin
   end;
 end;
 
+
+procedure TfrmStation.grdStationsEditChange(Sender: TObject; ACol,
+  ARow: Integer; Value: string);
+begin
+  if ACol = 1 then
+    edStcode.Text := Value
+
+  else if ACol = 2 then
+    edStname.Text := Value;
+
+
+end;
 
 procedure TfrmStation.lblT1UpDepClick(Sender: TObject);
 begin
@@ -1352,7 +1582,7 @@ if ARow > 0 then
   begin
     if ACol = 9 then
       begin
-        if ShowTVCSCheck(1) then
+        if ShowTVCSCheck(mcDelete) then
         begin
           gapi.DeleteStationCamera(stationCams[ARow-1 -addStCnt].fid);
           grdStationCams.RemoveRows(ARow, 1);

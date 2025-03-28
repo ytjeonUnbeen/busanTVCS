@@ -59,6 +59,7 @@ type
     VirtualImageList1: TVirtualImageList;
     AdvPanel1: TAdvPanel;
     AdvPanel2: TAdvPanel;
+    ImageListBitmap: TImageList;
     procedure FormCreate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure btnDlgCloseClick(Sender: TObject);
@@ -297,7 +298,7 @@ var
   mergePostInfo: fmergePostInfo;
   currentTabIndex: Integer;
 begin
-  if ShowTVCSCheck(0) then
+  if ShowTVCSCheck(mcModify) then
   begin
     try
       if selTrain = nil then
@@ -601,7 +602,7 @@ var
   i : integer;
 begin
 //if  
-  if ShowTVCSCheck(1) then
+  if ShowTVCSCheck(mcDelete) then
     begin
       gapi.DeleteTrainCameraMerge(selTrain.fid, tabMerge.AdvTabs.Items[tabMerge.TabIndex].Caption);
       LoadMergeList(selTrain.fid);                           
@@ -609,6 +610,10 @@ begin
 end;
 
 procedure TfrmLayouts.FormCreate(Sender: TObject);
+var
+  LineNo: integer;
+  Bitmap: TBitmap;
+
 begin
 //
   TButtonStyler.ApplyGlobalStyle(Self);
@@ -620,7 +625,14 @@ begin
   CamOffImg := AdvPanel2.Background;
 
   grdTrains.OnClickCell := grdTrainsClickCell;
-  lblTitle.Caption := '다중 영상 관리 ('+IntToStr(gapi.GetLoinInfo.fsystem.fline) +'호선)'
+  LineNo := gapi.GetLoinInfo.fsystem.fline;
+  lblTitle.Caption := '편성별 영상 관리 ('+IntToStr(gapi.GetLoinInfo.fsystem.fline) +'호선)';
+
+  Bitmap := TBitmap.Create;
+  ImageListBitmap.GetBitmap(LineNo, Bitmap);
+  tabMerge.TabBackGroundSelected := Bitmap;
+  Bitmap.Free;
+
 
 end;
 
@@ -684,7 +696,7 @@ begin
     end;
 
     hasMoreThan4Cameras := cameraCnt > 4;
-    if hasMoreThan4Cameras and not ShowTVCSCheck(3) then
+    if hasMoreThan4Cameras and not ShowTVCSCheck(mcChangLayout) then
     begin
       rbtnCheckPartition.ItemIndex := 0;
       Exit;

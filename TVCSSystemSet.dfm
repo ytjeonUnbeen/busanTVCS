@@ -3,7 +3,7 @@ object frmSystem: TfrmSystem
   Top = 0
   BorderStyle = bsDialog
   Caption = #49884#49828#53596' '#44288#47532
-  ClientHeight = 691
+  ClientHeight = 761
   ClientWidth = 794
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -11,16 +11,14 @@ object frmSystem: TfrmSystem
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
     Top = 0
     Width = 794
-    Height = 621
+    Height = 691
     Align = alClient
     TabOrder = 0
     object lblTitle: TLabel
@@ -340,28 +338,6 @@ object frmSystem: TfrmSystem
       TabOrder = 1
       Value = 0
     end
-    object cboxVideoResol: TDBComboBox
-      Left = 206
-      Top = 155
-      Width = 121
-      Height = 21
-      Items.Strings = (
-        '1920 * 1080'
-        '1280 * 720')
-      TabOrder = 2
-    end
-    object cboxVideoFrm: TDBComboBox
-      Left = 206
-      Top = 186
-      Width = 121
-      Height = 21
-      Items.Strings = (
-        '15'
-        '30'
-        '60'
-        '')
-      TabOrder = 3
-    end
     object speEventPop: TSpinEdit
       Left = 206
       Top = 267
@@ -369,7 +345,7 @@ object frmSystem: TfrmSystem
       Height = 22
       MaxValue = 0
       MinValue = 0
-      TabOrder = 4
+      TabOrder = 2
       Value = 30
     end
     object grdCamLicense: TAdvStringGrid
@@ -384,7 +360,7 @@ object frmSystem: TfrmSystem
       FixedRows = 0
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goFixedRowDefAlign]
       ScrollBars = ssNone
-      TabOrder = 5
+      TabOrder = 3
       GridLineColor = 13948116
       GridFixedLineColor = 11250603
       ActiveCellFont.Charset = DEFAULT_CHARSET
@@ -506,6 +482,8 @@ object frmSystem: TfrmSystem
         64
         18
         18)
+      RowHeights = (
+        22)
     end
     object groupEvent: TGroupBox
       Left = 206
@@ -515,7 +493,7 @@ object frmSystem: TfrmSystem
       Color = clWhite
       ParentBackground = False
       ParentColor = False
-      TabOrder = 6
+      TabOrder = 4
       StyleElements = [seFont, seClient]
       object btnEvtRadio1: TRadioButton
         Left = 14
@@ -541,7 +519,7 @@ object frmSystem: TfrmSystem
       Top = 656
       Width = 169
       Height = 24
-      TabOrder = 7
+      TabOrder = 5
       object btnLoginRadio1: TRadioButton
         Left = 22
         Top = 3
@@ -578,7 +556,7 @@ object frmSystem: TfrmSystem
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goFixedRowDefAlign]
       ParentFont = False
       ScrollBars = ssNone
-      TabOrder = 8
+      TabOrder = 6
       GridLineColor = 13948116
       GridFixedLineColor = 11250603
       ActiveCellFont.Charset = DEFAULT_CHARSET
@@ -696,6 +674,14 @@ object frmSystem: TfrmSystem
       SortSettings.HeaderMirrorColor = clWhite
       SortSettings.HeaderMirrorColorTo = clWhite
       Version = '9.1.3.0'
+      ColWidths = (
+        64
+        64
+        64
+        64
+        64)
+      RowHeights = (
+        22)
     end
     object cbxEventPop: TDBComboBox
       Left = 285
@@ -706,14 +692,14 @@ object frmSystem: TfrmSystem
         #52488
         #48516
         #49884#44036)
-      TabOrder = 9
+      TabOrder = 7
     end
     object edttcpip: TEdit
       Left = 206
       Top = 326
       Width = 123
       Height = 21
-      TabOrder = 10
+      TabOrder = 8
     end
     object btnAddCamLicense: TAdvGlowButton
       Left = 270
@@ -733,7 +719,7 @@ object frmSystem: TfrmSystem
       NotesFont.Style = []
       ParentFont = False
       Rounded = True
-      TabOrder = 11
+      TabOrder = 9
       OnClick = btnAddCamLicenseClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
@@ -789,7 +775,7 @@ object frmSystem: TfrmSystem
       NotesFont.Style = []
       ParentFont = False
       Rounded = True
-      TabOrder = 12
+      TabOrder = 10
       OnClick = btnAddCliLicenseClick
       Appearance.BorderColor = 11382963
       Appearance.BorderColorHot = 11565130
@@ -832,26 +818,75 @@ object frmSystem: TfrmSystem
       Top = 361
       Width = 74
       Height = 21
-      TabOrder = 13
+      TabOrder = 11
     end
     object edttcsip: TEdit
       Left = 523
       Top = 323
       Width = 121
       Height = 21
-      TabOrder = 14
+      TabOrder = 12
     end
     object edttcpport: TEdit
       Left = 206
       Top = 361
       Width = 74
       Height = 21
+      TabOrder = 13
+    end
+    object cboxVideoResol: TAdvComboBox
+      Left = 205
+      Top = 155
+      Width = 122
+      Height = 21
+      Color = clWindow
+      Version = '2.0.0.8'
+      Visible = True
+      ButtonWidth = 17
+      EmptyTextStyle = []
+      DropWidth = 0
+      Enabled = True
+      ItemIndex = 0
+      Items.Strings = (
+        '1920 * 1080'
+        '1280 * 720')
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clWindowText
+      LabelFont.Height = -11
+      LabelFont.Name = 'Tahoma'
+      LabelFont.Style = []
+      TabOrder = 14
+      Text = '1920 * 1080'
+    end
+    object cboxVideoFrm: TAdvComboBox
+      Left = 205
+      Top = 186
+      Width = 122
+      Height = 21
+      Color = clWindow
+      Version = '2.0.0.8'
+      Visible = True
+      ButtonWidth = 17
+      EmptyTextStyle = []
+      DropWidth = 0
+      Enabled = True
+      ItemIndex = -1
+      Items.Strings = (
+        '15'
+        '30'
+        '60')
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clWindowText
+      LabelFont.Height = -11
+      LabelFont.Name = 'Tahoma'
+      LabelFont.Style = []
       TabOrder = 15
+      Text = 'cboxVideoFrm'
     end
   end
   object Panel2: TPanel
     Left = 0
-    Top = 621
+    Top = 691
     Width = 794
     Height = 70
     Align = alBottom
