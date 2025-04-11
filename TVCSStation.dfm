@@ -32,7 +32,7 @@ object frmStation: TfrmStation
       Caption = #52712#49548
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -11
+      Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
       NotesFont.Charset = DEFAULT_CHARSET
@@ -89,7 +89,7 @@ object frmStation: TfrmStation
       Caption = #45803#44592
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -11
+      Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
       NotesFont.Charset = DEFAULT_CHARSET
@@ -145,7 +145,7 @@ object frmStation: TfrmStation
       Caption = #51200#51109
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -11
+      Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
       NotesFont.Charset = DEFAULT_CHARSET
@@ -204,8 +204,8 @@ object frmStation: TfrmStation
     ShowCaption = False
     TabOrder = 1
     object lblInfoTitle: TLabel
-      Left = 408
-      Top = 74
+      Left = 184
+      Top = 59
       Width = 140
       Height = 24
       Caption = #49849#44053#51109' '#52852#47700#46972' '#51221#48372
@@ -244,9 +244,9 @@ object frmStation: TfrmStation
     end
     object pnCamStationInfo: TPanel
       Left = 408
-      Top = 104
+      Top = 88
       Width = 801
-      Height = 481
+      Height = 505
       BevelEdges = []
       BevelOuter = bvNone
       Caption = 'edit'
@@ -256,538 +256,129 @@ object frmStation: TfrmStation
         Left = 0
         Top = 0
         Width = 801
-        Height = 33
+        Height = 47
         Align = alTop
         BevelOuter = bvNone
         Caption = 'pnDefStation'
         ShowCaption = False
         TabOrder = 0
+        ExplicitTop = 16
         object lblstCode: TLabel
-          Left = 1
-          Top = 11
-          Width = 33
-          Height = 16
+          Left = 4
+          Top = 19
+          Width = 42
+          Height = 19
           Caption = #50669#48264#54840
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
-          Font.Height = -13
+          Font.Height = -16
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
         end
         object lblStname: TLabel
-          Left = 152
-          Top = 12
-          Width = 33
-          Height = 16
+          Left = 187
+          Top = 19
+          Width = 42
+          Height = 19
           Caption = #50669#49324#47749
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
-          Font.Height = -13
+          Font.Height = -16
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
         end
         object edStname: TEdit
-          Left = 191
-          Top = 7
+          Left = 235
+          Top = 14
           Width = 81
-          Height = 21
-          Enabled = False
+          Height = 27
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -16
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
           TabOrder = 0
           OnChange = edStnameChange
+          OnEnter = edStnameEnter
+          OnExit = edStnameExit
         end
         object edStcode: TEdit
-          Left = 40
-          Top = 6
+          Left = 52
+          Top = 13
           Width = 86
-          Height = 21
-          Enabled = False
+          Height = 27
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -16
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
           TabOrder = 1
           OnChange = edStcodeChange
+          OnEnter = edStcodeEnter
+          OnExit = edStcodeExit
           OnKeyPress = edStcodeKeyPress
         end
       end
       object pnT1Delay: TPanel
         Left = 0
-        Top = 33
+        Top = 47
         Width = 801
-        Height = 168
+        Height = 441
         Align = alTop
         Caption = 'pnT1Delay'
         ShowCaption = False
         TabOrder = 1
-        object AdvOfficeTabSet1: TAdvOfficeTabSet
+        object pnUp: TPanel
           Left = 1
           Top = 1
           Width = 799
-          Height = 28
-          UIStyle = tsOffice2019White
-          AdvOfficeTabs = <
-            item
-              Caption = #49345#54665#49444#51221
-              Name = 'TOfficeTabCollectionItem1'
-              TabAppearance.BorderColor = clWhite
-              TabAppearance.BorderColorHot = clNone
-              TabAppearance.BorderColorSelected = clNone
-              TabAppearance.BorderColorSelectedHot = clNone
-              TabAppearance.BorderColorDisabled = clNone
-              TabAppearance.BorderColorDown = clNone
-              TabAppearance.Color = clWhite
-              TabAppearance.ColorTo = clWhite
-              TabAppearance.ColorSelected = clWhite
-              TabAppearance.ColorSelectedTo = clWhite
-              TabAppearance.ColorDisabled = 15658734
-              TabAppearance.ColorDisabledTo = clNone
-              TabAppearance.ColorHot = 16316922
-              TabAppearance.ColorHotTo = 16316922
-              TabAppearance.ColorMirror = clWhite
-              TabAppearance.ColorMirrorTo = clWhite
-              TabAppearance.ColorMirrorHot = 16316922
-              TabAppearance.ColorMirrorHotTo = 16316922
-              TabAppearance.ColorMirrorSelected = clWhite
-              TabAppearance.ColorMirrorSelectedTo = clWhite
-              TabAppearance.ColorMirrorDisabled = 15658734
-              TabAppearance.ColorMirrorDisabledTo = clNone
-              TabAppearance.Font.Charset = DEFAULT_CHARSET
-              TabAppearance.Font.Color = clWindowText
-              TabAppearance.Font.Height = -11
-              TabAppearance.Font.Name = 'Tahoma'
-              TabAppearance.Font.Style = []
-              TabAppearance.Gradient = ggVertical
-              TabAppearance.GradientMirror = ggVertical
-              TabAppearance.GradientHot = ggVertical
-              TabAppearance.GradientMirrorHot = ggVertical
-              TabAppearance.GradientSelected = ggVertical
-              TabAppearance.GradientMirrorSelected = ggVertical
-              TabAppearance.GradientDisabled = ggVertical
-              TabAppearance.GradientMirrorDisabled = ggVertical
-              TabAppearance.TextColor = 4474440
-              TabAppearance.TextColorHot = 14916384
-              TabAppearance.TextColorSelected = 4474440
-              TabAppearance.TextColorDisabled = 7303023
-              TabAppearance.ShadowColor = clNone
-              TabAppearance.HighLightColorSelected = clNone
-              TabAppearance.HighLightColorHot = clNone
-              TabAppearance.HighLightColorSelectedHot = clNone
-              TabAppearance.HighLightColorDown = clNone
-              TabAppearance.DrawLine = True
-              TabAppearance.TextSelectedBold = True
-              TabAppearance.BackGround.Color = clWhite
-              TabAppearance.BackGround.ColorTo = clWhite
-              TabAppearance.BackGround.Direction = gdHorizontal
-            end
-            item
-              Caption = #54616#54665#49444#51221
-              Name = 'TOfficeTabCollectionItem2'
-              TabAppearance.BorderColor = clWhite
-              TabAppearance.BorderColorHot = clNone
-              TabAppearance.BorderColorSelected = clNone
-              TabAppearance.BorderColorSelectedHot = clNone
-              TabAppearance.BorderColorDisabled = clNone
-              TabAppearance.BorderColorDown = clNone
-              TabAppearance.Color = clWhite
-              TabAppearance.ColorTo = clWhite
-              TabAppearance.ColorSelected = clWhite
-              TabAppearance.ColorSelectedTo = clWhite
-              TabAppearance.ColorDisabled = 15658734
-              TabAppearance.ColorDisabledTo = clNone
-              TabAppearance.ColorHot = 16316922
-              TabAppearance.ColorHotTo = 16316922
-              TabAppearance.ColorMirror = clWhite
-              TabAppearance.ColorMirrorTo = clWhite
-              TabAppearance.ColorMirrorHot = 16316922
-              TabAppearance.ColorMirrorHotTo = 16316922
-              TabAppearance.ColorMirrorSelected = clWhite
-              TabAppearance.ColorMirrorSelectedTo = clWhite
-              TabAppearance.ColorMirrorDisabled = 15658734
-              TabAppearance.ColorMirrorDisabledTo = clNone
-              TabAppearance.Font.Charset = DEFAULT_CHARSET
-              TabAppearance.Font.Color = clWindowText
-              TabAppearance.Font.Height = -11
-              TabAppearance.Font.Name = 'Tahoma'
-              TabAppearance.Font.Style = []
-              TabAppearance.Gradient = ggVertical
-              TabAppearance.GradientMirror = ggVertical
-              TabAppearance.GradientHot = ggVertical
-              TabAppearance.GradientMirrorHot = ggVertical
-              TabAppearance.GradientSelected = ggVertical
-              TabAppearance.GradientMirrorSelected = ggVertical
-              TabAppearance.GradientDisabled = ggVertical
-              TabAppearance.GradientMirrorDisabled = ggVertical
-              TabAppearance.TextColor = 4474440
-              TabAppearance.TextColorHot = 14916384
-              TabAppearance.TextColorSelected = 4474440
-              TabAppearance.TextColorDisabled = 7303023
-              TabAppearance.ShadowColor = clNone
-              TabAppearance.HighLightColorSelected = clNone
-              TabAppearance.HighLightColorHot = clNone
-              TabAppearance.HighLightColorSelectedHot = clNone
-              TabAppearance.HighLightColorDown = clNone
-              TabAppearance.DrawLine = True
-              TabAppearance.TextSelectedBold = True
-              TabAppearance.BackGround.Color = clWhite
-              TabAppearance.BackGround.ColorTo = clWhite
-              TabAppearance.BackGround.Direction = gdHorizontal
-            end>
+          Height = 215
           Align = alTop
-          ActiveTabIndex = 1
-          ButtonSettings.CloseButtonPicture.Data = {
-            424DA20400000000000036040000280000000900000009000000010008000000
-            00006C000000C30E0000C30E00000001000000010000427B8400DEEFEF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0001000001010100000100
-            0000000202000100020200000000000202020002020200000000010002020202
-            0200010000000101000202020001010000000100020202020200010000000002
-            0202000202020000000000020200010002020000000001000001010100000100
-            0000}
-          ButtonSettings.ClosedListButtonPicture.Data = {
-            424DA20400000000000036040000280000000900000009000000010008000000
-            00006C000000C30E0000C30E00000001000000010000427B8400DEEFEF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0001010101000101010100
-            0000010101000200010101000000010100020202000101000000010002020202
-            0200010000000002020200020202000000000002020001000202000000000100
-            0001010100000100000001010101010101010100000001010101010101010100
-            0000}
-          ButtonSettings.TabListButtonPicture.Data = {
-            424DA20400000000000036040000280000000900000009000000010008000000
-            00006C000000C30E0000C30E00000001000000010000427B8400DEEFEF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0001010101000101010100
-            0000010101000200010101000000010100020202000101000000010002020202
-            0200010000000002020200020202000000000002020001000202000000000100
-            0001010100000100000001010101010101010100000001010101010101010100
-            0000}
-          ButtonSettings.ScrollButtonPrevPicture.Data = {
-            424DA20400000000000036040000280000000900000009000000010008000000
-            00006C000000C30E0000C30E00000001000000010000427B8400DEEFEF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0001010101000001010100
-            0000010101000202000101000000010100020202000101000000010002020200
-            0101010000000002020200010101010000000100020202000101010000000101
-            0002020200010100000001010100020200010100000001010101000001010100
-            0000}
-          ButtonSettings.ScrollButtonNextPicture.Data = {
-            424DA20400000000000036040000280000000900000009000000010008000000
-            00006C000000C30E0000C30E00000001000000010000427B8400DEEFEF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0001010000010101010100
-            0000010002020001010101000000010002020200010101000000010100020202
-            0001010000000101010002020200010000000101000202020001010000000100
-            0202020001010100000001000202000101010100000001010000010101010100
-            0000}
-          ButtonSettings.ScrollButtonFirstPicture.Data = {
-            424DC60400000000000036040000280000001000000009000000010008000000
-            000000000000C40E0000C40E00000001000000010000427B84FFDEEFEFFFFFFF
-            FFFF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF01010101010000010101
-            0101000001010101010100020200010101000202000101010100020202000101
-            0002020200010101000202020001010002020200010101000202020001010002
-            0202000101010101000202020001010002020200010101010100020202000101
-            0002020200010101010100020200010101000202000101010101010000010101
-            010100000101}
-          ButtonSettings.ScrollButtonLastPicture.Data = {
-            424DC60400000000000036040000280000001000000009000000010008000000
-            000000000000C40E0000C40E00000001000000010000427B84FFDEEFEFFFFFFF
-            FFFF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-            00FF000000FF000000FF000000FF000000FF000000FF01010000010101010100
-            0001010101010100020200010101000202000101010101000202020001010002
-            0202000101010101000202020001010002020200010101010100020202000101
-            0002020200010101000202020001010002020200010101000202020001010002
-            0202000101010100020200010101000202000101010101010000010101010100
-            000101010101}
-          ButtonSettings.CloseButtonHint = 'Close'
-          ButtonSettings.InsertButtonHint = 'Insert new item'
-          ButtonSettings.TabListButtonHint = 'TabList'
-          ButtonSettings.ClosedListButtonHint = 'Closed Pages'
-          ButtonSettings.ScrollButtonNextHint = 'Next'
-          ButtonSettings.ScrollButtonPrevHint = 'Previous'
-          ButtonSettings.ScrollButtonFirstHint = 'First'
-          ButtonSettings.ScrollButtonLastHint = 'Last'
-          ButtonSettings.ButtonSize = 13
-          ButtonSettings.FullHeight = True
-          TabSettings.StartMargin = 5
-          TabSettings.Rounding = 0
-          OnChange = AdvOfficeTabSet1Change
-        end
-        object pnUp: TPanel
-          Left = 1
-          Top = 29
-          Width = 799
-          Height = 138
-          Align = alClient
           Caption = #49345#54665
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -16
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
           ShowCaption = False
-          TabOrder = 1
+          TabOrder = 0
+          ExplicitTop = 64
           object lblT1UpDep: TLabel
-            Left = 19
-            Top = 19
-            Width = 158
-            Height = 18
+            Left = 20
+            Top = 51
+            Width = 169
+            Height = 19
             Caption = #52636#48156' '#49884' '#50689#49345#51116#49373' '#51648#50672#49884#44036
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
-            Font.Height = -15
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object lblT1UpArr: TLabel
-            Left = 396
-            Top = 19
-            Width = 52
-            Height = 18
-            Caption = #46020#52265#53076#46300
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -15
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object lblT1DownArr: TLabel
-            Left = 396
-            Top = 92
-            Width = 52
-            Height = 18
-            Caption = #52636#48156#53076#46300
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -15
+            Font.Height = -16
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
           end
           object Label2: TLabel
-            Left = 19
-            Top = 55
-            Width = 66
-            Height = 18
+            Left = 23
+            Top = 175
+            Width = 71
+            Height = 19
             Caption = 'RTSP '#51452#49548
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
-            Font.Height = -15
+            Font.Height = -16
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
           end
-          object Label1: TLabel
-            Left = 396
-            Top = 55
-            Width = 52
+          object Label3: TLabel
+            Left = 18
+            Top = 127
+            Width = 5
             Height = 18
-            Caption = #51217#44540#53076#46300
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -796,290 +387,473 @@ object frmStation: TfrmStation
             ParentFont = False
           end
           object Label7: TLabel
-            Left = 19
-            Top = 92
-            Width = 83
-            Height = 18
-            Caption = #50689#49345' '#47112#51060#50500#50883
+            Left = 444
+            Top = 48
+            Width = 56
+            Height = 19
+            Caption = #52852#47700#46972#47749
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
-            Font.Height = -15
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object edupLeavTcode: TEdit
-            Left = 472
-            Top = 92
-            Width = 77
-            Height = 21
-            Enabled = False
-            TabOrder = 0
-            Text = '0'
-            OnChange = edStcodeChange
-            OnKeyPress = edStcodeKeyPress
-          end
-          object edupArrvTcode: TEdit
-            Left = 472
-            Top = 17
-            Width = 75
-            Height = 21
-            Enabled = False
-            TabOrder = 1
-            Text = '0'
-            OnKeyPress = edStcodeKeyPress
-          end
-          object edupApprTcode: TEdit
-            Left = 472
-            Top = 56
-            Width = 77
-            Height = 21
-            Enabled = False
-            TabOrder = 2
-            Text = '0'
-            OnKeyPress = edStcodeKeyPress
-          end
-          object AdvOfficeRadioGroup1: TAdvOfficeRadioGroup
-            Left = 110
-            Top = 84
-            Width = 161
-            Height = 37
-            Margins.Left = 0
-            Margins.Top = 0
-            Margins.Right = 0
-            Margins.Bottom = 0
-            BorderColor = 12895944
-            BorderStyle = bsNone
-            CaptionFont.Charset = DEFAULT_CHARSET
-            CaptionFont.Color = clWindowText
-            CaptionFont.Height = -11
-            CaptionFont.Name = 'Tahoma'
-            CaptionFont.Style = []
-            Version = '1.8.4.1'
-            Enabled = False
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = 3881787
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentBackground = False
-            ParentCtl3D = True
-            ParentFont = False
-            TabOrder = 3
-            UIStyle = tsOffice2019White
-            Columns = 2
-            ItemIndex = 0
-            Items.Strings = (
-              #45800#51068#50689#49345
-              #47672#51648#50689#49345)
-            Ellipsis = False
-          end
-          object edupRtsp: TEdit
-            Left = 110
-            Top = 52
-            Width = 161
-            Height = 21
-            Enabled = False
-            TabOrder = 4
-            Text = '0'
-            OnKeyPress = edStcodeKeyPress
-          end
-          object edupDepartDelay: TEdit
-            Left = 210
-            Top = 18
-            Width = 61
-            Height = 21
-            Enabled = False
-            TabOrder = 5
-            Text = '0'
-            OnKeyPress = edStcodeKeyPress
-          end
-        end
-        object pnDn: TPanel
-          Left = 1
-          Top = 29
-          Width = 799
-          Height = 138
-          Align = alClient
-          Caption = #54616#54665
-          ShowCaption = False
-          TabOrder = 2
-          object Label3: TLabel
-            Left = 19
-            Top = 19
-            Width = 158
-            Height = 18
-            Caption = #52636#48156' '#49884' '#50689#49345#51116#49373' '#51648#50672#49884#44036
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -15
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object Label4: TLabel
-            Left = 396
-            Top = 19
-            Width = 52
-            Height = 18
-            Caption = #46020#52265#53076#46300
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -15
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object Label5: TLabel
-            Left = 396
-            Top = 92
-            Width = 52
-            Height = 18
-            Caption = #52636#48156#53076#46300
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -15
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object Label6: TLabel
-            Left = 19
-            Top = 55
-            Width = 66
-            Height = 18
-            Caption = 'RTSP '#51452#49548
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -15
+            Font.Height = -16
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
           end
           object Label8: TLabel
-            Left = 396
-            Top = 55
-            Width = 52
-            Height = 18
-            Caption = #51217#44540#53076#46300
+            Left = 19
+            Top = 93
+            Width = 43
+            Height = 19
+            Caption = 'IP'#51452#49548
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
-            Font.Height = -15
+            Font.Height = -16
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
           end
           object Label9: TLabel
-            Left = 19
-            Top = 92
-            Width = 83
-            Height = 18
-            Caption = #50689#49345' '#47112#51060#50500#50883
+            Left = 445
+            Top = 93
+            Width = 56
+            Height = 19
+            Caption = #54252#53944#48264#54840
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
-            Font.Height = -15
+            Font.Height = -16
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
           end
-          object eddnLeavTcode: TEdit
-            Left = 472
-            Top = 92
-            Width = 77
-            Height = 21
-            Enabled = False
-            ReadOnly = True
-            TabOrder = 0
-            Text = '0'
-            OnChange = edStcodeChange
-          end
-          object eddnDepartDelay: TEdit
-            Left = 210
-            Top = 18
-            Width = 61
-            Height = 21
-            Enabled = False
-            TabOrder = 1
-            Text = '0'
-            OnKeyPress = edStcodeKeyPress
-          end
-          object eddnArrvTcode: TEdit
-            Left = 472
-            Top = 17
-            Width = 75
-            Height = 21
-            Enabled = False
-            ReadOnly = True
-            TabOrder = 2
-            Text = '0'
-            OnKeyPress = edStcodeKeyPress
-          end
-          object eddnApprTcode: TEdit
-            Left = 472
-            Top = 56
-            Width = 77
-            Height = 21
-            Enabled = False
-            ReadOnly = True
-            TabOrder = 3
-            Text = '0'
-            OnKeyPress = edStcodeKeyPress
-          end
-          object eddnRtsp: TEdit
-            Left = 110
-            Top = 52
-            Width = 161
-            Height = 21
-            Enabled = False
-            TabOrder = 4
-            Text = '0'
-          end
-          object AdvOfficeRadioGroup2: TAdvOfficeRadioGroup
-            Left = 110
-            Top = 84
-            Width = 161
-            Height = 37
-            Margins.Left = 0
-            Margins.Top = 0
-            Margins.Right = 0
-            Margins.Bottom = 0
-            BorderColor = 12895944
-            BorderStyle = bsNone
-            CaptionFont.Charset = DEFAULT_CHARSET
-            CaptionFont.Color = clWindowText
-            CaptionFont.Height = -11
-            CaptionFont.Name = 'Tahoma'
-            CaptionFont.Style = []
-            Version = '1.8.4.1'
-            Enabled = False
+          object Label10: TLabel
+            Left = 20
+            Top = 135
+            Width = 42
+            Height = 19
+            Caption = #50500#51060#46356
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 3881787
-            Font.Height = -11
+            Font.Color = clWindowText
+            Font.Height = -16
             Font.Name = 'Tahoma'
             Font.Style = []
-            ParentBackground = False
-            ParentCtl3D = True
+            ParentFont = False
+          end
+          object Label11: TLabel
+            Left = 445
+            Top = 132
+            Width = 56
+            Height = 19
+            Caption = #54056#49828#50892#46300
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Label5: TLabel
+            Left = 18
+            Top = 11
+            Width = 61
+            Height = 19
+            Caption = #49345#54665' '#49444#51221
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+          object edupDepartDelay: TComboBox
+            Left = 234
+            Top = 48
+            Width = 151
+            Height = 27
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            TabStop = False
+            Text = '0'
+            Items.Strings = (
+              '0'
+              '5'
+              '10'
+              '15'
+              '20'
+              '25'
+              '30')
+          end
+          object edupRtsp: TEdit
+            Left = 234
+            Top = 172
+            Width = 439
+            Height = 27
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 1
+            Text = 'edupRtsp'
+          end
+          object edupCamName: TEdit
+            Left = 518
+            Top = 45
+            Width = 150
+            Height = 27
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 2
+          end
+          object edupIpaddr: TAdvIPEdit
+            Left = 234
+            Top = 93
+            Width = 151
+            Height = 27
+            Alignment = taCenter
+            Color = clWhite
+            Enabled = True
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            MaxLength = 3
+            ParentFont = False
+            ReadOnly = False
+            TabOrder = 3
+            Visible = True
+            AutoFocus = False
+            Flat = False
+            FlatLineColor = 11250603
+            FlatParentColor = True
+            ShowModified = False
+            FocusColor = clWhite
+            FocusBorder = False
+            FocusFontColor = 3881787
+            LabelAlwaysEnabled = False
+            LabelPosition = lpLeftTop
+            LabelTransparent = False
+            LabelFont.Charset = DEFAULT_CHARSET
+            LabelFont.Color = clWindowText
+            LabelFont.Height = -16
+            LabelFont.Name = 'Tahoma'
+            LabelFont.Style = []
+            ModifiedColor = clRed
+            SelectFirstChar = False
+            Version = '1.5.2.1'
+            EditMask = ''
+            IPAddress = '0.0.0.0'
+            IPAddressType = ipv4
+          end
+          object edupPort: TEdit
+            Left = 520
+            Top = 90
+            Width = 150
+            Height = 27
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 4
+          end
+          object edupCamId: TEdit
+            Left = 234
+            Top = 135
+            Width = 151
+            Height = 27
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
             ParentFont = False
             TabOrder = 5
-            UIStyle = tsOffice2019White
-            Columns = 2
-            ItemIndex = 0
+          end
+          object edupCamPw: TEdit
+            Left = 520
+            Top = 132
+            Width = 150
+            Height = 27
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 6
+          end
+        end
+        object pnDn: TPanel
+          Left = 1
+          Top = 225
+          Width = 799
+          Height = 215
+          Align = alBottom
+          BevelEdges = [beTop]
+          BevelOuter = bvSpace
+          Caption = 'pnDn'
+          ShowCaption = False
+          TabOrder = 1
+          ExplicitTop = 248
+          object Label1: TLabel
+            Left = 501
+            Top = 143
+            Width = 56
+            Height = 19
+            Caption = #54056#49828#50892#46300
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Label4: TLabel
+            Left = 501
+            Top = 104
+            Width = 56
+            Height = 19
+            Caption = #54252#53944#48264#54840
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Label6: TLabel
+            Left = 500
+            Top = 59
+            Width = 56
+            Height = 19
+            Caption = #52852#47700#46972#47749
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Label12: TLabel
+            Left = 28
+            Top = 59
+            Width = 169
+            Height = 19
+            Caption = #52636#48156' '#49884' '#50689#49345#51116#49373' '#51648#50672#49884#44036
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Label13: TLabel
+            Left = 27
+            Top = 101
+            Width = 43
+            Height = 19
+            Caption = 'IP'#51452#49548
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Label14: TLabel
+            Left = 28
+            Top = 143
+            Width = 42
+            Height = 19
+            Caption = #50500#51060#46356
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Label15: TLabel
+            Left = 31
+            Top = 183
+            Width = 71
+            Height = 19
+            Caption = 'RTSP '#51452#49548
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Label16: TLabel
+            Left = 28
+            Top = 19
+            Width = 61
+            Height = 19
+            Caption = #54616#54665' '#49444#51221
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+          object eddnCamPw: TEdit
+            Left = 576
+            Top = 143
+            Width = 105
+            Height = 27
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+          end
+          object eddnPort: TEdit
+            Left = 576
+            Top = 101
+            Width = 105
+            Height = 27
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 1
+          end
+          object eddnCamName: TEdit
+            Left = 574
+            Top = 59
+            Width = 107
+            Height = 27
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 2
+          end
+          object eddnDepartDelay: TComboBox
+            Left = 242
+            Top = 59
+            Width = 120
+            Height = 27
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 3
+            TabStop = False
+            Text = '0'
             Items.Strings = (
-              #45800#51068#50689#49345
-              #47672#51648#50689#49345)
-            Ellipsis = False
+              '0'
+              '5'
+              '10'
+              '15'
+              '20'
+              '25'
+              '30')
+          end
+          object eddnIpaddr: TAdvIPEdit
+            Left = 242
+            Top = 101
+            Width = 120
+            Height = 27
+            Alignment = taCenter
+            Color = clWhite
+            Enabled = True
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            MaxLength = 3
+            ParentFont = False
+            ReadOnly = False
+            TabOrder = 4
+            Visible = True
+            AutoFocus = False
+            Flat = False
+            FlatLineColor = 11250603
+            FlatParentColor = True
+            ShowModified = False
+            FocusColor = clWhite
+            FocusBorder = False
+            FocusFontColor = 3881787
+            LabelAlwaysEnabled = False
+            LabelPosition = lpLeftTop
+            LabelTransparent = False
+            LabelFont.Charset = DEFAULT_CHARSET
+            LabelFont.Color = clWindowText
+            LabelFont.Height = -16
+            LabelFont.Name = 'Tahoma'
+            LabelFont.Style = []
+            ModifiedColor = clRed
+            SelectFirstChar = False
+            Version = '1.5.2.1'
+            EditMask = ''
+            IPAddress = '0.0.0.0'
+            IPAddressType = ipv4
+          end
+          object eddnCamId: TEdit
+            Left = 242
+            Top = 143
+            Width = 120
+            Height = 27
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 5
+          end
+          object eddnRtsp: TEdit
+            Left = 242
+            Top = 176
+            Width = 439
+            Height = 27
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 6
+            Text = 'edupRtsp'
           end
         end
       end
       object pnCamInfos: TPanel
         Left = 0
-        Top = 201
+        Top = 488
         Width = 801
-        Height = 280
-        Align = alClient
+        Height = 17
+        Align = alBottom
         Caption = 'pnCamInfos'
         ShowCaption = False
         TabOrder = 2
+        ExplicitLeft = 1
+        ExplicitTop = 464
         object lbStCamCnt: TLabel
           Left = 20
           Top = 17
@@ -1402,14 +1176,14 @@ object frmStation: TfrmStation
       Appearance.TextColorDisabled = 13948116
     end
     object btnStationDownload: TAdvGlowButton
-      Left = 1034
+      Left = 1007
       Top = 599
-      Width = 175
-      Height = 24
+      Width = 202
+      Height = 36
       Caption = #50669#49324' '#51221#48372' '#51068#44292' '#45236#47140#48155#44592
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -11
+      Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
       NotesFont.Charset = DEFAULT_CHARSET
@@ -1458,14 +1232,14 @@ object frmStation: TfrmStation
       Appearance.TextColorDisabled = 13948116
     end
     object btnUploadStations: TAdvGlowButton
-      Left = 850
+      Left = 816
       Top = 599
-      Width = 175
-      Height = 24
+      Width = 185
+      Height = 36
       Caption = #50669#49324' '#51221#48372' '#51068#44292' '#46321#47197
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -11
+      Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
       NotesFont.Charset = DEFAULT_CHARSET
@@ -1542,7 +1316,13 @@ object frmStation: TfrmStation
       Height = 443
       DrawingStyle = gdsClassic
       FixedColor = clSkyBlue
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Tahoma'
+      Font.Style = []
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRowSizing, goColSizing, goEditing, goFixedRowDefAlign]
+      ParentFont = False
       TabOrder = 7
       OnEditChange = grdStationsEditChange
       ActiveCellFont.Charset = DEFAULT_CHARSET
@@ -2341,5 +2121,14 @@ object frmStation: TfrmStation
     Version = '3.14'
     Left = 744
     Top = 601
+  end
+  object ValidToolTip: TAdvToolTip
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -12
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    Left = 264
+    Top = 608
   end
 end

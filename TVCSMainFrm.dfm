@@ -177,8 +177,6 @@ object frmTVCSMain: TfrmTVCSMain
       SortSettings.HeaderMirrorColor = clWhite
       SortSettings.HeaderMirrorColorTo = clWhite
       Version = '9.1.3.0'
-      ExplicitLeft = 4
-      ExplicitTop = 5
       ColWidths = (
         12
         12

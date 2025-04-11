@@ -9,7 +9,7 @@ uses
   System.ImageList, Vcl.ImgList ,tvcsAPI, tvcsProtocol, TVCSCheckDialog, TVCSPreview,
   Vcl.BaseImageCollection, Vcl.ImageCollection, Vcl.VirtualImageList, TVCSButtonStyle,
   AdvStyleIF, AdvAppStyler, tmsAdvGridExcel, AdvEdit, AdvGroupBox,
-  AdvOfficeButtons, ToolPanels, AdvOfficeTabSet; //, tmsAdvGridExcel;
+  AdvOfficeButtons, ToolPanels, AdvOfficeTabSet, Vcl.Mask, AdvIPEdit, AdvToolTip; //, tmsAdvGridExcel;
 
 type
   TfrmStation = class(TForm)
@@ -19,8 +19,6 @@ type
     btnAddStation: TAdvGlowButton;
     pnCamStationInfo: TPanel;
     edStname: TEdit;
-    edupLeavTcode: TEdit;
-    edupArrvTcode: TEdit;
     btnAddCams: TAdvGlowButton;
     btnUploadStations: TAdvGlowButton;
     btnStationDownload: TAdvGlowButton;
@@ -33,9 +31,6 @@ type
     lblTotal: TLabel;
     lblstCode: TLabel;
     lblStname: TLabel;
-    lblT1UpDep: TLabel;
-    lblT1UpArr: TLabel;
-    lblT1DownArr: TLabel;
     lblInfoTitle: TLabel;
     lbStCamCnt: TLabel;
     pnBottom: TPanel;
@@ -47,31 +42,43 @@ type
     ImageCollection1: TImageCollection;
     AdvFormStyler1: TAdvFormStyler;
     AdvAppStyler1: TAdvAppStyler;
-    Label1: TLabel;
-    edupApprTcode: TEdit;
     btnSave: TAdvGlowButton;
     edStcode: TEdit;
-    Label2: TLabel;
     AdvGridExcelIO1: TAdvGridExcelIO;
-    AdvOfficeTabSet1: TAdvOfficeTabSet;
     pnUp: TPanel;
-    Label7: TLabel;
+    lblT1UpDep: TLabel;
+    Label2: TLabel;
+    edupDepartDelay: TComboBox;
+    ValidToolTip: TAdvToolTip;
+    edupRtsp: TEdit;
     pnDn: TPanel;
     Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
+    Label7: TLabel;
+    edupCamName: TEdit;
+    edupIpaddr: TAdvIPEdit;
     Label8: TLabel;
     Label9: TLabel;
-    eddnLeavTcode: TEdit;
-    eddnDepartDelay: TEdit;
-    eddnArrvTcode: TEdit;
-    eddnApprTcode: TEdit;
+    edupPort: TEdit;
+    edupCamId: TEdit;
+    Label10: TLabel;
+    edupCamPw: TEdit;
+    Label11: TLabel;
+    eddnCamPw: TEdit;
+    Label1: TLabel;
+    Label4: TLabel;
+    eddnPort: TEdit;
+    eddnCamName: TEdit;
+    Label6: TLabel;
+    Label12: TLabel;
+    eddnDepartDelay: TComboBox;
+    Label13: TLabel;
+    eddnIpaddr: TAdvIPEdit;
+    Label14: TLabel;
+    eddnCamId: TEdit;
+    Label15: TLabel;
     eddnRtsp: TEdit;
-    AdvOfficeRadioGroup2: TAdvOfficeRadioGroup;
-    AdvOfficeRadioGroup1: TAdvOfficeRadioGroup;
-    edupRtsp: TEdit;
-    edupDepartDelay: TEdit;
+    Label5: TLabel;
+    Label16: TLabel;
 
 
     procedure FormCreate(Sender: TObject);
@@ -98,6 +105,10 @@ type
     procedure AdvOfficeTabSet1Change(Sender: TObject);
     procedure grdStationsEditChange(Sender: TObject; ACol, ARow: Integer;
       Value: string);
+    procedure edStcodeEnter(Sender: TObject);
+    procedure edStcodeExit(Sender: TObject);
+    procedure edStnameEnter(Sender: TObject);
+    procedure edStnameExit(Sender: TObject);
     
 
   private
@@ -140,6 +151,7 @@ implementation
 
 procedure TfrmStation.AdvOfficeTabSet1Change(Sender: TObject);
 begin
+  {[
   if advofficetabset1.ActiveTabIndex  = 0 then
     begin
       pnUp.Visible := true;
@@ -151,7 +163,7 @@ begin
       pnDn.Visible := true;
     end;
 
-
+  }
 end;
 
 
@@ -230,47 +242,47 @@ begin
 
 
     AddImageIdx(3, 1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
-    SelectCells(0,1,0,1);
-    FocusCell(1,1);
-    EditCell(1,1);
+    //SelectCells(0,1,0,1);
+    //FocusCell(1,1);
+    //EditCell(1,1);
 
     TopRow := 0;
 
   end;
   //edStcode.Enabled := true;
   //edStName.Enabled := true;
-  eddnApprTcode.Enabled := true;
-  eddnArrvTcode.Enabled := true;
+  //eddnApprTcode.Enabled := true;
+  //eddnArrvTcode.Enabled := true;
   eddnDepartDelay.Enabled := true;
-  eddnLeavTcode.Enabled := true;
-  edupApprTcode.Enabled := true;
-  edupArrvTcode.Enabled := true;
+  //eddnLeavTcode.Enabled := true;
+  //edupApprTcode.Enabled := true;
+  //edupArrvTcode.Enabled := true;
   edupDepartDelay.Enabled := true;
-  edupLeavTcode.Enabled := true;
+  //edupLeavTcode.Enabled := true;
   btnAddCams.Enabled := true;
 
   edupRtsp.Enabled := true;
   eddnRtsp.Enabled := true;
-  AdvOfficeRadioGroup1.Enabled := true;
-  AdvOfficeRadioGroup2.Enabled := true;
+  //AdvOfficeRadioGroup1.Enabled := true;
+  //AdvOfficeRadioGroup2.Enabled := true;
 
 
   edStcode.Text := 'NULL';
   edStname.Text := 'NULL';
   edupDepartDelay.Text := '0';
   eddnDepartDelay.Text := '0';
-  eddnApprTcode.Text := '';
-  edupArrvTcode.Text := '';
-  edupLeavTcode.Text := '';
+  //eddnApprTcode.Text := '';
+  //edupArrvTcode.Text := '';
+  //edupLeavTcode.Text := '';
 
-  eddnApprTcode.Text := '';
-  eddnArrvTcode.Text := '';
-  eddnLeavTcode.Text := '';
+  //eddnApprTcode.Text := '';
+  //eddnArrvTcode.Text := '';
+  //eddnLeavTcode.Text := '';
 
   eddnRtsp.text := '';
   edupRtsp.Text := '';
 
-  //edStcode.SetFocus;
+  edStcode.SetFocus;
 
 
   LoadCamInfoList;
@@ -294,8 +306,16 @@ var
   stationPatch: TvcsStationInPatch;
   station: tvcsProtocol.TvcsStation;
   stationCamsPos: TArray<TVCSStationCameraPost>;
+  stationCamsPosup: TVCSStationCameraPost;
+  stationCamsPosdn: TVCSStationCameraPost;
   stationCamPatch: TVCSStationCameraPatch;
+  stationCamPatchup: TVCSStationCameraPatch;
+  stationCamPatchdn: TVCSStationCameraPatch;
   stationCam: TVCSStationCamera;
+  stationCamup: TVCSStationCamera;
+  stationCamdn: TVCSStationCamera;
+
+
   i, j: Integer;
   allSuccess: Boolean;
   isModified: Boolean;
@@ -454,6 +474,8 @@ begin
         if addStCnt > 0 then // 추가
         begin
            stationPos := TvcsStationInPost.Create;
+           stationCamsPosup := TVCSStationCameraPost.Create;
+           stationCamsPosdn := TVCSStationCameraPost.Create;
           try
             // 기본 정보 설정
             if lineInfo <> StrToInt(edStcode.Text) div 100  then
@@ -463,18 +485,38 @@ begin
               end;
 
 
+            // 역사정보
             stationPos.fname := edStname.Text;
             stationPos.fcode := edStcode.Text;
             stationPos.fupDepartDelay := StrtoInt(edupDepartDelay.Text);
             stationPos.fdnDepartDelay := StrtoInt(edupDepartDelay.Text);
-            stationPos.fupApprTcode := edupApprTcode.Text;
-            stationPos.fupArrvTcode := edupArrvTcode.Text;
-            stationPos.fupLeavTcode := edupLeavTcode.Text;
-            stationPos.fdnApprTcode := eddnApprTcode.Text;
-            stationPos.fdnArrvTcode := eddnArrvTcode.Text;
-            stationPos.fdnLeavTcode := eddnLeavTcode.Text;
+            // 상행카메라 정보
+            stationCamsPosup.fname := edupCamName.text;
+            stationCamsPosup.fipaddr := edupIpaddr.text;
+            stationCamsPosup.fport := StrToInt(edupPort.Text);
+            stationCamsPosup.fuserId := edupCamId.text;
+            stationCamsPosup.fuserPwd := edupCamPw.Text;
+            stationCamsPosup.fstationCode := edStcode.Text;
+            stationCamsPosup.fdivision := 1;
+            // 하행카메라 정보
+            stationCamsPosdn.fname := eddnCamName.text;
+            stationCamsPosdn.fipaddr := eddnIpaddr.text;
+            stationCamsPosdn.fport := StrToInt(eddnPort.Text);
+            stationCamsPosdn.fuserId := eddnCamId.text;
+            stationCamsPosdn.fuserPwd := eddnCamPw.Text;
+            stationCamsPosdn.fstationCode := edStcode.Text;
+            stationCamsPosdn.fdivision := 2;
+
+
+            //stationPos.fupApprTcode := edupApprTcode.Text;
+            //stationPos.fupArrvTcode := edupArrvTcode.Text;
+            //stationPos.fupLeavTcode := edupLeavTcode.Text;
+            //stationPos.fdnApprTcode := eddnApprTcode.Text;
+            //stationPos.fdnArrvTcode := eddnArrvTcode.Text;
+            //stationPos.fdnLeavTcode := eddnLeavTcode.Text;
 
             // 이전/다음 역 코드 설정
+            {
             try
               if StrToInt(stationPos.fcode) > 0 then
               begin
@@ -485,9 +527,13 @@ begin
               ShowTVCSMessage('올바른 역 코드를 입력해주세요.');
               Exit;
             end;
-
+            }
             station := gapi.AddStation(stationPos);
-            if station = nil then
+            stationCamup := gapi.AddStationCamera(stationcamsposup);
+            stationCamdn := gapi.AddStationCamera(stationcamsposdn);
+
+
+            if (station = nil) or (stationCamup = nil) or (stationCamdn =nil) then
             begin
               ShowTVCSMessage('역사정보 추가가 실패하였습니다.');
               Exit;
@@ -499,22 +545,110 @@ begin
         else // 수정
         begin
           stationPatch := TvcsStationInPatch.Create;
-          try
 
+
+
+          try
 
             // 기본 정보 설정
             stationPatch.fname := edStname.Text;
             stationPatch.fcode := edStcode.Text;
             stationPatch.fupDepartDelay := StrtoInt(edupDepartDelay.Text);
             stationPatch.fdnDepartDelay := StrtoInt(edupDepartDelay.Text);
-            stationPatch.fupApprTcode := edupApprTcode.Text;
-            stationPatch.fupArrvTcode := edupArrvTcode.Text;
-            stationPatch.fupLeavTcode := edupLeavTcode.Text;
-            stationPatch.fdnApprTcode := eddnApprTcode.Text;
-            stationPatch.fdnArrvTcode := eddnArrvTcode.Text;
-            stationPatch.fdnLeavTcode := eddnLeavTcode.Text;
+            ShowMessage('test1');
+
+
+            if length(stationCams) > 0 then
+            begin
+              ShowMessage(IntToStr(length(stationCams)));
+              for i := 0 to 1 do
+              begin
+                if stationCams[i].fdivision = 1 then
+                begin
+                  stationCamPatchup := TVCSStationCameraPatch.Create;
+                  stationCamPatchup.fid := stationCams[i].fid;
+                end
+                else if stationCams[i].fdivision = 2 then
+                begin
+                  stationCamPatchdn := TVCSStationCameraPatch.Create;
+                  stationCamPatchdn.fid := stationCams[i].fid;
+                end;
+              end;
+            end;
+
+            ShowMessage('test2');
+
+
+
+
+            if stationCamPatchup = nil then
+            begin
+              stationCamsPosup := TVCSStationCameraPost.Create;
+              stationCamsPosup.fname := edupCamName.text;
+              stationCamsPosup.fipaddr := edupIpaddr.text;
+              stationCamsPosup.fport := StrToInt(edupPort.Text);
+              stationCamsPosup.fuserId := edupCamId.text;
+              stationCamsPosup.fuserPwd := edupCamPw.Text;
+              stationCamsPosup.fstationCode := edStcode.Text;
+              stationCamsPosup.fdivision := 1;
+              stationCam := gapi.AddStationCamera(stationCamsPosup);
+              if stationCam <> nil then
+                begin
+                  stationCamPatchup := TVCSStationCameraPatch.Create;
+                  stationCamPatchup.fid := stationCam.fid;
+                  FreeAndNil(stationCam);
+                end;
+
+            end;
+
+            if stationCamPatchdn = nil then
+            begin
+              stationCamsPosdn := TVCSStationCameraPost.Create;
+              stationCamsPosdn.fname := edupCamName.text;
+              stationCamsPosdn.fipaddr := edupIpaddr.text;
+              stationCamsPosdn.fport := StrToInt(edupPort.Text);
+              stationCamsPosdn.fuserId := edupCamId.text;
+              stationCamsPosdn.fuserPwd := edupCamPw.Text;
+              stationCamsPosdn.fstationCode := edStcode.Text;
+              stationCamsPosdn.fdivision := 1;
+              stationCam := gapi.AddStationCamera(stationCamsPosdn);
+              if stationCam <> nil then
+                begin
+                  stationCamPatchdn := TVCSStationCameraPatch.Create;
+                  stationCamPatchdn.fid := stationCam.fid;
+                  FreeAndNil(stationCam);
+                end;
+
+            end;
+
+
+
+            // 상행카메라 정보
+            stationCamPatchup.fname := edupCamName.text;
+            stationCamPatchup.fipaddr := edupIpaddr.text;
+            stationCamPatchup.fport := StrToInt(edupPort.Text);
+            stationCamPatchup.fuserId := edupCamId.text;
+            stationCamPatchup.fuserPwd := edupCamPw.Text;
+            stationCamPatchup.fstationCode := edStcode.Text;
+            stationCamPatchup.fdivision := 1;
+            // 하행카메라 정보
+            stationCamPatchdn.fname := eddnCamName.text;
+            stationCamPatchdn.fipaddr := eddnIpaddr.text;
+            stationCamPatchdn.fport := StrToInt(eddnPort.Text);
+            stationCamPatchdn.fuserId := eddnCamId.text;
+            stationCamPatchdn.fuserPwd := eddnCamPw.Text;
+            stationCamPatchdn.fstationCode := edStcode.Text;
+            stationCamPatchdn.fdivision := 2;
+
+            //stationPatch.fupApprTcode := edupApprTcode.Text;
+            //stationPatch.fupArrvTcode := edupArrvTcode.Text;
+            //stationPatch.fupLeavTcode := edupLeavTcode.Text;
+            //stationPatch.fdnApprTcode := eddnApprTcode.Text;
+            //stationPatch.fdnArrvTcode := eddnArrvTcode.Text;
+            //stationPatch.fdnLeavTcode := eddnLeavTcode.Text;
 
             // 이전/다음 역 코드 설정
+            {
             try
               if StrToInt(stationPatch.fcode) > 0 then
               begin
@@ -525,8 +659,14 @@ begin
               ShowTVCSMessage('올바른 역 코드를 입력해주세요.');
               Exit;
             end;
+            }
 
-            if nil = gapi.UpdateStation(stationPatch) then
+            // fid 가 없을 경우 추가해야함
+            if stationCamPatchup.fid = 0 then
+
+
+
+            if (nil = gapi.UpdateStation(stationPatch)) or (nil = gapi.UpdateStationCamera(stationCamPatchup)) or (nil = gapi.UpdateStationCamera(stationCamPatchdn)) then
             begin
               ShowTVCSMessage('역사정보 수정이 실패하였습니다.');
               Exit;
@@ -537,44 +677,10 @@ begin
         end;
 
         // 2. 새로 추가된 카메라 정보 처리
-        if addCamCnt > 0 then
-        begin
-          SetLength(stationCamsPos, addCamCnt);
-          try
-            for i := 1 to addCamCnt do
-            begin
-              stationCamsPos[i-1] := TVCSStationCameraPost.Create;
-              with stationCamsPos[i-1] do
-              begin
-                fstationCode := edStcode.Text;
-                if grdStationCams.Cells[0,i] = '상행' then
-                  fdivision := 1
-                else
-                  fdivision := 2;
-                fname := grdStationCams.Cells[1,i];
-                fipaddr := grdStationCams.Cells[2,i];
-                fport := StrToInt(grdStationCams.Cells[3,i]);
-                frtsp := grdStationCams.Cells[4,i];
-                frtsp2 := grdStationCams.Cells[5,i];
-                fuserId := grdStationCams.Cells[6,i];
-                fuserPwd := grdStationCams.Cells[7,i];
-              end;
 
-              stationCam := gapi.AddStationCamera(stationCamsPos[i-1]);
-              if stationCam = nil then
-              begin
-                allSuccess := False;
-                Break;
-              end;
-            end;
-          finally
-            for i := 0 to Length(stationCamsPos)-1 do
-              if Assigned(stationCamsPos[i]) then
-                FreeAndNil(stationCamsPos[i]);
-          end;
-        end;
 
         // 3. 기존 카메라 정보 수정
+        {
         for i := 1 to grdStationCams.RowCount - 1 do
         begin
           if i <= addCamCnt then Continue;
@@ -605,6 +711,7 @@ begin
             end;
           end;
         end;
+        }
       except
         on E: Exception do
         begin
@@ -956,6 +1063,51 @@ begin
     edStcode.Text := '';
 end;
 
+procedure TfrmStation.edStcodeEnter(Sender: TObject);
+begin
+  HideValidator(edStcode);
+end;
+
+procedure TfrmStation.edStnameEnter(Sender: TObject);
+begin
+  HideValidator(edStname);
+end;
+
+
+
+procedure TfrmStation.edStcodeExit(Sender: TObject);
+var
+ selCount,i,selRow:Integer;
+begin
+  selCount:=grdStations.SelectedRowCount;
+  if (selCount<>1) then
+    Exit;
+  if (Trim(edStcode.Text)='') then
+    ShowValidator(edStcode,'역번호를 입력',ValidToolTip);
+
+  selRow:= grdStations.SelectedRow[0];
+  if (grdStations.Cells[1,selRow]<>Trim(edStcode.Text)) then
+    grdStations.Cells[1,selRow]:=edStcode.Text;
+end;
+
+procedure TfrmStation.edStnameExit(Sender: TObject);
+var
+ selCount,i,selRow:Integer;
+begin
+  selCount:=grdStations.SelectedRowCount;
+  if (selCount<>1) then
+    Exit;
+  if (Trim(edStname.Text)='') then
+    ShowValidator(edStname,'역사명을 입력',ValidToolTip);
+
+  selRow:= grdStations.SelectedRow[0];
+  if (grdStations.Cells[2,selRow]<>Trim(edStname.Text)) then
+    grdStations.Cells[2,selRow]:=edStname.Text;
+
+end;
+
+
+
 procedure TfrmStation.edStcodeKeyPress(Sender: TObject; var Key: Char);
 begin
   // 숫자나 백스페이스가 아닌 경우
@@ -972,6 +1124,8 @@ begin
     edStname.Text := '';
 end;
 
+
+
 procedure TfrmStation.FormCreate(Sender: TObject);
 begin
   LoadStationInfoList;
@@ -985,6 +1139,9 @@ begin
 
   TButtonStyler.ApplyGlobalStyle(Self);
   lblTitle.Caption := '승강장 카메라 관리 ('+IntToStr(gapi.GetLoinInfo.fsystem.fline) +'호선)';
+
+  grdStationsClickCell(Sender,1,1); //첫번째 셀 선택
+  grdStations.SelectRows(1,1);
 
 end;
 
@@ -1144,6 +1301,8 @@ begin
         Cells[1,0]:='역번호';
         Cells[2,0]:='역사명';
         Cells[3,0]:='삭제';
+        HideColumn(0);
+
    end;
 
    for i := 0 to size-1 do
@@ -1259,6 +1418,7 @@ begin
          stationCams := gapi.GetStationCamera(stationCode);
       end;
 
+      //ShowMessage(IntToStr(length(stationCams)));
       size := Length(stationCams);
       lbStCamCnt.Caption := '총: '+ IntToStr(size) + '개';
       if size > 0 then
@@ -1269,9 +1429,28 @@ begin
              AddRow;
 
              if stationCams[i].fdivision = 1 then
-              division := '상행'
+             begin
+              division := '상행';
+              edupCamName.Text := stationCams[i].fname;
+              edupIpaddr.IPAddress := stationCams[i].fipaddr;
+              edupPort.Text := IntToStr(stationCams[i].fport);
+              edupCamId.Text := stationCams[i].fuserId;
+              edupCamPw.Text := stationCams[i].fuserPwd;
+
+
+             end
              else
+             begin
               division := '하행';
+              eddnCamName.Text := stationCams[i].fname;
+              eddnIpaddr.IPAddress := stationCams[i].fipaddr;
+              eddnPort.Text := IntToStr(stationCams[i].fport);
+              eddnCamId.Text := stationCams[i].fuserId;
+              eddnCamPw.Text := stationCams[i].fuserPwd;
+             end;
+
+
+
 
              Cells[0,i+1] := division;
              Cells[1,i+1] := stationCams[i].fname;
@@ -1282,6 +1461,8 @@ begin
 
              Cells[6,i+1] := stationCams[i].fuserId;
              Cells[7,i+1] := stationCams[i].fuserPwd;
+
+
 
              AddImageIdx(8, i+1, VirtualImageList1.GetIndexByName('preview'), haCenter, vaCenter);
              AddImageIdx(9, i+1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
@@ -1313,31 +1494,34 @@ begin
     edStname.Text := '';
     edupDepartDelay.Text := '0';
     eddnDepartDelay.Text := '0';
-    eddnApprTcode.Text := '';
-    edupArrvTcode.Text := '';
-    edupLeavTcode.Text := '';
-    eddnApprTcode.Text := '';
-    eddnArrvTcode.Text := '';
-    eddnLeavTcode.Text := '';
+    //eddnApprTcode.Text := '';
+    //edupArrvTcode.Text := '';
+    //edupLeavTcode.Text := '';
+    //eddnApprTcode.Text := '';
+    //eddnArrvTcode.Text := '';
+    //eddnLeavTcode.Text := '';
     eddnRtsp.Text := '';
     edupRtsp.Text := '';
 
 
     edStcode.Enabled := False;
     edStName.Enabled := False;
-    eddnApprTcode.Enabled := False;
-    eddnArrvTcode.Enabled := False;
+    //eddnApprTcode.Enabled := False;
+    //eddnArrvTcode.Enabled := False;
     eddnDepartDelay.Enabled := False;
-    eddnLeavTcode.Enabled := False;
-    edupApprTcode.Enabled := False;
-    edupArrvTcode.Enabled := False;
+    //eddnLeavTcode.Enabled := False;
+    //edupApprTcode.Enabled := False;
+    //edupArrvTcode.Enabled := False;
     edupDepartDelay.Enabled := False;
-    edupLeavTcode.Enabled := False;
+    //edupLeavTcode.Enabled := False;
+
+    //edupDepartDelay.Enabled := False;
+
     btnAddCams.Enabled := False;
     edupRtsp.Enabled := False;
     eddnRtsp.Enabled := False;
-    AdvOfficeRadioGroup1.Enabled := False;
-    AdvOfficeRadioGroup2.Enabled := False;
+    //AdvOfficeRadioGroup1.Enabled := False;
+    //AdvOfficeRadioGroup2.Enabled := False;
     grdStations.Options := grdStations.Options - [goEditing];
 
     LoadCamInfoList();
@@ -1362,16 +1546,16 @@ begin
           staionAdd.fupDepartDelay := StrtoInt(edupDepartDelay.text);
           staionAdd.fdnDepartDelay := StrtoInt(eddnDepartDelay.text);  
           
-          staionAdd.fupLeavTcode := edupLeavTcode.text;  
-          staionAdd.fdnLeavTcode := eddnLeavTcode.text;  
+          //staionAdd.fupLeavTcode := edupLeavTcode.text;
+          //staionAdd.fdnLeavTcode := eddnLeavTcode.text;
           
-          staionAdd.fupArrvTcode := edupArrvTcode.text;  
-          staionAdd.fdnArrvTcode := eddnArrvTcode.text; 
+          //staionAdd.fupArrvTcode := edupArrvTcode.text;
+          //staionAdd.fdnArrvTcode := eddnArrvTcode.text;
 
-          staionAdd.fupApprTcode := edupArrvTcode.Text;
-          staionAdd.fdnApprTcode := eddnApprTcode.Text;      
+          //staionAdd.fupApprTcode := edupArrvTcode.Text;
+          //staionAdd.fdnApprTcode := eddnApprTcode.Text;
 
-
+          {
           if AdvOfficeRadioGroup1.ItemIndex = 0 then
             begin
               staionAdd.fupView := 'single';
@@ -1383,10 +1567,10 @@ begin
                staionAdd.fupView := 'merge'; 
                staionAdd.fdnView := 'merge'; 
             end;
-           
+          }
 
 
-          
+          {
           if advofficetabset1.ActiveTabIndex  = 0 then
           begin
             pnUp.Visible := true;
@@ -1397,7 +1581,7 @@ begin
             pnUp.Visible := false;
             pnDn.Visible := true;
           end;
-          
+          }
 
 
           
@@ -1414,20 +1598,20 @@ begin
   // 데이터 행 클릭 시 (헤더 제외)
   //edStcode.Enabled := true;
   //edStName.Enabled := true;
-  eddnApprTcode.Enabled := true;
-  eddnArrvTcode.Enabled := true;
+  //eddnApprTcode.Enabled := true;
+  //eddnArrvTcode.Enabled := true;
   eddnDepartDelay.Enabled := true;
-  eddnLeavTcode.Enabled := true;
-  edupApprTcode.Enabled := true;
-  edupArrvTcode.Enabled := true;
+  //eddnLeavTcode.Enabled := true;
+  //edupApprTcode.Enabled := true;
+  //edupArrvTcode.Enabled := true;
   edupDepartDelay.Enabled := true;
-  edupLeavTcode.Enabled := true;
+  //edupLeavTcode.Enabled := true;
   btnAddCams.Enabled := true;
 
   edupRtsp.Enabled := true;
   eddnRtsp.Enabled := true;
-  AdvOfficeRadioGroup1.Enabled := true;
-  AdvOfficeRadioGroup2.Enabled := true;
+  //AdvOfficeRadioGroup1.Enabled := true;
+  //AdvOfficeRadioGroup2.Enabled := true;
 
   grdStations.Options := grdStations.Options + [goEditing];
 
@@ -1449,16 +1633,16 @@ begin
           edStname.Text := '';
           edupDepartDelay.Text := '0';
           eddnDepartDelay.Text := '0';
-          eddnApprTcode.Text := '0';
-          edupArrvTcode.Text := '0';
-          edupLeavTcode.Text := '0';
-          eddnApprTcode.Text := '0';
-          eddnArrvTcode.Text := '0';
-          eddnLeavTcode.Text := '0';
+          //eddnApprTcode.Text := '0';
+          //edupArrvTcode.Text := '0';
+          //edupLeavTcode.Text := '0';
+          //eddnApprTcode.Text := '0';
+          //eddnArrvTcode.Text := '0';
+          //eddnLeavTcode.Text := '0';
           edupRtsp.Text := '';
           eddnRtsp.Text := '';
-          AdvOfficeRadioGroup1.ItemIndex := 0;
-          AdvOfficeRadioGroup2.ItemIndex := 0;
+          //AdvOfficeRadioGroup1.ItemIndex := 0;
+          //AdvOfficeRadioGroup2.ItemIndex := 0;
           addStCnt := 0 ;
           ShowTVCSMessage('삭제 되었습니다. ');
         end;
@@ -1479,16 +1663,17 @@ begin
         edStname.Text := SelectStation.fname;
         edupDepartDelay.Text := intTostr(SelectStation.fupDepartDelay);
         eddnDepartDelay.Text := intTostr(SelectStation.fdnDepartDelay);
-        edupApprTcode.Text := SelectStation.fupApprTcode;
-        edupArrvTcode.Text := SelectStation.fupArrvTcode;
-        edupLeavTcode.Text := SelectStation.fupLeavTcode;
-        eddnApprTcode.Text := SelectStation.fdnApprTcode;
-        eddnArrvTcode.Text := SelectStation.fdnArrvTcode;
-        eddnLeavTcode.Text := SelectStation.fdnLeavTcode;
+        //edupApprTcode.Text := SelectStation.fupApprTcode;
+        //edupArrvTcode.Text := SelectStation.fupArrvTcode;
+        //edupLeavTcode.Text := SelectStation.fupLeavTcode;
+        //eddnApprTcode.Text := SelectStation.fdnApprTcode;
+        //eddnArrvTcode.Text := SelectStation.fdnArrvTcode;
+        //eddnLeavTcode.Text := SelectStation.fdnLeavTcode;
 
-        edupRtsp.Text := SelectStation.fupRtsp;
+
+        edupRtsp.text := SelectStation.fupRtsp;
         eddnRtsp.Text := SelectStation.fdnRtsp;
-
+        {
         if SelectStation.fupView = 'merge' then
           AdvOfficeRadioGroup2.ItemIndex := 1
         else
@@ -1498,7 +1683,7 @@ begin
           AdvOfficeRadioGroup1.ItemIndex := 1
         else
           AdvOfficeRadioGroup1.ItemIndex := 0;
-
+        }
 
         end;
         //ShowMessage(SelectStation.fupApprTcode + SelectStation.fupArrvTcode);
@@ -1511,23 +1696,23 @@ begin
         edStcode.Text := grdStations.Cells[1, ARow];
         edStname.Text := grdStations.Cells[2, ARow];
 
-        edupDepartDelay.Text := IntToStr(staionAdd.fupDepartDelay);          
+        edupDepartDelay.Text := IntToStr(staionAdd.fupDepartDelay);
         eddnDepartDelay.Text := IntToStr(staionAdd.fdnDepartDelay);
-        eddnApprTcode.Text := staionAdd.fdnApprTcode;
-        edupArrvTcode.Text := staionAdd.fupArrvTcode;
-        edupLeavTcode.Text := staionAdd.fupLeavTcode;
-        eddnApprTcode.Text := staionAdd.fdnApprTcode;
-        eddnArrvTcode.Text := staionAdd.fdnArrvTcode;
-        eddnLeavTcode.Text := staionAdd.fdnLeavTcode;
+        //eddnApprTcode.Text := staionAdd.fdnApprTcode;
+        //edupArrvTcode.Text := staionAdd.fupArrvTcode;
+        //edupLeavTcode.Text := staionAdd.fupLeavTcode;
+        //eddnApprTcode.Text := staionAdd.fdnApprTcode;
+        //eddnArrvTcode.Text := staionAdd.fdnArrvTcode;
+        //eddnLeavTcode.Text := staionAdd.fdnLeavTcode;
 
         edupRtsp.Text := staionAdd.fupRtsp;
         eddnRtsp.Text := staionAdd.fdnRtsp;
-
+        {
         if staionAdd.fupView = 'single' then
           AdvOfficeRadioGroup1.ItemIndex := 0
         else
           AdvOfficeRadioGroup2.ItemIndex := 1;
-        
+        }
         // 나머지 필드는 기본값 유지
         LoadCamInfoList;  // 빈 카메라 리스트 로드
       end;
@@ -1536,17 +1721,17 @@ begin
       edStname.Text := '';
       edupDepartDelay.Text := '0';
       eddnDepartDelay.Text := '0';
-      eddnApprTcode.Text := '';
-      edupArrvTcode.Text := '';
-      edupLeavTcode.Text := '';
-      eddnApprTcode.Text := '';
-      eddnArrvTcode.Text := '';
-      eddnLeavTcode.Text := '';
+      //eddnApprTcode.Text := '';
+      //edupArrvTcode.Text := '';
+      //edupLeavTcode.Text := '';
+      //eddnApprTcode.Text := '';
+      //eddnArrvTcode.Text := '';
+      //eddnLeavTcode.Text := '';
 
       edupRtsp.Text := '';
       eddnRtsp.Text := '';
-      AdvOfficeRadioGroup1.ItemIndex := 0;
-      AdvOfficeRadioGroup2.ItemIndex := 0;
+      //AdvOfficeRadioGroup1.ItemIndex := 0;
+      //AdvOfficeRadioGroup2.ItemIndex := 0;
 
       LoadCamInfoList;
     end;

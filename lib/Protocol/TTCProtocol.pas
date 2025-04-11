@@ -135,7 +135,7 @@ interface
         22: 마스터스케줄body
         23: 실시간스케줄헤더
         24: 마스터스케줄bod
-      }
+        }
         FOpCode:Byte;
         FSeq:Byte;
         FDataLen:Word;

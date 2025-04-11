@@ -221,6 +221,10 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="lib\Protocol\TVCSIpcMsg.pas"/>
+        <DCCReference Include="TVCSStationCam.pas">
+            <Form>frmStationCam</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

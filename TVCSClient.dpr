@@ -45,7 +45,8 @@ uses
   TVCSFullScreen in 'TVCSFullScreen.pas' {frmFullViewer},
   PasLibVlcUnit,
   TVCSMyPage in 'TVCSMyPage.pas' {frmMyPage},
-  TVCSIpcMsg in 'lib\Protocol\TVCSIpcMsg.pas';
+  TVCSIpcMsg in 'lib\Protocol\TVCSIpcMsg.pas',
+  TVCSStationCam in 'TVCSStationCam.pas' {frmStationCam};
 
 {$R *.res}
 var
@@ -87,6 +88,7 @@ begin
      begin
 
         Application.CreateForm(TfrmTVCSMain, frmTVCSMain);
+
   //Application.CreateForm(TfrmMyPage, frmMyPage);
         frmTVCSMain.WindowState:=TWindowState.wsMaximized;
       end;

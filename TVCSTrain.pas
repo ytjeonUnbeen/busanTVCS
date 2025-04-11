@@ -1,4 +1,4 @@
-unit TVCSTrain;
+ï»¿unit TVCSTrain;
 
 interface
 
@@ -93,7 +93,7 @@ type
     trainCams: TArray<TVCSTrainCamera>;
     SelTrain: tvcsProtocol.TVCSTrain;
 
-    // ¾ÕÂÊ private,public µîÀÌ ¾Æ´Ñ¿µ¿ª¿¡ ³ÖÀ¸¸é form  ÀÌº¥Æ®¶ó »èÁ¦ °ü¸®µÊ
+    // ï¿½ï¿½ï¿½ï¿½ private,public ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´Ñ¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ form  ï¿½Ìºï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     procedure LoadTrainList(trainNo: string='');
     procedure SetTrainCamListHeader;
     procedure LoadTrainCamList(trainId: Integer =-1);
@@ -120,7 +120,7 @@ begin
 
   if (grdTrains.Cells[8,1]='new') then    begin
 
-   if (ShowTVCSCheck('¿­Â÷Á¤º¸','½Å±Ô·Î Ãß°¡µÈ ¿­Â÷ÀÔ´Ï´Ù.'#13#10'ÀúÀåÈÄ ÁøÇÛÇÒ±î¿ä?')) then begin
+   if (ShowTVCSCheck('ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½','ï¿½Å±Ô·ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.'#13#10'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ò±ï¿½ï¿½?')) then begin
 
        AddTrainsList;
        grdTrains.Cells[8,1]:='old';
@@ -128,14 +128,14 @@ begin
    else Exit;
 
   end;
-  
+
 
 
   with grdTrainCams do
   begin
     InsertChildRow(0);
     Cells[0,1] := edTrainNo.Text;
-    Cells[1,1] := '10';  // positionÀÇ ±âº»°ª ¼³Á¤
+    Cells[1,1] := '10';  // positionï¿½ï¿½ ï¿½âº»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     Cells[2,1] := '';
     Cells[3,1] := '';
     Cells[4,1] := '80';
@@ -164,7 +164,7 @@ begin
 //    FocusCell(1,1);
     Cells[4,1]:='-1';
     Cells[5,1]:=IntToStr(defTrainCarridgeCount);
-    Cells[6,1]:='Ä«¸Þ¶óÀÌ¸§';
+    Cells[6,1]:='Ä«ï¿½Þ¶ï¿½ï¿½Ì¸ï¿½';
     Cells[7,1]:='0.0.0.0';
     Cells[8,1]:='new'; // new flag
 
@@ -201,22 +201,22 @@ begin
   Result:=True;
    if (edscNo.Text = '') then
     begin
-      ShowValidator(edscNo,'Æí¼º¹øÈ£¸¦ ÀÔ·Â',ValidTooltip);
+      ShowValidator(edscNo,'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£ï¿½ï¿½ ï¿½Ô·ï¿½',ValidTooltip);
         Result:=false;
     end;
     if (edTrainNo.Text = '') then
     begin
-          ShowValidator(edTrainNo,'¿­Â÷¹øÈ£¸¦ ÀÔ·Â',ValidTooltip);
+          ShowValidator(edTrainNo,'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£ï¿½ï¿½ ï¿½Ô·ï¿½',ValidTooltip);
           Result:=false;
     end;
     if (cmbTrainCnt.Text = '') then
     begin
-      ShowValidator(edTrainNo,'°´Â÷¼ö¸¦  ÀÔ·Â',ValidTooltip);
+      ShowValidator(edTrainNo,'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½Ô·ï¿½',ValidTooltip);
       Result:=false;
     end;
     if (edNvrRTSP.IPAddress = '0.0.0.0') then
     begin
-      ShowValidator(edNvrRTSP,'TVCS ÁÖ¼Ò ÀÔ·Â',ValidTooltip);
+      ShowValidator(edNvrRTSP,'TVCS ï¿½Ö¼ï¿½ ï¿½Ô·ï¿½',ValidTooltip);
       Result:=false;
     end;
 
@@ -253,7 +253,7 @@ begin
           with trainCamPos[i-1] do
           begin
             ftrainNo := edTrainNo.Text;
-            fposition := StrToInt(grdTrainCams.Cells[1,i]);  // À§Ä¡ Á¤º¸ Ãß°¡
+            fposition := StrToInt(grdTrainCams.Cells[1,i]);  // ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
             fname := grdTrainCams.Cells[2,i];
             fipaddr := grdTrainCams.Cells[3,i];
             fport := StrToInt(grdTrainCams.Cells[4,i]);
@@ -275,7 +275,7 @@ begin
             end;
           end;
         finally
-          // »ý¼ºµÈ Ä«¸Þ¶ó °´Ã¼µé ÇØÁ¦
+          // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
           for i := 0 to Length(trainCamPos) - 1 do
           begin
             if Assigned(trainCamPos[i]) then
@@ -297,7 +297,7 @@ begin
             try
               trainCamPatch.fid := trainCams[j].fid;
               trainCamPatch.ftrainId := SelTrain.fid;
-              trainCamPatch.fposition := StrToInt(grdTrainCams.Cells[1,i]);  // À§Ä¡ Á¤º¸ Ãß°¡
+              trainCamPatch.fposition := StrToInt(grdTrainCams.Cells[1,i]);  // ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
               trainCamPatch.fname := grdTrainCams.Cells[2,i];
               trainCamPatch.fipaddr := grdTrainCams.Cells[3,i];
               trainCamPatch.fport := StrToInt(grdTrainCams.Cells[4,i]);
@@ -314,7 +314,7 @@ begin
           end;
         end;
 
-         ShowTVCSMessage('Ã³¸®°¡ ¿Ï·áµÇ¾ú½À´Ï´Ù.');
+         ShowTVCSMessage('Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.');
          LoadTrainList;
          IpcMsgSend('LOADTRAIN');
 
@@ -348,30 +348,30 @@ begin
   for i := 1 to grdTrains.RowCount - 1 do
   begin
     case searchMode of
-      0: // ÀüÃ¼ °Ë»ö
-        if  grdTrains.Cells[1,i] = searchText then  // ¿ª»ç¸í¿¡¼­ Ã£Àº °æ¿ì
+      0: // ï¿½ï¿½Ã¼ ï¿½Ë»ï¿½
+        if  grdTrains.Cells[1,i] = searchText then  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½
         begin
           grdTrains.SelectCells(1,i,1,i);
           grdTrainsClickCell(grdTrains, i, 1);
           found := true;
           Break;
         end
-        else if grdTrains.Cells[2,i] = searchText then  // Æí¼º¸í¿¡¼­ Ã£Àº °æ¿ì
+        else if grdTrains.Cells[2,i] = searchText then  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½
         begin
           grdTrains.SelectCells(2,i,2,i);
           grdTrainsClickCell(grdTrains, i, 2);
           found := true;
           Break;
         end;
-      1: // Æí¼º °Ë»ö
-        if grdTrains.Cells[1,i] = searchText then  // ¿ª»ç¸í¿¡¼­ Ã£Àº °æ¿ì
+      1: // ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½
+        if grdTrains.Cells[1,i] = searchText then  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½
         begin
           grdTrains.SelectCells(1,i,1,i);
           grdTrainsClickCell(grdTrains, i, 1);
           found := true;
           Break;
         end;
-      2: // ¿­Â÷ ¹øÈ£ °Ë»ö
+      2: // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½Ë»ï¿½
          if grdTrains.Cells[2,i] = searchText then
         begin
           grdTrains.SelectCells(2,i,2,i);
@@ -379,7 +379,7 @@ begin
           found := true;
           Break;
         end;
-      3: // ¿­Â÷ ¹øÈ£ °Ë»ö
+      3: // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½Ë»ï¿½
          if grdTrains.Cells[3,i] = searchText then
         begin
           grdTrains.SelectCells(3,i,3,i);
@@ -391,7 +391,7 @@ begin
   end;
 
   if not found then
-    ShowTVCSMessage('°Ë»ö °á°ú°¡ ¾ø½À´Ï´Ù.');
+    ShowTVCSMessage('ï¿½Ë»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.');
 end;
 
 procedure TfrmTrain.btnDownloadTrainCamerasClick(Sender: TObject);
@@ -410,61 +410,61 @@ begin
     SaveDialog.FilterIndex := 2;
     if SaveDialog.Execute then
     begin
-      // ¿¢¼¿ ±×¸®µå ÃÊ±â ¼³Á¤
+      // ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½ ï¿½ï¿½ï¿½ï¿½
 
       with ExcelGrid do
       begin
-        ColCount := 14;  // ÀüÃ¼ ÄÃ·³ ¼ö
-        RowCount := 1;   // Çì´õ row
-        // Çì´õ ¼³Á¤
-        Cells[1,1] := 'Æí¼º¹øÈ£';
-        Cells[2,1] := '¿­Â÷¹øÈ£';
-        Cells[3,1] := '°´Â÷¼ö';
-        Cells[4,1] := 'Ä«¸Þ¶ó¼ö';
+        ColCount := 14;  // ï¿½ï¿½Ã¼ ï¿½Ã·ï¿½ ï¿½ï¿½
+        RowCount := 1;   // ï¿½ï¿½ï¿½ row
+        // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        Cells[1,1] := 'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£';
+        Cells[2,1] := 'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£';
+        Cells[3,1] := 'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½';
+        Cells[4,1] := 'Ä«ï¿½Þ¶ï¿½ï¿½';
         Cells[5,1] := 'TVCSIP';
-        Cells[6,1] := '¼³Ä¡À§Ä¡';
-        Cells[7,1] := 'Ä«¸Þ¶óÀÌ¸§';
-        Cells[8,1] := 'Ä«¸Þ¶óipÁÖ¼Ò';
-        Cells[9,1] := 'Æ÷Æ®¹øÈ£';
-        Cells[10,1] := 'RTSPÁÖ¼Ò(main)';
-        Cells[11,1] := 'RTSPÁÖ¼Ò(sub)';
-        Cells[12,1] := 'Ä«¸Þ¶óID';
-        Cells[13,1] := 'Ä«¸Þ¶óPW';
+        Cells[6,1] := 'ï¿½ï¿½Ä¡ï¿½ï¿½Ä¡';
+        Cells[7,1] := 'Ä«ï¿½Þ¶ï¿½ï¿½Ì¸ï¿½';
+        Cells[8,1] := 'Ä«ï¿½Þ¶ï¿½ipï¿½Ö¼ï¿½';
+        Cells[9,1] := 'ï¿½ï¿½Æ®ï¿½ï¿½È£';
+        Cells[10,1] := 'RTSPï¿½Ö¼ï¿½(main)';
+        Cells[11,1] := 'RTSPï¿½Ö¼ï¿½(sub)';
+        Cells[12,1] := 'Ä«ï¿½Þ¶ï¿½ID';
+        Cells[13,1] := 'Ä«ï¿½Þ¶ï¿½PW';
       end;
       currentRow := 2;
-      // °¢ ¿­Â÷º°·Î Ã³¸®
+      // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
       for i := 0 to Length(trains) - 1 do
       begin
         train := trains[i];
-        // ÇØ´ç ¿­Â÷ÀÇ Ä«¸Þ¶ó Á¤º¸ °¡Á®¿À±â
+        // ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         trainCameras := gapi.GetTrainCamera(train.fid);
 
-        // Ä«¸Þ¶ó°¡ 0°³ÀÎ °æ¿ì¿¡µµ ¿­Â÷ Á¤º¸´Â ÇÑ ¹ø Ãß°¡
+        // Ä«ï¿½Þ¶ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ß°ï¿½
         if Length(trainCameras) = 0 then
         begin
           ExcelGrid.RowCount := currentRow + 1;
-          // ¿­Â÷ Á¤º¸¸¸ ÀÔ·Â
+          // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½
           ExcelGrid.Cells[1,currentRow] := IntToStr(train.fformatNo);
           ExcelGrid.Cells[2,currentRow] := train.ftrainNo;
           ExcelGrid.Cells[3,currentRow] := IntToStr(train.fcarriageNum);
           ExcelGrid.Cells[4,currentRow] := IntToStr(train.fcameraNum);
           ExcelGrid.Cells[5,currentRow] := train.ftvcsIpaddr;
-          // Ä«¸Þ¶ó Á¤º¸´Â ºñ¿öµÒ
+          // Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
           Inc(currentRow);
         end
         else
         begin
-          // Ä«¸Þ¶ó°¡ ÀÖ´Â °æ¿ì °¢ Ä«¸Þ¶óº°·Î row Ãß°¡
+          // Ä«ï¿½Þ¶ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ Ä«ï¿½Þ¶óº°·ï¿½ row ï¿½ß°ï¿½
           for j := 0 to Length(trainCameras) - 1 do
           begin
             ExcelGrid.RowCount := currentRow + 1;
-            // ¿­Â÷ Á¤º¸
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             ExcelGrid.Cells[1,currentRow] := IntToStr(train.fformatNo);
             ExcelGrid.Cells[2,currentRow] := train.ftrainNo;
             ExcelGrid.Cells[3,currentRow] := IntToStr(train.fcarriageNum);
             ExcelGrid.Cells[4,currentRow] := IntToStr(train.fcameraNum);
             ExcelGrid.Cells[5,currentRow] := train.ftvcsIpaddr;
-            // Ä«¸Þ¶ó Á¤º¸
+            // Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½
             ExcelGrid.Cells[6,currentRow] := IntToStr(trainCameras[j].fposition);
             ExcelGrid.Cells[7,currentRow] := trainCameras[j].fname;
             ExcelGrid.Cells[8,currentRow] := trainCameras[j].fipaddr;
@@ -477,10 +477,10 @@ begin
           end;
         end;
       end;
-      // ¿¢¼¿·Î ÀúÀå
+      // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
       AdvGridExcelIO1.AdvStringGrid := ExcelGrid;
       AdvGridExcelIO1.XLSExport(SaveDialog.FileName);
-      ShowTVCSMessage('¿¢¼¿ ÆÄÀÏÀÌ ÀúÀåµÇ¾ú½À´Ï´Ù.');
+      ShowTVCSMessage('ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.');
     end;
   finally
     SaveDialog.Free;
@@ -509,14 +509,14 @@ begin
         AdvGridExcelIO1.AdvStringGrid := GridBuf;
         AdvGridExcelIO1.XLSImport(OpenDialog.FileName, 0);
 
-        // ½ÇÁ¦ µ¥ÀÌÅÍ°¡ ÀÖ´Â Çà ¼ö °è»ê
-        actualRowCount := 1; // Çì´õ ÇàÀº Ç×»ó Æ÷ÇÔ
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½
+        actualRowCount := 1; // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×»ï¿½ ï¿½ï¿½ï¿½ï¿½
         hasEmptyCells := False;
         emptyCellRows := '';
 
         for i := 1 to GridBuf.RowCount - 1 do
         begin
-          // ÇàÀÌ ¿ÏÀüÈ÷ ºñ¾îÀÖ´ÂÁö È®ÀÎ
+          // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
           var rowIsEmpty := True;
           for j := 0 to GridBuf.ColCount - 1 do
           begin
@@ -529,14 +529,14 @@ begin
 
           if rowIsEmpty then
           begin
-            // ¿ÏÀüÈ÷ ºó ÇàÀ» ¸¸³ª¸é Á¾·á
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             Break;
           end
           else
           begin
-            // ÇÊ¼ö Ç×¸ñ(Æí¼º¹øÈ£, ¿­Â÷¹øÈ£, °´Â÷¼ö, Ä«¸Þ¶ó¼ö, TVCSIP) È®ÀÎ
+            // ï¿½Ê¼ï¿½ ï¿½×¸ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, Ä«ï¿½Þ¶ï¿½ï¿½, TVCSIP) È®ï¿½ï¿½
             requiredColumnsFilled := True;
-            for j := 1 to 5 do // ÇÊ¼ö ¿­ ÀÎµ¦½º 0~4
+            for j := 1 to 5 do // ï¿½Ê¼ï¿½ ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ 0~4
             begin
               if Trim(GridBuf.Cells[j, i]) = '' then
               begin
@@ -545,9 +545,9 @@ begin
               end;
             end;
 
-            // ¼±ÅÃ Ç×¸ñÀÌ ÇÏ³ª¶óµµ ÀÖ´ÂÁö È®ÀÎ
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
             anyOptionalColumnFilled := False;
-            for j := 6 to GridBuf.ColCount - 1 do // ¼±ÅÃ ¿­ ÀÎµ¦½º 5~¸¶Áö¸·
+            for j := 6 to GridBuf.ColCount - 1 do // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ 5~ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             begin
               if Trim(GridBuf.Cells[j, i]) <> '' then
               begin
@@ -556,10 +556,10 @@ begin
               end;
             end;
 
-            // ÇÊ¼ö Ç×¸ñÀÌ ¸ðµÎ Ã¤¿öÁ® ÀÖ°í, ¼±ÅÃ Ç×¸ñ Áß ÇÏ³ª¶óµµ ÀÖ´Âµ¥ ¸ðµÎ Ã¤¿öÁ® ÀÖÁö ¾ÊÀº °æ¿ì
+            // ï¿½Ê¼ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã¤ï¿½ï¿½ï¿½ï¿½ ï¿½Ö°ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ ï¿½ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½Ö´Âµï¿½ ï¿½ï¿½ï¿½ Ã¤ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
             if requiredColumnsFilled and anyOptionalColumnFilled then
             begin
-              // ¼±ÅÃ Ç×¸ñÀÌ ¸ðµÎ Ã¤¿öÁ® ÀÖ´ÂÁö È®ÀÎ
+              // ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã¤ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
               var allOptionalColumnsFilled := True;
               for j := 6 to GridBuf.ColCount - 1 do
               begin
@@ -575,7 +575,7 @@ begin
                 hasEmptyCells := True;
                 if emptyCellRows <> '' then
                   emptyCellRows := emptyCellRows + ', ';
-                emptyCellRows := emptyCellRows + IntToStr(i+1); // ¿¢¼¿ Çà ¹øÈ£´Â 1ºÎÅÍ ½ÃÀÛ
+                emptyCellRows := emptyCellRows + IntToStr(i+1); // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ 1ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
               end;
             end;
 
@@ -583,16 +583,16 @@ begin
           end;
         end;
 
-        // ½ÇÁ¦ »ç¿ëÇÒ Çà ¼ö·Î ±×¸®µå Å©±â Á¶Á¤
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         GridBuf.RowCount := actualRowCount;
 
         if hasEmptyCells then
         begin
-          ShowTVCSMessage('ÀÔ·ÂµÇÁö ¾ÊÀº Ç×¸ñÀÌ ÀÖ½À´Ï´Ù. ¿¢¼¿µ¥ÀÌÅÍÀÇ ´ÙÀ½ ÇàÀ» È®ÀÎÇÏ¼¼¿ä: ' + emptyCellRows);
+          ShowTVCSMessage('ï¿½Ô·Âµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ ï¿½Ö½ï¿½ï¿½Ï´ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½: ' + emptyCellRows);
         end
         else
         begin
-          ShowMessage('·ÎµåµÈ µ¥ÀÌÅÍ Çà ¼ö: ' + IntToStr(actualRowCount));
+          ShowMessage('ï¿½Îµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½: ' + IntToStr(actualRowCount));
         end;
       end;
     finally
@@ -610,7 +610,7 @@ end;
 
 procedure TfrmTrain.edNvrRTSPExit(Sender: TObject);
 begin
-        if (edNvrRTSP.IPAddress='0.0.0.0') then ShowValidator(edNvrRTSP,'À¯È¿ÇÏÁö ¾ÊÀº ÁÖ¼Ò',ValidTooltip);
+        if (edNvrRTSP.IPAddress='0.0.0.0') then ShowValidator(edNvrRTSP,'ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼ï¿½',ValidTooltip);
 end;
 
 procedure TfrmTrain.edscNoEnter(Sender: TObject);
@@ -625,7 +625,7 @@ var
 begin
 selCount:=grdTrains.SelectedRowCount;
 if (selCount<>1) then  Exit;
-if (Trim(edscNo.Text)='') then ShowValidator(edscNo,'Æí¼º¹øÈ£¸¦ ÀÔ·Â',ValidToolTip);
+if (Trim(edscNo.Text)='') then ShowValidator(edscNo,'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£ï¿½ï¿½ ï¿½Ô·ï¿½',ValidToolTip);
 selRow:=grdTRains.SelectedRow[0];
 
 if (grdTrains.Cells[1,selRow]<>Trim(edscNo.Text)) then grdTrains.Cells[1,selRow]:=edscNo.Text;
@@ -667,7 +667,7 @@ if (selCount<>1) then  Exit;
 //  grdTrains.Cells[1,1]:=edTrainNo.Text;
   //edTrainNo.StyleElements:=[seBorder,seFont,seClient];
 
-    if (edTrainNo.Text='') then ShowValidator(edTrainNo,'¿­Â÷¹øÈ£¸¦  ÀÔ·Â.',ValidTooltip);
+    if (edTrainNo.Text='') then ShowValidator(edTrainNo,'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£ï¿½ï¿½  ï¿½Ô·ï¿½.',ValidTooltip);
     selRow:=grdTRains.SelectedRow[0];
     if (grdTrains.Cells[2,selRow]<>Trim(edTrainNo.Text)) then grdTrains.Cells[2,selRow]:=edTrainNo.Text;
 
@@ -676,17 +676,17 @@ end;
 procedure TfrmTrain.FormCreate(Sender: TObject);
 begin
 
-  
+
   LoadTrainList;
   SetTrainCamListHeader;
 
-  //¹öÆ°
+  //ï¿½ï¿½Æ°
   TButtonStyler.ApplyGlobalStyle(Self);
 
   grdTrains.OnClickCell := grdTrainsClickCell;
-  lblTitle.Caption := 'Æí¼º Ä«¸Þ¶ó °ü¸® ('+IntToStr(gapi.GetLoinInfo.fsystem.fline) +'È£¼±)';
+  lblTitle.Caption := 'ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ ('+IntToStr(gapi.GetLoinInfo.fsystem.fline) +'È£ï¿½ï¿½)';
   isNeedUpdate:=false;
-  grdTrainsClickCell(Sender,1,1); //Ã¹¹øÂ° ¼¿ ¼±ÅÃ
+  grdTrainsClickCell(Sender,1,1); //Ã¹ï¿½ï¿½Â° ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
   grdTrains.SelectRows(1,1);
 
 
@@ -710,7 +710,7 @@ begin
         trainRes := gapi.UpdateTrain(trainPat);
         if trainRes = nil then
         begin
-          ShowTVCSMessage('¿­Â÷Á¤º¸ ¼öÁ¤ÀÌ ½ÇÆÐÇÏ¿´½À´Ï´Ù.');
+          ShowTVCSMessage('ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.');
           Exit;
         end;
 
@@ -730,7 +730,7 @@ begin
 
   try
    if (not Validator) then begin
-      ShowTVCSMessage('Àß¸øµÈ °ªÀÌ ÀÖ½À´Ï´Ù. È®ÀÎÇØÁÖ¼¼¿ä');
+      ShowTVCSMessage('ï¿½ß¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö½ï¿½ï¿½Ï´ï¿½. È®ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½');
       Exit;
    end;
 
@@ -743,7 +743,7 @@ begin
     trainRes := gapi.AddTrain(trainPos);
     if trainRes = nil then
     begin
-      ShowTVCSMessage('¿­Â÷Á¤º¸ Ãß°¡°¡ ½ÇÆÐÇÏ¿´½À´Ï´Ù.');
+      ShowTVCSMessage('ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.');
       Exit;
     end;
   finally
@@ -765,9 +765,9 @@ begin
 
   trains := gapi.GetTrain(-1);
   size := Length(trains);
-  lblTotal.Caption := 'ÃÑ :' + IntToStr(size) +'°³';
+  lblTotal.Caption := 'ï¿½ï¿½ :' + IntToStr(size) +'ï¿½ï¿½';
   delBtn := TButton.Create(self);
-  delBtn.Caption := '»èÁ¦';
+  delBtn.Caption := 'ï¿½ï¿½ï¿½ï¿½';
 
   with grdTrains do
   begin
@@ -779,9 +779,9 @@ begin
     ColWidths[3]:=60;
 
     Cells[0,0]:='No.';
-    Cells[1,0]:='Æí¼º¹øÈ£';
-    Cells[2,0]:='¿­Â÷¹øÈ£';
-    Cells[3,0]:='»èÁ¦';
+    Cells[1,0]:='ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£';
+    Cells[2,0]:='ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£';
+    Cells[3,0]:='ï¿½ï¿½ï¿½ï¿½';
     for I := 4 to 8  do begin
       HideColumn(i);
     end;
@@ -796,7 +796,7 @@ begin
     Cells[2,i+1] := trains[i].ftrainNo;
     AddImageIdx(3, i+1, VirtualImageList1.GetIndexByName('delete'), haCenter, vaCenter);
 
-    //hidden cell Á¤º¸°ü¸®
+    //hidden cell ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     Cells[4,i+1]:=IntTostr(trains[i].fid);
     Cells[5,i+1]:=IntTostr(trains[i].fcarriageNum);
     Cells[6,i+1]:=IntTostr(trains[i].fcameraNum);
@@ -818,32 +818,32 @@ begin
     RowCount:=1;
     ColCount:=13;
     //760
-    ColWidths[0] := 60;   // °´Â÷¹øÈ£
-    ColWidths[1] := 40;  // È£À§Ä¡
-    ColWidths[2] := 90;  // Ä«¸Þ¶óÀÌ¸§
+    ColWidths[0] := 60;   // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£
+    ColWidths[1] := 40;  // È£ï¿½ï¿½Ä¡
+    ColWidths[2] := 90;  // Ä«ï¿½Þ¶ï¿½ï¿½Ì¸ï¿½
     ColWidths[3] := 100;   // IP
     ColWidths[4] := 40;  // Port
     ColWidths[5] := 150;  // RTSP High
 
     ColWidths[6] := 150;  // RTSP Low
     ColWidths[7] := 65;   // Password
-    ColWidths[8] := 82;   // ¹Ì¸®º¸±â ¹öÆ°
-    ColWidths[9] := 65;   // »èÁ¦ ¹öÆ°
+    ColWidths[8] := 82;   // ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°
+    ColWidths[9] := 65;   // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°
     ColWidths[10] := 45;
 
-    Cells[0,0]:='¿­Â÷¹øÈ£';
-    Cells[1,0]:='À§Ä¡';
+    Cells[0,0]:='ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£';
+    Cells[1,0]:='ï¿½ï¿½Ä¡';
 
-    Cells[2,0]:='Ä«¸Þ¶ó¸í';
+    Cells[2,0]:='Ä«ï¿½Þ¶ï¿½ï¿½';
     Cells[3,0]:='IP Addr';
     Cells[4,0]:= 'Port';
-    Cells[5,0]:='RTSP ÁÖ¼Ò1 ';
-    Cells[6,0]:='RTSP ÁÖ¼Ò2 ';
+    Cells[5,0]:='RTSP ï¿½Ö¼ï¿½1 ';
+    Cells[6,0]:='RTSP ï¿½Ö¼ï¿½2 ';
 
     Cells[7,0]:='ID';
     Cells[8,0]:='Password';
-    Cells[9,0]:='¹Ì¸®º¸±â';
-    Cells[10,0]:='»èÁ¦';
+    Cells[9,0]:='ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½';
+    Cells[10,0]:='ï¿½ï¿½ï¿½ï¿½';
 
     FixedRows := 0;
     FixedCols := 0;
@@ -870,7 +870,7 @@ var
 
 begin
   //
-  lblCamCnt.Caption := 'ÃÑ:0°³';
+  lblCamCnt.Caption := 'ï¿½ï¿½:0ï¿½ï¿½';
 
   grdTrainCams.RowCount:=1;
 
@@ -878,7 +878,7 @@ begin
   begin
     trainCams := Gapi.GetTrainCamera(trainId);
     count := length(trainCams);
-    lblCamCnt.Caption := 'ÃÑ:' + IntToStr(count) + '°³';
+    lblCamCnt.Caption := 'ï¿½ï¿½:' + IntToStr(count) + 'ï¿½ï¿½';
 
     if count > 0 then
     begin
@@ -913,11 +913,11 @@ begin
 
 end;
 
-//¿­Â÷ ¼±ÅÃ/»èÁ¦
+//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½
 procedure TfrmTrain.grdTrainsCanEditCell(Sender: TObject; ARow, ACol: Integer;
   var CanEdit: Boolean);
 begin
-  // »õ·Î »ðÀÔµÈ cell¸¸
+  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ôµï¿½ cellï¿½ï¿½
   if (grdTrains.cells[8,Arow]='new') then CanEdit:=true else canEdit:=false;
 end;
 
@@ -969,10 +969,10 @@ begin
         try
         if ShowTVCSCheck(mcDelete) then
           begin
-          // »èÁ¦
+          // ï¿½ï¿½ï¿½ï¿½
             gapi.DeleteTrain(StrToInt(grdTrains.Cells[4,Arow]));
             grdTrains.RemoveRows(ARow, 1);
-            ShowTVCSMessage('»èÁ¦ µÇ¾ú½À´Ï´Ù. ');
+            ShowTVCSMessage('ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. ');
             grdTrainsClickCell(Sender,1,1);
           end;
         finally
@@ -981,7 +981,7 @@ begin
 
       end else
       begin
-          fid :=strToInt(grdTrains.Cells[4,Arow]); // Æí¼º¿­Â÷ÀÌ fid
+          fid :=strToInt(grdTrains.Cells[4,Arow]); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ fid
           edscNo.Text := grdTrains.Cells[1,Arow];
           if (edscNo.Text<>'') then HideValidator(edscNo);
 
@@ -1039,11 +1039,11 @@ if ARow > 0 then
           gapi.DeleteTrainCamera(StrToInt(grdTrainCams.Cells[ARow,11]));
           grdTrainCams.RemoveRows(ARow, 1);
     //      LoadTrainCamList(SelTrain.fid);
-          ShowTVCSMessage('»èÁ¦ µÇ¾ú½À´Ï´Ù. ');
+          ShowTVCSMessage('ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. ');
         end;
       end;
 
-    // ¹Ì¸®º¸±â
+    // ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½
     if ACol = 9 then
       begin
         ShowPreview := TfrmPreview.Create(self);
@@ -1063,7 +1063,7 @@ end;
 procedure TfrmTrain.grdTrainCamsGetEditorType(Sender: TObject; ACol,
   ARow: Integer; var AEditor: TEditorType);
 begin
-if (ACol=8) then AEditor:=edPassword; // ÆÐ½º¿öµå ***
+if (ACol=8) then AEditor:=edPassword; // ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ ***
 
 
 end;

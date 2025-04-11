@@ -136,8 +136,8 @@ object frmTrain: TfrmTrain
       Appearance.TextColorDisabled = 13948116
     end
     object btnSave: TAdvGlowButton
-      Left = 1142
-      Top = 15
+      Left = 1141
+      Top = 14
       Width = 65
       Height = 24
       Caption = #51200#51109
@@ -501,7 +501,7 @@ object frmTrain: TfrmTrain
   end
   object btnUploadTrainCameras: TAdvGlowButton
     Left = 850
-    Top = 598
+    Top = 599
     Width = 175
     Height = 24
     Caption = #50676#52264' '#52852#47700#46972' '#51068#44292' '#46321#47197
@@ -688,7 +688,13 @@ object frmTrain: TfrmTrain
         Alignment = taCenter
         Color = clWhite
         Enabled = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'Tahoma'
+        Font.Style = []
         MaxLength = 3
+        ParentFont = False
         ReadOnly = False
         TabOrder = 0
         Visible = True
@@ -1092,7 +1098,7 @@ object frmTrain: TfrmTrain
               04CD3301DC02F762885BE8076A178411D89E3AD60000000049454E44AE426082}
           end>
       end>
-    Left = 1112
+    Left = 856
     Top = 32
   end
   object AdvGridExcelIO1: TAdvGridExcelIO

@@ -311,7 +311,7 @@ implementation
 
 {$R *.dfm}
  uses TVCSStation,TVCSSystemSet,TVCSTrain,TVCSUsers,TVCSViewControl,TVCSDevices, TVCSLayouts,TVCSDrawCommon,vcl.Themes,
- GDIPAPI, GDIPOBJ, GDIPUTIL,ConvertHex,TVCSFullScreen;
+ GDIPAPI, GDIPOBJ, GDIPUTIL,ConvertHex,TVCSFullScreen, TVCSStationCam;
 
 
 
@@ -834,7 +834,7 @@ begin
 
 
 with lstTrainSched do begin
-    Cells[0,0]:='편성';
+    Cells[0,0]:='편성번호';
     Cells[1,0]:='열차번호';
     Cells[2,0]:='상태';
     Cells[3,0]:='역명';
@@ -842,10 +842,10 @@ with lstTrainSched do begin
   end;
 
   with lstTrainSched do begin
-     ColWidths[0]:=60;
-     ColWidths[1]:=60;
+     ColWidths[0]:=80;
+     ColWidths[1]:=80;
      ColWidths[2]:=50;
-     ColWidths[3]:=180;
+     ColWidths[3]:=250;
   end;
   lstTrainSched.RowColor[0]:=clBlack;
   lstTrainSched.RowFontColor[0]:=clWhite;
@@ -1933,11 +1933,14 @@ end;
 
 procedure TfrmTVCSMain.actStationsExecute(Sender: TObject);
 var
- fm:TfrmStation;
+ //fm:TfrmStation;
+  fm: TfrmStationCam;
+
 begin
 //
   try
-    fm:=TfrmStation.CReate(Self);
+    //fm:=TfrmStation.CReate(Self);
+    fm:=TfrmStationcam.CReate(Self);
     fm.ShowModal;
   finally
     FreeAndNil(fm);

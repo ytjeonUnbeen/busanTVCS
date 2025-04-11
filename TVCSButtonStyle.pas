@@ -23,14 +23,14 @@ begin
   with Button do
   begin
     // 기본 설정
-    Font.Name := '맑은 고딕';
-    Font.Size := 10;
+    //Font.Name := '맑은 고딕';
+    Font.Size := 12;
 
     Font.Color := clWhite;
     //ont.Style := [fsBold];
 
     //width := 60;
-    Height := 25;
+    Height := 30;
 
     with Appearance do
     begin
@@ -70,14 +70,14 @@ begin
   with Button do
   begin
     // 기본 설정
-    Font.Name := '맑은 고딕';
-    Font.Size := 10;
+    //Font.Name := '맑은 고딕';
+    Font.Size := 12;
 
     Font.Color := clWhite;
     //ont.Style := [fsBold];
 
     //width := 60;
-    Height := 25;
+    Height := 30;
 
     with Appearance do
     begin
